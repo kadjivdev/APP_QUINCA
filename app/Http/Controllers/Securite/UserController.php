@@ -266,6 +266,7 @@ class UserController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+
     public function logout(Request $request)
     {
         try {
@@ -309,6 +310,7 @@ class UserController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    
     public function updateProfile(Request $request): JsonResponse
     {
         try {

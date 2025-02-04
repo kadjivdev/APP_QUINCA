@@ -318,7 +318,7 @@
         });
 
         $.ajax({
-            url: `/achat/bon-commandes/${id}`,
+            url: `/quinkadjiv_refont/public/achat/bon-commandes/${id}`,
             method: 'GET',
             success: function(response) {
                 Swal.close();
