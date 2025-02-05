@@ -17,8 +17,6 @@
 
             <form action="#" method="POST" id="addReglementForm" class="needs-validation" novalidate>
                 @csrf
-                <input type="hidden" name="facture_id" id="factureClientId">
-
                 <div class="modal-body p-4">
                     {{-- Informations principales --}}
                     <div class="row mb-4">
@@ -26,31 +24,28 @@
                             <div class="card bg-light border-0">
                                 <div class="card-body">
                                     <div class="row g-3">
-                                        {{-- Sélection Facture --}}
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-medium required">Facture</label>
-                                            <select class="form-select" name="facture_id" id="factureSelect" required>
-                                                <option value="">Sélectionner une facture</option>
-                                                @foreach ($factures as $facture)
-                                                    <option value="{{ $facture->id }}"
-                                                        data-client="{{ $facture->client->raison_sociale }}"
-                                                        data-montant="{{ $facture->montant_ttc }}"
-                                                        data-reste="{{ $facture->reste_a_regler }}">
-                                                        {{ $facture->numero }} - {{ $facture->client->raison_sociale }}
-                                                        (Reste:
-                                                        {{ number_format($facture->reste_a_regler, 0, ',', ' ') }} F)
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <div class="invalid-feedback">Veuillez sélectionner une facture</div>
-                                        </div>
-
                                         {{-- Client (en lecture seule) --}}
                                         <div class="col-md-6">
                                             <label class="form-label fw-medium">Client</label>
-                                            <div class="form-control bg-white" id="clientDisplay">
-                                                Sélectionnez une facture
-                                            </div>
+                                            <select class="form-select" name="clientId" id="clientDisplay">
+                                                <option value="">Sélectionnez un client</option>
+                                                @foreach ($clients as $client)
+                                                <option value="{{ $client->id }}"
+                                                    data-factures="{{ $client->facturesClient }}">
+                                                    {{ $client->raison_sociale }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="invalid-feedback">Veuillez sélectionner un client</div>
+                                        </div>
+
+                                        {{-- Sélection Facture --}}
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-medium required">Facture</label>
+                                            <select class="form-control" name="facture_id" id="factureSelect" required>
+                                                <option value="">Sélectionner une facture</option>
+                                            </select>
+                                            <!-- <div class="invalid-feedback">Veuillez sélectionner une facture</div> -->
                                         </div>
 
                                         {{-- Type de règlement --}}

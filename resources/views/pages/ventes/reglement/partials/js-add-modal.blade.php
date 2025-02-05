@@ -1,11 +1,11 @@
 <script>
     $(document).ready(function() {
-        // Initialisation de Select2 pour la facture
-        function initFactureSelect() {
-            $('#factureSelect').select2({
+        function initClientSelect() {
+            // Initialisation de Select2 pour le client
+            $('#clientDisplay').select2({
                 dropdownParent: $('#addReglementModal .modal-content'),
                 theme: 'bootstrap-5',
-                placeholder: 'Sélectionner une facture',
+                placeholder: 'Sélectionner un client',
                 width: '100%',
                 language: {
                     noResults: function() {
@@ -22,17 +22,82 @@
             });
         }
 
+        // Initialisation de Select2 pour la facture
+        // function initFactureSelect() {
+        //     $('#factureSelect').select2({
+        //         dropdownParent: $('#addReglementModal .modal-content'),
+        //         theme: 'bootstrap-5',
+        //         placeholder: 'Sélectionner une facture',
+        //         width: '100%',
+        //         language: {
+        //             noResults: function() {
+        //                 return "Aucune facture trouvée";
+        //             },
+        //             searching: function() {
+        //                 return "Recherche...";
+        //             }
+        //         }
+        //     }).on('select2:open', function() {
+        //         setTimeout(function() {
+        //             $('.select2-search__field').focus();
+        //         }, 100);
+        //     });
+        // }
+
         // Initialiser select2 à l'ouverture du modal
         $('#addReglementModal').on('shown.bs.modal', function() {
-            initFactureSelect();
+            // initFactureSelect();
+            initClientSelect();
         });
 
         // Détruire select2 à la fermeture du modal
         $('#addReglementModal').on('hidden.bs.modal', function() {
-            if ($('#factureSelect').data('select2')) {
-                $('#factureSelect').select2('destroy');
+            // if ($('#factureSelect').data('select2')) {
+            //     $('#factureSelect').select2('destroy');
+            // }
+
+            if ($('#clientDisplay').data('select2')) {
+                $('#clientDisplay').select2('destroy');
             }
             resetForm();
+        });
+
+        // Au changement de client
+        $('#clientDisplay').on('change', function() {
+            const selectedOption = $(this).find(':selected');
+            const clientId = $(this).val();
+
+            // Mettre à jour l'ID de la facture
+            $('#clientId').val(clientId);
+
+            if (clientId) {
+                const factures = selectedOption.data('factures');
+
+                // console.log(clientId)
+                // console.log(factures)
+
+                // Mettre à jour l'affichage
+                factures.forEach(facture => {
+                    // console.log(facture)
+                    $('#factureSelect').append(
+                        `
+                        <option value="${facture.id}"
+                            data-client="${facture.client.raison_sociale}"
+                            data-montant="${facture.montant_ttc}"
+                            data-reste="${facture.montant_ttc - facture.montant_regle}">
+                            ${facture.numero} - ${facture.client.raison_sociale}
+                            (Reste: ${facture.montant_ttc - facture.montant_regle} F)
+                        </option>
+                        `
+                    )
+                });
+            } else {
+                // Réinitialiser les champs
+                $('#clientDisplay').text('Sélectionnez un client');
+                $('#resteAPayer').text('');
+                $('#montant').prop('disabled', true).val('');
+            }
+            updateSaveButton();
         });
 
         // Au changement de facture
@@ -44,11 +109,12 @@
             $('#factureClientId').val(factureId);
 
             if (factureId) {
-                const clientName = selectedOption.data('client');
+                // const clientName = selectedOption.data('client');
                 const resteAPayer = selectedOption.data('reste');
 
+                // console.log(selectedOption)
                 // Mettre à jour l'affichage
-                $('#clientDisplay').text(clientName);
+                // $('#clientDisplay').text(clientName);
                 $('#resteAPayer').html(
                     `Reste à payer: <strong>${formatMontant(resteAPayer)} F</strong>`);
 
@@ -137,7 +203,6 @@
             const submitBtn = $('#btnSaveReglement');
             submitBtn.prop('disabled', true)
                 .html('<i class="fas fa-spinner fa-spin me-2"></i>Enregistrement...');
-
             $.ajax({
                 url: `${apiUrl}/vente/reglement/store`,
                 type: 'POST',

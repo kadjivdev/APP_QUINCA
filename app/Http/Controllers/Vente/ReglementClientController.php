@@ -56,7 +56,7 @@ class ReglementClientController extends Controller
         $reglements = $reglements->paginate(10);
 
         // Données pour les filtres et le modal d'ajout
-        $clients = Client::orderBy('raison_sociale')->get();
+        $clients = Client::orderBy('raison_sociale')->with("facturesClient")->get();
 
         // Statistiques pour le header
         $statsReglements = [
@@ -85,15 +85,15 @@ class ReglementClientController extends Controller
         ];
 
         // Récupérer les factures non soldées pour le modal d'ajout
-       // Récupérer les factures non soldées pour le modal d'ajout
-    $factures = FactureClient::where('statut', 'validee')
-    ->whereRaw('IFNULL(montant_regle, 0) < montant_ttc')
-    ->with('client')
-    ->latest()
-    ->get()
-    ->filter(function($facture) {
-        return !$facture->est_solde;
-    });
+        // Récupérer les factures non soldées pour le modal d'ajout
+        $factures = FactureClient::where('statut', 'validee')
+            ->whereRaw('IFNULL(montant_regle, 0) < montant_ttc')
+            ->with('client')
+            ->latest()
+            ->get()
+            ->filter(function ($facture) {
+                return !$facture->est_solde;
+            });
 
 
         // Types de règlement disponibles
@@ -229,7 +229,6 @@ class ReglementClientController extends Controller
                     ])
                 ]
             ]);
-
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json([
@@ -237,7 +236,6 @@ class ReglementClientController extends Controller
                 'message' => 'Erreur de validation',
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création du règlement:', [
@@ -302,7 +300,6 @@ class ReglementClientController extends Controller
                     ])
                 ]
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -416,7 +413,6 @@ class ReglementClientController extends Controller
                     'success' => true,
                     'data' => $response
                 ]);
-
             } catch (\Exception $e) {
                 Log::error('Erreur lors de la préparation de la réponse', [
                     'reglement_id' => $id,
@@ -429,7 +425,6 @@ class ReglementClientController extends Controller
                     'message' => 'Erreur lors de la préparation des données du règlement'
                 ], 500);
             }
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération des détails du règlement', [
                 'reglement_id' => $id,
@@ -557,7 +552,6 @@ class ReglementClientController extends Controller
                     'reglement' => $reglement
                 ]
             ]);
-
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json([
@@ -565,7 +559,6 @@ class ReglementClientController extends Controller
                 'message' => 'Erreur de validation',
                 'errors' => $e->errors()
             ], 422);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour du règlement:', [
@@ -627,7 +620,6 @@ class ReglementClientController extends Controller
                     ])
                 ]
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de l\'annulation du règlement:', [
@@ -658,7 +650,6 @@ class ReglementClientController extends Controller
                 'success' => true,
                 'message' => 'Règlement supprimé avec succès'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -668,7 +659,7 @@ class ReglementClientController extends Controller
         }
     }
 
-     /**
+    /**
      * Obtenir les détails d'un règlement
      *
      * @param ReglementClient $reglement
@@ -694,5 +685,4 @@ class ReglementClientController extends Controller
             'notes' => $reglement->notes
         ]);
     }
-
 }

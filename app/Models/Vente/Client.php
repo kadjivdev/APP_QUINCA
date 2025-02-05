@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
-use App\Models\Vente\{FactureClient, LigneFacture, ReglementClient };
+use App\Models\Vente\{FactureClient, LigneFacture, ReglementClient};
 use App\Models\Securite\User;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Models\Vente\SoldeInitialClient;
@@ -55,7 +55,7 @@ class Client extends Model
     // Relations
     public function facturesClient(): HasMany
     {
-        return $this->hasMany(FactureClient::class);
+        return $this->hasMany(FactureClient::class)->with("client");
     }
 
     public function reglements(): HasManyThrough
@@ -71,9 +71,9 @@ class Client extends Model
     }
 
     public function soldeInitial()
-{
-    return $this->hasOne(SoldeInitialClient::class)->latestOfMany('date_solde');
-}
+    {
+        return $this->hasOne(SoldeInitialClient::class)->latestOfMany('date_solde');
+    }
 
     public function createdBy()
     {
@@ -85,8 +85,9 @@ class Client extends Model
         return $this->belongsTo(Departement::class, 'departement_id');
     }
 
-    public function agent() {
-        return $this->belongsTo(Agent::class, 'agent_id');     
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class, 'agent_id');
     }
 
     // Scopes
@@ -109,10 +110,10 @@ class Client extends Model
     {
         return $query->where(function ($q) use ($term) {
             $q->where('raison_sociale', 'like', "%{$term}%")
-              ->orWhere('code_client', 'like', "%{$term}%")
-              ->orWhere('ifu', 'like', "%{$term}%")
-              ->orWhere('rccm', 'like', "%{$term}%")
-              ->orWhere('telephone', 'like', "%{$term}%");
+                ->orWhere('code_client', 'like', "%{$term}%")
+                ->orWhere('ifu', 'like', "%{$term}%")
+                ->orWhere('rccm', 'like', "%{$term}%")
+                ->orWhere('telephone', 'like', "%{$term}%");
         });
     }
 
@@ -123,12 +124,12 @@ class Client extends Model
     }
 
     /**
- * Relation avec les acomptes clients
- */
-public function acomptes(): HasMany
-{
-    return $this->hasMany(AcompteClient::class, 'client_id');
-}
+     * Relation avec les acomptes clients
+     */
+    public function acomptes(): HasMany
+    {
+        return $this->hasMany(AcompteClient::class, 'client_id');
+    }
 
     public function getEstActifAttribute(): bool
     {
@@ -207,23 +208,22 @@ public function acomptes(): HasMany
 
     // Règles de validation
     public static function rules($id = null): array
-{
-    return [
-        'raison_sociale' => 'required|string|max:255',
-        'ifu' => 'nullable|string|unique:clients,ifu,' . $id,
-        'rccm' => 'nullable|string|unique:clients,rccm,' . $id,
-        'telephone' => 'nullable|string|max:20',
-        'email' => 'nullable|email',
-        'adresse' => 'nullable|string',
-        'ville' => 'nullable|string',
-        'plafond_credit' => 'required|numeric|min:0',
-        'delai_paiement' => 'required|integer|min:0',
-        'categorie' => 'required|in:particulier,professionnel,societe,comptoir',
-        'solde_initial' => 'required|numeric|min:0',
-        'statut' => 'required|boolean',
-        'notes' => 'nullable|string',
-        'taux_aib' => 'nullable|numeric|min:0|max:100',
-    ];
-}
-
+    {
+        return [
+            'raison_sociale' => 'required|string|max:255',
+            'ifu' => 'nullable|string|unique:clients,ifu,' . $id,
+            'rccm' => 'nullable|string|unique:clients,rccm,' . $id,
+            'telephone' => 'nullable|string|max:20',
+            'email' => 'nullable|email',
+            'adresse' => 'nullable|string',
+            'ville' => 'nullable|string',
+            'plafond_credit' => 'required|numeric|min:0',
+            'delai_paiement' => 'required|integer|min:0',
+            'categorie' => 'required|in:particulier,professionnel,societe,comptoir',
+            'solde_initial' => 'required|numeric|min:0',
+            'statut' => 'required|boolean',
+            'notes' => 'nullable|string',
+            'taux_aib' => 'nullable|numeric|min:0|max:100',
+        ];
+    }
 }
