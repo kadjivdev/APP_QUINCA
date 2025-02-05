@@ -64,9 +64,9 @@
                                                     required>
                                                     <option value="">Sélectionner un fournisseur</option>
                                                     @foreach ($fournisseurs as $fournisseur)
-                                                        <option value="{{ $fournisseur->id }}">
-                                                            {{ $fournisseur->raison_sociale }}
-                                                        </option>
+                                                    <option value="{{ $fournisseur->id }}">
+                                                        {{ $fournisseur->raison_sociale }}
+                                                    </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -144,9 +144,9 @@
             <select class="form-select select2-articles" name="articles[]" required>
                 <option value="">Sélectionner un article</option>
                 @foreach ($articles as $article)
-                    <option value="{{ $article->id }}">
-                        {{ $article->code_article }} - {{ $article->designation }}
-                    </option>
+                <option value="{{ $article->id }}">
+                    {{ $article->code_article }} - {{ $article->designation }}
+                </option>
                 @endforeach
             </select>
             <div class="invalid-feedback">L'article est requis</div>
@@ -160,9 +160,9 @@
             <select class="form-select" name="unites[]" required>
                 <option value="">Sélectionner une unité</option>
                 @foreach ($unitesMesure as $unite)
-                    <option value="{{ $unite->id }}">
-                        {{ $unite->code_unite }} - {{ $unite->libelle_unite }}
-                    </option>
+                <option value="{{ $unite->id }}">
+                    {{ $unite->code_unite }} - {{ $unite->libelle_unite }}
+                </option>
                 @endforeach
             </select>
             <div class="invalid-feedback">L'unité est requise</div>
@@ -175,125 +175,122 @@
     </tr>
 </template>
 
-
 @push('scripts')
-    <script>
-        $(document).ready(function() {
-            // Générer le code au chargement
-            // generateCode();
-
-            // Initialize Select2 for fournisseur
-            $('#fournisseurSelect').select2({
+<script>
+    $(document).ready(function() {
+        $('.select2').each(function() {
+            $(this).select2({
                 theme: 'bootstrap-5',
-                width: '100%'
-            });
-
-            // Charger les articles quand le fournisseur change
-            $('#fournisseurSelect').on('change', function() {
-                const fournisseurId = $(this).val();
-                if (fournisseurId) {
-                    loadArticles(fournisseurId);
-                }
-            });
-
-            // Ajouter une nouvelle ligne
-            $('#btnAddLigne').on('click', function() {
-                addNewLine();
-            });
-
-            // Supprimer une ligne
-            $(document).on('click', '.remove-ligne', function() {
-                $(this).closest('tr').remove();
-            });
-
-            // Soumission du formulaire
-            $('#addProgrammationForm').on('submit', function(e) {
-                e.preventDefault();
-                if (this.checkValidity()) {
-                    saveProgrammation($(this));
-                }
-                $(this).addClass('was-validated');
+                dropdownParent: $(this).parent(),
             });
         });
+        
+        // Charger les articles quand le fournisseur change
+        $('#fournisseurSelect').on('change', function() {
+            const fournisseurId = $(this).val();
+            if (fournisseurId) {
+                loadArticles(fournisseurId);
+            }
+        });
 
-        // function generateCode() {
-        //     $.ajax({
-        //         url: `${apiUrl}/achat/programmation/generate-code`,
-        //         method: 'GET',
-        //         success: function(response) {
-        //             if (response.success) {
-        //                 $('#code').val(response.code);
-        //             }
-        //         }
-        //     });
-        // }
+        // Ajouter une nouvelle ligne
+        $('#btnAddLigne').on('click', function() {
+            addNewLine();
+        });
 
-        function loadArticles(fournisseurId) {
-            $.ajax({
-                url: `${apiUrl}/achat/programmation/articles/${fournisseurId}`,
-                method: 'GET',
-                success: function(response) {
-                    const articles = response;
-                    updateArticlesOptions(articles);
-                }
-            });
-        }
+        // Supprimer une ligne
+        $(document).on('click', '.remove-ligne', function() {
+            $(this).closest('tr').remove();
+        });
 
-        function updateArticlesOptions(articles) {
-            let options = '<option value="">Sélectionner un article</option>';
-            articles.forEach(article => {
-                options += `<option value="${article.id}" data-unites='${JSON.stringify(article.unites)}'>
+        // Soumission du formulaire
+        $('#addProgrammationForm').on('submit', function(e) {
+            e.preventDefault();
+            if (this.checkValidity()) {
+                saveProgrammation($(this));
+            }
+            $(this).addClass('was-validated');
+        });
+    });
+
+    // function generateCode() {
+    //     $.ajax({
+    //         url: `${apiUrl}/achat/programmation/generate-code`,
+    //         method: 'GET',
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 $('#code').val(response.code);
+    //             }
+    //         }
+    //     });
+    // }
+
+    function loadArticles(fournisseurId) {
+        $.ajax({
+            url: `${apiUrl}/achat/programmation/articles/${fournisseurId}`,
+            method: 'GET',
+            success: function(response) {
+                const articles = response;
+                updateArticlesOptions(articles);
+            }
+        });
+    }
+
+    function updateArticlesOptions(articles) {
+        let options = '<option value="">Sélectionner un article</option>';
+        articles.forEach(article => {
+            options += `<option value="${article.id}" data-unites='${JSON.stringify(article.unites)}'>
                     ${article.designation}
                 </option>`;
-            });
-            $('.select2-articles').html(options);
-        }
+        });
+        $('.select2-articles').html(options);
+    }
 
-        // function addNewLine() {
-        //     const template = document.getElementById('ligneProgrammationTemplate');
-        //     const clone = template.content.cloneNode(true);
-        //     $('#lignesContainer').append(clone);
+    // function addNewLine() {
+    //     const template = document.getElementById('ligneProgrammationTemplate');
+    //     const clone = template.content.cloneNode(true);
+    //     $('#lignesContainer').append(clone);
 
-        //     const newLine = $('#lignesContainer tr:last');
+    //     const newLine = $('#lignesContainer tr:last');
 
-        //     // Initialize Select2 for the new line
-        //     newLine.find('.select2-articles').select2({
-        //         theme: 'bootstrap-5',
-        //         width: '100%'
-        //     });
-        // }
+    //     // Initialize Select2 for the new line
+    //     newLine.find('.select2-articles').select2({
+    //         theme: 'bootstrap-5',
+    //         width: '100%'
+    //     });
+    // }
 
-        // function saveProgrammation($form) {
-        //     const formData = $form.serialize();
+    // function saveProgrammation($form) {
+    //     const formData = $form.serialize();
 
-        //     $.ajax({
-        //         url: '/achat/programmation',
-        //         method: 'POST',
-        //         data: formData,
-        //         success: function(response) {
-        //             if (response.success) {
-        //                 // Fermer le modal
-        //                 $('#addProgrammationModal').modal('hide');
+    //     $.ajax({
+    //         url: '/achat/programmation',
+    //         method: 'POST',
+    //         data: formData,
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 // Fermer le modal
+    //                 $('#addProgrammationModal').modal('hide');
 
-        //                 // Afficher le message de succès
-        //                 Toast.fire({
-        //                     icon: 'success',
-        //                     title: response.message
-        //                 });
+    //                 // Afficher le message de succès
+    //                 Toast.fire({
+    //                     icon: 'success',
+    //                     title: response.message
+    //                 });
 
-        //                 // Recharger la page après un court délai
-        //                 setTimeout(() => {
-        //                     window.location.reload();
-        //                 }, 1000);
-        //             }
-        //         },
-        //         error: function(xhr) {
-        //             Toast.fire({
-        //                 icon: 'error',
-        //                 title: 'Erreur lors de l\'enregistrement'
-        //             });
-        //         }
-        //     });
-        // }
-    </script>
+    //                 // Recharger la page après un court délai
+    //                 setTimeout(() => {
+    //                     window.location.reload();
+    //                 }, 1000);
+    //             }
+    //         },
+    //         error: function(xhr) {
+    //             Toast.fire({
+    //                 icon: 'error',
+    //                 title: 'Erreur lors de l\'enregistrement'
+    //             });
+    //         }
+    //     });
+    // }
+</script>
 @endpush

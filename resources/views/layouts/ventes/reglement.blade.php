@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" dir="ltr" data-navigation-type="default" data-navbar-horizontal-shape="default">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -34,7 +35,9 @@
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css" rel="stylesheet">
 
-    <script>var apiUrl = "{{ config('app.url_ajax') }}";</script>
+    <script>
+        var apiUrl = "{{ config('app.url_ajax') }}";
+    </script>
 
     <!-- Page Specific CSS -->
     @stack('styles')
@@ -79,6 +82,13 @@
 
     <!-- Global Configurations -->
     <script>
+        $('.select2').each(function() {
+            $(this).select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $(this).parent(),
+            });
+        });
+
         // Configuration de SweetAlert2
         const Toast = Swal.mixin({
             toast: true,
@@ -141,13 +151,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialisation des tooltips Bootstrap
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
             // Initialisation des popovers Bootstrap
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-            popoverTriggerList.map(function (popoverTriggerEl) {
+            popoverTriggerList.map(function(popoverTriggerEl) {
                 return new bootstrap.Popover(popoverTriggerEl)
             });
         });
@@ -156,4 +166,5 @@
     <!-- Page Specific JS -->
     @stack('scripts')
 </body>
+
 </html>

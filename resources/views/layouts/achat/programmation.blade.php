@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-US" dir="ltr" data-navigation-type="default" data-navbar-horizontal-shape="default">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    
+
 
     <!-- Core Stylesheets -->
     <link href="{{ asset('vendors/simplebar/simplebar.min.css') }}" rel="stylesheet">
@@ -37,8 +38,12 @@
     <!-- Third Party Plugins CSS -->
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"> --}}
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css" rel="stylesheet">
+
     <!-- CSS Select2 -->
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    
 
     <!-- Core Scripts -->
     <script src="{{ asset('vendors/simplebar/simplebar.min.js') }}"></script>
@@ -88,7 +93,9 @@
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
-    <script>var apiUrl = "{{ config('app.url_ajax') }}";</script>
+    <script>
+        var apiUrl = "{{ config('app.url_ajax') }}";
+    </script>
     <script src="{{ asset('js/achat/programmation-achat.js') }}"></script>
 
     <!-- App Scripts -->
@@ -96,6 +103,21 @@
 
     <!-- Notifications Configuration -->
     <script>
+        // Configuration de Select2
+        $.fn.select2.defaults.set('theme', 'bootstrap-5');
+        $.fn.select2.defaults.set('width', '100%');
+        $.fn.select2.defaults.set('language', {
+            noResults: function() {
+                return "Aucun résultat trouvé";
+            },
+            searching: function() {
+                return "Recherche en cours...";
+            },
+            loadingMore: function() {
+                return "Chargement de résultats supplémentaires...";
+            }
+        });
+
         // Configuration globale de SweetAlert2
         const Toast = Swal.mixin({
             toast: true,
@@ -117,4 +139,5 @@
     @stack('scripts')<!-- Axios pour les requêtes HTTP -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
+
 </html>

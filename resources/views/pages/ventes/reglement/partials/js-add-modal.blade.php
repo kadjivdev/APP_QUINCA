@@ -20,29 +20,26 @@
                     $('.select2-search__field').focus();
                 }, 100);
             });
-        }
 
-        // Initialisation de Select2 pour la facture
-        // function initFactureSelect() {
-        //     $('#factureSelect').select2({
-        //         dropdownParent: $('#addReglementModal .modal-content'),
-        //         theme: 'bootstrap-5',
-        //         placeholder: 'Sélectionner une facture',
-        //         width: '100%',
-        //         language: {
-        //             noResults: function() {
-        //                 return "Aucune facture trouvée";
-        //             },
-        //             searching: function() {
-        //                 return "Recherche...";
-        //             }
-        //         }
-        //     }).on('select2:open', function() {
-        //         setTimeout(function() {
-        //             $('.select2-search__field').focus();
-        //         }, 100);
-        //     });
-        // }
+            $('#factureSelect').select2({
+                dropdownParent: $('#addReglementModal .modal-content'),
+                theme: 'bootstrap-5',
+                placeholder: 'Sélectionner une facture',
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Aucune facture trouvée";
+                    },
+                    searching: function() {
+                        return "Recherche...";
+                    }
+                }
+            }).on('select2:open', function() {
+                setTimeout(function() {
+                    $('.select2-search__field').focus();
+                }, 100);
+            });
+        }
 
         // Initialiser select2 à l'ouverture du modal
         $('#addReglementModal').on('shown.bs.modal', function() {
@@ -64,6 +61,8 @@
 
         // Au changement de client
         $('#clientDisplay').on('change', function() {
+            $('#factureSelect').empty()
+
             const selectedOption = $(this).find(':selected');
             const clientId = $(this).val();
 
@@ -72,9 +71,6 @@
 
             if (clientId) {
                 const factures = selectedOption.data('factures');
-
-                // console.log(clientId)
-                // console.log(factures)
 
                 // Mettre à jour l'affichage
                 factures.forEach(facture => {

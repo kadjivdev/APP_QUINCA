@@ -51,10 +51,10 @@
                                                 <select class="form-select" name="client_id" required>
                                                     <option value="">Sélectionner un client</option>
                                                     @foreach ($clients as $client)
-                                                        <option value="{{ $client->id }}"
-                                                            data-taux-aib="{{ $client->taux_aib }}">
-                                                            {{ $client->raison_sociale }}
-                                                        </option>
+                                                    <option value="{{ $client->id }}"
+                                                        data-taux-aib="{{ $client->taux_aib }}">
+                                                        {{ $client->raison_sociale }}
+                                                    </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -68,7 +68,7 @@
                                                     <i class="fas fa-clock text-primary"></i>
                                                 </span>
                                                 <input type="date" class="form-control" name="date_echeance"
-                                                value="{{ date('Y-m-d') }}"
+                                                    value="{{ date('Y-m-d') }}"
                                                     required>
                                             </div>
                                             <div class="invalid-feedback">La date d'échéance est requise</div>
@@ -280,12 +280,12 @@
         </td>
         <td>
             <input type="number"
-                   class="form-control text-end select2-tarifs"
-                   name="lignes[__INDEX__][tarification_id]"
-                   placeholder="0.00"
-                   required
-                   min="0.01"
-                   step="0.01">
+                class="form-control text-end select2-tarifs"
+                name="lignes[__INDEX__][tarification_id]"
+                placeholder="0.00"
+                required
+                min="0.01"
+                step="0.01">
             <div class="invalid-feedback">Le prix est requis</div>
         </td>
         <td>
@@ -305,5 +305,3 @@
         </td>
     </tr>
 </template>
-
-    </script>
