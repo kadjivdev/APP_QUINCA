@@ -152,7 +152,7 @@
                 </span>
                 <input type="search"
                     style="border-radius:0px"
-                    placeholder="Recherche un article...."
+                    placeholder="Recherche...."
                     name=""
                     class="form-control" id="articleSearch">
                 <select class="form-select " name="article_id_id" id="articles_block"
@@ -208,26 +208,6 @@
                 dropdownParent: $(this).parent(),
             });
         });
-
-        // SEARCH ARTICLE
-        var articles = document.querySelectorAll('.article');
-        document.getElementById('articleSearch').addEventListener('keyup', function(e) {
-            var text = this.value.toLowerCase();
-            Array.prototype.forEach.call(articles, function(article) {
-                // On a bien trouvé les termes de recherche.
-                if (article.innerHTML.toLowerCase().indexOf(text) > -1) {
-                    article.style.display = 'block';
-                } else {
-                    article.style.display = 'none';
-                }
-            });
-        })
-        if (document.getElementById('fournisseurSearch').trim() == '') {
-            Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
-                // On a bien trouvé les termes de recherche.
-                fournisseur.style.display = 'block';
-            });
-        }
 
         // SEARCH FOURNISSEUR
         var fournisseurs = document.querySelectorAll('.fournisseur');
