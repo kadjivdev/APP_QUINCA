@@ -20,10 +20,8 @@ class ProgrammationAchat {
         // Événements pour le modal et le formulaire
         $('#addProgrammationModal').on('shown.bs.modal', () => this.onModalShow());
         $('#addProgrammationModal').on('hidden.bs.modal', () => this.onModalHide());
-
         $('#editProgrammationModal').on('shown.bs.modal', () => this.onModalShow());
         $('#editProgrammationModal').on('hidden.bs.modal', () => this.onModalHide());
-
         $('#addProgrammationForm').on('submit', (e) => this.handleSubmit(e));
 
         // Événements pour la gestion des articles

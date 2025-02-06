@@ -43,7 +43,6 @@
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
-    
 
     <!-- Core Scripts -->
     <script src="{{ asset('vendors/simplebar/simplebar.min.js') }}"></script>
@@ -103,21 +102,7 @@
 
     <!-- Notifications Configuration -->
     <script>
-        // Configuration de Select2
-        $.fn.select2.defaults.set('theme', 'bootstrap-5');
-        $.fn.select2.defaults.set('width', '100%');
-        $.fn.select2.defaults.set('language', {
-            noResults: function() {
-                return "Aucun résultat trouvé";
-            },
-            searching: function() {
-                return "Recherche en cours...";
-            },
-            loadingMore: function() {
-                return "Chargement de résultats supplémentaires...";
-            }
-        });
-
+        
         // Configuration globale de SweetAlert2
         const Toast = Swal.mixin({
             toast: true,
@@ -136,7 +121,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/fr.js"></script>
 
-    @stack('scripts')<!-- Axios pour les requêtes HTTP -->
+    @stack('scripts')
+    <!-- Axios pour les requêtes HTTP -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </body>
 

@@ -82,13 +82,7 @@
 
     <!-- Global Configurations -->
     <script>
-        $('.select2').each(function() {
-            $(this).select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $(this).parent(),
-            });
-        });
-
+        
         // Configuration de SweetAlert2
         const Toast = Swal.mixin({
             toast: true,
