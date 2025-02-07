@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="col-md-3">
                                             <label class="form-label small text-muted mb-2 required">Facture</label>
-                                            <select class="form-select rounded-pill" name="facture_id"
+                                            <select class="form-select select2 rounded-pill" name="facture_id"
                                                 id="factureSelect" required>
                                                 <option value="">Sélectionner une facture</option>
                                                 @foreach ($factures as $facture)
@@ -53,7 +53,7 @@
                                         </div>
                                         <div class="col-md-3">
                                             <label class="form-label small text-muted mb-2 required">Magasin</label>
-                                            <select class="form-select rounded-pill" name="depot_id" required>
+                                            <select class="form-select rounded-pill select2" name="depot_id" required>
                                                 <option value="">Sélectionner un magasin</option>
                                                 @foreach ($depots as $depot)
                                                     <option value="{{ $depot->id }}">{{ $depot->libelle_depot }}
@@ -71,7 +71,7 @@
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <label class="form-label small text-muted mb-2 required">Véhicule</label>
-                            <select class="form-select rounded-pill" name="vehicule_id" required>
+                            <select class="form-select select2 rounded-pill" name="vehicule_id" required>
                                 <option value="">Sélectionner un véhicule</option>
                                 @foreach ($vehicules as $vehicule)
                                     <option value="{{ $vehicule->id }}">{{ $vehicule->matricule }}</option>
@@ -80,7 +80,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small text-muted mb-2 required">Chauffeur</label>
-                            <select class="form-select rounded-pill" name="chauffeur_id" required>
+                            <select class="form-select select2 rounded-pill" name="chauffeur_id" required>
                                 <option value="">Sélectionner un chauffeur</option>
                                 @foreach ($chauffeurs as $chauffeur)
                                     <option value="{{ $chauffeur->id }}">{{ $chauffeur->nom_chauf }}</option>

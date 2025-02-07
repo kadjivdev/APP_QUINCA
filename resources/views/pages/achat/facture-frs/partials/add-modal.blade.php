@@ -30,19 +30,19 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <select class="form-select select2" name="bon_commande_id" id="bonCommandeSelect"
+                                    <select class="form-select select2" name="bon_commande_id" id="_bonCommandeSelect"
                                         required>
                                         <option value="">Sélectionner un bon de commande</option>
                                         @foreach ($bonsCommande as $bc)
-                                            <option value="{{ $bc->id }}" data-code="{{ $bc->code }}"
-                                                data-point-vente="{{ $bc->pointVente->nom_pv }}"
-                                                data-point-vente-id="{{ $bc->point_de_vente_id }}"
-                                                data-fournisseur="{{ $bc->fournisseur->raison_sociale }}"
-                                                data-fournisseur-id="{{ $bc->fournisseur_id }}"
-                                                data-montant="{{ $bc->montant_total }}">
-                                                {{ $bc->code }} - {{ $bc->fournisseur->raison_sociale }}
-                                                ({{ number_format($bc->montant_total, 2) }} FCFA)
-                                            </option>
+                                        <option value="{{ $bc->id }}" data-code="{{ $bc->code }}"
+                                            data-point-vente="{{ $bc->pointVente->nom_pv }}"
+                                            data-point-vente-id="{{ $bc->point_de_vente_id }}"
+                                            data-fournisseur="{{ $bc->fournisseur->raison_sociale }}"
+                                            data-fournisseur-id="{{ $bc->fournisseur_id }}"
+                                            data-montant="{{ $bc->montant_total }}">
+                                            {{ $bc->code }} - {{ $bc->fournisseur->raison_sociale }}
+                                            ({{ number_format($bc->montant_total, 2) }} FCFA)
+                                        </option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">Veuillez sélectionner un bon de commande</div>
@@ -248,80 +248,86 @@
 </div>
 
 @push('scripts')
-    <script>
-        var apiUrl = "{{ config('app.url_ajax') }}";
-        $(document).ready(function() {
-            // Initialisation de Select2
-            $('#bonCommandeSelect').select2({
+<script>
+    var apiUrl = "{{ config('app.url_ajax') }}";
+    $(document).ready(function() {
+        // Initialisation de Select2
+        // Initialisation de Select2 avec gestion d'erreur
+        try {
+            $('.select2').select2({
                 theme: 'bootstrap-5',
-                placeholder: 'Sélectionner un bon de commande'
+                width: '100%',
+                dropdownParent: $('#addFactureModal')
             });
+        } catch (e) {
+            console.error('Erreur initialisation Select2:', e);
+        }
 
-            // Gestionnaire de changement pour le bon de commande
-            $('#bonCommandeSelect').change(function() {
-                const option = $(this).find(':selected');
-                if (option.val()) {
-                    // Masquer le conteneur des détails et afficher le loader
-                    $('#detailsContainer').hide();
-                    $('#loaderSection').show();
-                    $('#btnSave').hide();
+        // Gestionnaire de changement pour le bon de commande
+        $('#_bonCommandeSelect').change(function() {
+            const option = $(this).find(':selected');
+            if (option.val()) {
+                // Masquer le conteneur des détails et afficher le loader
+                $('#detailsContainer').hide();
+                $('#loaderSection').show();
+                $('#btnSave').hide();
 
-                    // Remplir les informations de base
-                    $('#bonCommandeCode').text(option.data('code'));
-                    $('#pointVente').text(option.data('point-vente'));
-                    $('#pointVenteId').val(option.data('point-vente-id'));
-                    $('#fournisseur').text(option.data('fournisseur'));
-                    $('#fournisseurId').val(option.data('fournisseur-id'));
-                    $('#montantTotal').text(new Intl.NumberFormat('fr-FR').format(option.data('montant')) +
-                        ' FCFA');
+                // Remplir les informations de base
+                $('#bonCommandeCode').text(option.data('code'));
+                $('#pointVente').text(option.data('point-vente'));
+                $('#pointVenteId').val(option.data('point-vente-id'));
+                $('#fournisseur').text(option.data('fournisseur'));
+                $('#fournisseurId').val(option.data('fournisseur-id'));
+                $('#montantTotal').text(new Intl.NumberFormat('fr-FR').format(option.data('montant')) +
+                    ' FCFA');
 
-                    // Charger les articles
-                    $.ajax({
-                        url: `${apiUrl}/achat/bon-commandes/${option.val()}/articles`,
-                        method: 'GET',
-                        success: function(response) {
-                            if (response.success) {
-                                displayArticles(response.data);
-                                // Masquer le loader et afficher les détails
-                                $('#loaderSection').hide();
-                                $('#detailsContainer').show();
-                                $('#btnSave').show();
-                            }
-                        },
-                        error: function() {
-                            // En cas d'erreur, masquer le loader
-                            $('#loaderSection').hide();
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Erreur lors du chargement des articles'
-                            });
-                        }
-                    });
-                } else {
-                    $('#detailsContainer, #btnSave').hide();
-                }
-            });
-
-            // Fonction pour charger les articles
-            function loadBonCommandeArticles(bonCommandeId) {
+                // Charger les articles
                 $.ajax({
-                    url: `${apiUrl}/achat/bon-commandes/${bonCommandeId}/articles`,
+                    url: `${apiUrl}/achat/bon-commandes/${option.val()}/articles`,
                     method: 'GET',
                     success: function(response) {
                         if (response.success) {
                             displayArticles(response.data);
+                            // Masquer le loader et afficher les détails
+                            $('#loaderSection').hide();
+                            $('#detailsContainer').show();
+                            $('#btnSave').show();
                         }
+                    },
+                    error: function() {
+                        // En cas d'erreur, masquer le loader
+                        $('#loaderSection').hide();
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Erreur lors du chargement des articles'
+                        });
                     }
                 });
+            } else {
+                $('#detailsContainer, #btnSave').hide();
             }
+        });
 
-            // Fonction pour afficher les articles
-            function displayArticles(articles) {
-                const tbody = $('#articlesTableBody');
-                tbody.empty();
+        // Fonction pour charger les articles
+        function loadBonCommandeArticles(bonCommandeId) {
+            $.ajax({
+                url: `${apiUrl}/achat/bon-commandes/${bonCommandeId}/articles`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        displayArticles(response.data);
+                    }
+                }
+            });
+        }
 
-                articles.forEach(article => {
-                    tbody.append(`
+        // Fonction pour afficher les articles
+        function displayArticles(articles) {
+            const tbody = $('#articlesTableBody');
+            tbody.empty();
+
+            articles.forEach(article => {
+                tbody.append(`
             <tr>
                 <td>${article.code_article}</td>
                 <td>${article.designation}</td>
@@ -352,163 +358,163 @@
                 </td>
             </tr>
         `);
-                });
-
-                calculateTotals();
-            }
-
-            // Ajouter les champs TVA et AIB aux écouteurs
-            $('#tauxTVA, #tauxAIB').on('input', function() {
-                calculateTotals();
             });
 
-            // Fonction pour initialiser les calculs
-            function initializeCalculations() {
-                const calculFields = '#tauxTVA, #tauxAIB';
+            calculateTotals();
+        }
 
-                $(document).on('input', calculFields, function() {
-                    calculateTotals();
-                });
-            }
-
-
-            // Calculer les montants pour une ligne
-            function calculateLineMontants(row) {
-                const quantite = parseFloat(row.find('.quantite').val()) || 0;
-                const prix = parseFloat(row.find('.prix').val()) || 0;
-                const montantHT = quantite * prix;
-
-                row.find('.montant-ht').text(montantHT.toFixed(2));
-                row.find('.montant-ht-input').val(montantHT.toFixed(2));
-            }
-
-            // Calculer les totaux
-            function calculateTotals() {
-                let totalHT = 0;
-                $('#articlesTableBody tr').each(function() {
-                    totalHT += parseFloat($(this).find('.montant-ht-input').val()) || 0;
-                });
-
-                const isNormalise = $('select[name="type_facture"]').val() === 'NORMALISE';
-                const tauxTVA = isNormalise ? (parseFloat($('#tauxTVA').val()) || 0) : 0;
-                const tauxAIB = isNormalise ? (parseFloat($('#tauxAIB').val()) || 0) : 0;
-
-                const totalTVA = totalHT * (tauxTVA / 100);
-                const totalAIB = totalHT * (tauxAIB / 100);
-                const totalTTC = isNormalise ? (totalHT + totalTVA + totalAIB) : totalHT;
-
-                $('#montantHT').text(totalHT.toFixed(2));
-                $('#montantTVA').text(totalTVA.toFixed(2));
-                $('#montantAIB').text(totalAIB.toFixed(2));
-                $('#montantTTC').text(totalTTC.toFixed(2));
-
-                $('#montantHTInput').val(totalHT.toFixed(2));
-                $('#montantTVAInput').val(totalTVA.toFixed(2));
-                $('#montantAIBInput').val(totalAIB.toFixed(2));
-                $('#montantTTCInput').val(totalTTC.toFixed(2));
-            }
-
-            // Validation du formulaire
-            $('#addFactureForm').on('submit', function(e) {
-                e.preventDefault();
-
-                if (this.checkValidity()) {
-                    const formData = new FormData(this);
-
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        method: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(response) {
-                            if (response.success) {
-                                $('#addFactureModal').modal('hide');
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Facture créée avec succès'
-                                });
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 1000);
-                            }
-                        },
-                        error: function(xhr) {
-                            Toast.fire({
-                                icon: 'error',
-                                title: 'Erreur lors de la création de la facture'
-                            });
-                        }
-                    });
-                }
-
-                $(this).addClass('was-validated');
-            });
-
-            // Génération automatique du code facture
-            function generateFactureCode() {
-                const date = new Date();
-                const year = date.getFullYear().toString().substr(-2);
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const random = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
-                return `FAC${year}${month}${random}`;
-            }
-
-            // Initialiser le code facture lors de la sélection du bon de commande
-            $('#bonCommandeSelect').on('change', function() {
-                if ($(this).val()) {
-                    $('#codeFacture').val(generateFactureCode());
-                    $('select[name="type_facture"]').trigger('change')
-                }
-            });
-
-            $('select[name="type_facture"]').change(function() {
-                const isNormalise = $(this).val() === 'NORMALISE';
-                if (isNormalise) {
-                    $('.tva-aib-section, .row-tva, .row-aib').show();
-                } else {
-                    $('.tva-aib-section, .row-tva, .row-aib').hide();
-                    $('#tauxTVA, #tauxAIB').val(0);
-                }
-                calculateTotals();
-            });
-
+        // Ajouter les champs TVA et AIB aux écouteurs
+        $('#tauxTVA, #tauxAIB').on('input', function() {
+            calculateTotals();
         });
-    </script>
+
+        // Fonction pour initialiser les calculs
+        function initializeCalculations() {
+            const calculFields = '#tauxTVA, #tauxAIB';
+
+            $(document).on('input', calculFields, function() {
+                calculateTotals();
+            });
+        }
+
+
+        // Calculer les montants pour une ligne
+        function calculateLineMontants(row) {
+            const quantite = parseFloat(row.find('.quantite').val()) || 0;
+            const prix = parseFloat(row.find('.prix').val()) || 0;
+            const montantHT = quantite * prix;
+
+            row.find('.montant-ht').text(montantHT.toFixed(2));
+            row.find('.montant-ht-input').val(montantHT.toFixed(2));
+        }
+
+        // Calculer les totaux
+        function calculateTotals() {
+            let totalHT = 0;
+            $('#articlesTableBody tr').each(function() {
+                totalHT += parseFloat($(this).find('.montant-ht-input').val()) || 0;
+            });
+
+            const isNormalise = $('select[name="type_facture"]').val() === 'NORMALISE';
+            const tauxTVA = isNormalise ? (parseFloat($('#tauxTVA').val()) || 0) : 0;
+            const tauxAIB = isNormalise ? (parseFloat($('#tauxAIB').val()) || 0) : 0;
+
+            const totalTVA = totalHT * (tauxTVA / 100);
+            const totalAIB = totalHT * (tauxAIB / 100);
+            const totalTTC = isNormalise ? (totalHT + totalTVA + totalAIB) : totalHT;
+
+            $('#montantHT').text(totalHT.toFixed(2));
+            $('#montantTVA').text(totalTVA.toFixed(2));
+            $('#montantAIB').text(totalAIB.toFixed(2));
+            $('#montantTTC').text(totalTTC.toFixed(2));
+
+            $('#montantHTInput').val(totalHT.toFixed(2));
+            $('#montantTVAInput').val(totalTVA.toFixed(2));
+            $('#montantAIBInput').val(totalAIB.toFixed(2));
+            $('#montantTTCInput').val(totalTTC.toFixed(2));
+        }
+
+        // Validation du formulaire
+        $('#addFactureForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (this.checkValidity()) {
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#addFactureModal').modal('hide');
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Facture créée avec succès'
+                            });
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    },
+                    error: function(xhr) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Erreur lors de la création de la facture'
+                        });
+                    }
+                });
+            }
+
+            $(this).addClass('was-validated');
+        });
+
+        // Génération automatique du code facture
+        function generateFactureCode() {
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
+            return `FAC${year}${month}${random}`;
+        }
+
+        // Initialiser le code facture lors de la sélection du bon de commande
+        $('#_bonCommandeSelect').on('change', function() {
+            if ($(this).val()) {
+                $('#codeFacture').val(generateFactureCode());
+                $('select[name="type_facture"]').trigger('change')
+            }
+        });
+
+        $('select[name="type_facture"]').change(function() {
+            const isNormalise = $(this).val() === 'NORMALISE';
+            if (isNormalise) {
+                $('.tva-aib-section, .row-tva, .row-aib').show();
+            } else {
+                $('.tva-aib-section, .row-tva, .row-aib').hide();
+                $('#tauxTVA, #tauxAIB').val(0);
+            }
+            calculateTotals();
+        });
+
+    });
+</script>
 @endpush
 
 @push('styles')
-    <style>
-        .form-control-sm {
-            height: calc(1.5em + 0.5rem + 2px);
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            border-radius: 0.2rem;
-        }
+<style>
+    .form-control-sm {
+        height: calc(1.5em + 0.5rem + 2px);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+    }
 
-        .table td {
-            vertical-align: middle;
-        }
+    .table td {
+        vertical-align: middle;
+    }
 
-        .table input[type="number"] {
-            min-width: 80px;
-        }
+    .table input[type="number"] {
+        min-width: 80px;
+    }
 
-        .card {
-            margin-bottom: 0;
-        }
+    .card {
+        margin-bottom: 0;
+    }
 
-        .select2-container {
-            width: 100% !important;
-        }
+    .select2-container {
+        width: 100% !important;
+    }
 
-        .was-validated .select2-selection {
-            border-color: #dc3545 !important;
-        }
+    .was-validated .select2-selection {
+        border-color: #dc3545 !important;
+    }
 
-        .was-validated .select2-selection--single:valid {
-            border-color: #198754 !important;
-        }
-    </style>
+    .was-validated .select2-selection--single:valid {
+        border-color: #198754 !important;
+    }
+</style>
 @endpush

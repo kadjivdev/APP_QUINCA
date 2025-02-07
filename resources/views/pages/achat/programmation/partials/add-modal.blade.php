@@ -55,25 +55,19 @@
                                         </div>
 
                                         <div class="col-md-4">
-                                            <label class="form-label fw-medium required">Fournisseur</label>
-                                            <div class="input-group _d-flex">
-                                                <span class="input-group-text bg-white">
-                                                    <i class="fas fa-truck text-primary"></i>
-                                                </span>
-                                                <input type="search"
-                                                    style="border-radius:0px"
-                                                    placeholder="Recherche...."
-                                                    name=""
-                                                    class="form-control" id="fournisseurSearch">
-                                                <select class="form-select " name="fournisseur_id" id="fournisseurs_block"
-                                                    required>
-                                                    <option class="fournisseur" value="">Selectionner un fournisseur</option>
-                                                    @foreach ($fournisseurs as $fournisseur)
-                                                    <option class="fournisseur" value="{{ $fournisseur->id }}">
-                                                        {{ $fournisseur->raison_sociale }}
-                                                    </option>
-                                                    @endforeach
-                                                </select>
+                                            <div class="input-group">
+                                                <label class="form-label fw-medium required my-1" for="">Fournisseur</label>
+                                                <div class="input-group">
+                                                    <select class="form-select select2" name="fournisseur_id" id="_fournisseurSelect"
+                                                        required>
+                                                        <option value="">Selectionner un fournisseur</option>
+                                                        @foreach ($fournisseurs as $fournisseur)
+                                                        <option value="{{ $fournisseur->id }}">
+                                                            {{ $fournisseur->raison_sociale }}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
                                             </div>
                                             <div class="invalid-feedback">Le fournisseur est requis</div>
                                         </div>
@@ -146,20 +140,12 @@
 <template id="ligneProgrammationTemplate">
     <tr class="ligne-programmation hover:bg-gray-50 transition-colors duration-200">
         <td class="p-2">
-            <div class="input-group _d-flex">
-                <span class="input-group-text bg-white">
-                    <i class="fas fa-truck text-primary"></i>
-                </span>
-                <input type="search"
-                    style="border-radius:0px"
-                    placeholder="Recherche...."
-                    name=""
-                    class="form-control" id="articleSearch">
-                <select class="form-select" name="article_id" id="articles_block"
-                    required>
-                    <option class="article" value="">Selectionner un article</option>
+            <div class="input-group">
+                <label class="form-label fw-medium required my-1" for="">Article</label>
+                <select class="form-select select2-articles" name="articles[]" id="" required>
+                    <option value="">Selectionner un article</option>
                     @foreach ($articles as $article)
-                    <option class="article" value="{{ $article->id }}">
+                    <option value="{{ $article->id }}">
                         {{ $article->code_article }} - {{ $article->designation }}
                     </option>
                     @endforeach
@@ -173,7 +159,7 @@
             <div class="invalid-feedback">La quantité est requise</div>
         </td>
         <td class="p-2">
-            <select class="form-select" name="unites[]" required>
+            <select class="form-select select2" name="unites[]" required>
                 <option value="">Sélectionner une unité</option>
                 @foreach ($unitesMesure as $unite)
                 <option value="{{ $unite->id }}">
@@ -194,48 +180,46 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // SEARCH ARTICLE
-        var articles = document.querySelectorAll('.article');
-        document.getElementById('articleSearch').addEventListener('keyup', function(e) {
-            var text = this.value.toLowerCase();
-            Array.prototype.forEach.call(articles, function(article) {
-                // On a bien trouvé les termes de recherche.
-                if (article.innerHTML.toLowerCase().indexOf(text) > -1) {
-                    article.style.display = 'block';
-                } else {
-                    article.style.display = 'none';
-                }
+        // Initialisation de Select2 avec gestion d'erreur
+        try {
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                dropdownParent: $('#addProgrammationModal')
             });
-        })
-        if (document.getElementById('articleSearch').trim() == '') {
-            Array.prototype.forEach.call(articles, function(article) {
-                // On a bien trouvé les termes de recherche.
-                article.style.display = 'block';
+
+            $('.select2-articles').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                // dropdownParent: $('#addProgrammationModal')
             });
+
+        } catch (e) {
+            console.error('Erreur initialisation Select2:', e);
         }
 
-        // SEARCH FOURNISSEUR
-        var fournisseurs = document.querySelectorAll('.fournisseur');
-        document.getElementById('fournisseurSearch').addEventListener('keyup', function(e) {
-            var text = this.value.toLowerCase();
-            Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
-                // On a bien trouvé les termes de recherche.
-                if (fournisseur.innerHTML.toLowerCase().indexOf(text) > -1) {
-                    fournisseur.style.display = 'block';
-                } else {
-                    fournisseur.style.display = 'none';
-                }
-            });
-        })
-        if (document.getElementById('fournisseurSearch').trim() == '') {
-            Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
-                // On a bien trouvé les termes de recherche.
-                fournisseur.style.display = 'block';
-            });
-        }
+        // // SEARCH FOURNISSEUR
+        // var fournisseurs = document.querySelectorAll('.fournisseur');
+        // document.getElementById('fournisseurSearch').addEventListener('keyup', function(e) {
+        //     var text = this.value.toLowerCase();
+        //     Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
+        //         // On a bien trouvé les termes de recherche.
+        //         if (fournisseur.innerHTML.toLowerCase().indexOf(text) > -1) {
+        //             fournisseur.style.display = 'block';
+        //         } else {
+        //             fournisseur.style.display = 'none';
+        //         }
+        //     });
+        // })
+        // if (document.getElementById('fournisseurSearch').trim() == '') {
+        //     Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
+        //         // On a bien trouvé les termes de recherche.
+        //         fournisseur.style.display = 'block';
+        //     });
+        // }
 
         // Charger les articles quand le fournisseur change
-        $('#fournisseurSelect').on('change', function() {
+        $('#_fournisseurSelect').on('change', function() {
             const fournisseurId = $(this).val();
             if (fournisseurId) {
                 loadArticles(fournisseurId);
@@ -274,13 +258,13 @@
     }
 
     function updateArticlesOptions(articles) {
-        // let options = '<option value="">Sélectionner un article</option>';
-        // articles.forEach(article => {
-        //     options += `<option value="${article.id}" data-unites='${JSON.stringify(article.unites)}'>
-        //             ${article.designation}
-        //         </option>`;
-        // });
-        // $('.select2-articles').html(options);
+        let options = '<option value="">Sélectionner un article</option>';
+        articles.forEach(article => {
+            options += `<option value="${article.id}" data-unites='${JSON.stringify(article.unites)}'>
+                    ${article.designation}
+                </option>`;
+        });
+        $('.select2-articles').html(options);
     }
 </script>
 @endpush

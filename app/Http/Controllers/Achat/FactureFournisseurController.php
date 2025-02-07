@@ -17,112 +17,112 @@ use Illuminate\Support\Facades\Log;
 class FactureFournisseurController extends Controller
 {
 
-/**
- * Affiche la liste des factures
- */
-public function index(Request $request)
-{
-    // Construction de la requête de base avec les relations nécessaires
-    $query = FactureFournisseur::with([
-        'bonCommande',
-        'pointVente',
-        'fournisseur',
-        'lignes.article',
-        'lignes.uniteMesure'
-    ]);
+    /**
+     * Affiche la liste des factures
+     */
+    public function index(Request $request)
+    {
+        // Construction de la requête de base avec les relations nécessaires
+        $query = FactureFournisseur::with([
+            'bonCommande',
+            'pointVente',
+            'fournisseur',
+            'lignes.article',
+            'lignes.uniteMesure'
+        ]);
 
-    // Filtres
-    if ($request->filled('period')) {
-        switch ($request->period) {
-            case 'today':
-                $query->whereDate('date_facture', Carbon::today());
-                break;
-            case 'week':
-                $query->whereBetween('date_facture', [
-                    Carbon::now()->startOfWeek(),
-                    Carbon::now()->endOfWeek()
-                ]);
-                break;
-            case 'month':
-                $query->whereYear('date_facture', Carbon::now()->year)
-                      ->whereMonth('date_facture', Carbon::now()->month);
-                break;
+        // Filtres
+        if ($request->filled('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $query->whereDate('date_facture', Carbon::today());
+                    break;
+                case 'week':
+                    $query->whereBetween('date_facture', [
+                        Carbon::now()->startOfWeek(),
+                        Carbon::now()->endOfWeek()
+                    ]);
+                    break;
+                case 'month':
+                    $query->whereYear('date_facture', Carbon::now()->year)
+                        ->whereMonth('date_facture', Carbon::now()->month);
+                    break;
+            }
         }
-    }
 
-    if ($request->filled('status')) {
-        $query->where('statut_livraison', $request->status);
-    }
-
-    if ($request->filled('payment')) {
-        $query->where('statut_paiement', $request->payment);
-    }
-
-    if ($request->filled('search')) {
-        $query->search($request->search);
-    }
-
-    // Récupération des factures paginées
-    $factures = $query->latest('date_facture')->paginate(10);
-
-    // Calcul des statistiques pour le header
-    $statsQuery = FactureFournisseur::query();
-
-    // Si un filtre de période est actif, l'appliquer aux stats aussi
-    if ($request->filled('period')) {
-        switch ($request->period) {
-            case 'today':
-                $statsQuery->whereDate('date_facture', Carbon::today());
-                break;
-            case 'week':
-                $statsQuery->whereBetween('date_facture', [
-                    Carbon::now()->startOfWeek(),
-                    Carbon::now()->endOfWeek()
-                ]);
-                break;
-            case 'month':
-                $statsQuery->whereYear('date_facture', Carbon::now()->year)
-                          ->whereMonth('date_facture', Carbon::now()->month);
-                break;
+        if ($request->filled('status')) {
+            $query->where('statut_livraison', $request->status);
         }
+
+        if ($request->filled('payment')) {
+            $query->where('statut_paiement', $request->payment);
+        }
+
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        // Récupération des factures paginées
+        $factures = $query->latest('date_facture')->paginate(10);
+
+        // Calcul des statistiques pour le header
+        $statsQuery = FactureFournisseur::query();
+
+        // Si un filtre de période est actif, l'appliquer aux stats aussi
+        if ($request->filled('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $statsQuery->whereDate('date_facture', Carbon::today());
+                    break;
+                case 'week':
+                    $statsQuery->whereBetween('date_facture', [
+                        Carbon::now()->startOfWeek(),
+                        Carbon::now()->endOfWeek()
+                    ]);
+                    break;
+                case 'month':
+                    $statsQuery->whereYear('date_facture', Carbon::now()->year)
+                        ->whereMonth('date_facture', Carbon::now()->month);
+                    break;
+            }
+        }
+
+        // Statistiques
+        $nombreFactures = $statsQuery->count();
+        $montantTotal = $statsQuery->sum('montant_ttc');
+        $montantMoyen = $nombreFactures > 0 ? $montantTotal / $nombreFactures : 0;
+        $facturesNonPayees = $statsQuery->where('statut_paiement', 'NON_PAYE')->count();
+
+        // Bons de commande disponibles pour nouvelle facture
+        $bonsCommande = BonCommande::whereDoesntHave('factures')
+            ->whereNotNull('validated_at')
+            ->with(['pointVente', 'fournisseur'])
+            ->get();
+
+
+
+        // Retour de la vue avec toutes les données nécessaires
+        return view('pages.achat.facture-frs.index', [
+            // Données principales
+            'factures' => $factures,
+            'bonsCommande' => $bonsCommande,
+
+            // Données du header
+            'date' => Carbon::now()->format('d/m/Y'),
+            'nombreFactures' => $nombreFactures,
+            'montantTotal' => $montantTotal,
+            'montantMoyen' => $montantMoyen,
+            'facturesNonPayees' => $facturesNonPayees,
+
+            // Données supplémentaires pour la vue
+            'filtres' => [
+                'period' => $request->period,
+                'status' => $request->status,
+                'payment' => $request->payment,
+                'search' => $request->search
+            ]
+        ]);
     }
-
-    // Statistiques
-    $nombreFactures = $statsQuery->count();
-    $montantTotal = $statsQuery->sum('montant_ttc');
-    $montantMoyen = $nombreFactures > 0 ? $montantTotal / $nombreFactures : 0;
-    $facturesNonPayees = $statsQuery->where('statut_paiement', 'NON_PAYE')->count();
-
-    // Bons de commande disponibles pour nouvelle facture
-    $bonsCommande = BonCommande::whereDoesntHave('factures')
-                              ->whereNotNull('validated_at')
-                              ->with(['pointVente', 'fournisseur'])
-                              ->get();
-
-
-
-    // Retour de la vue avec toutes les données nécessaires
-    return view('pages.achat.facture-frs.index', [
-        // Données principales
-        'factures' => $factures,
-        'bonsCommande' => $bonsCommande,
-
-        // Données du header
-        'date' => Carbon::now()->format('d/m/Y'),
-        'nombreFactures' => $nombreFactures,
-        'montantTotal' => $montantTotal,
-        'montantMoyen' => $montantMoyen,
-        'facturesNonPayees' => $facturesNonPayees,
-
-        // Données supplémentaires pour la vue
-        'filtres' => [
-            'period' => $request->period,
-            'status' => $request->status,
-            'payment' => $request->payment,
-            'search' => $request->search
-        ]
-    ]);
-}
 
     /**
      * Enregistre une nouvelle facture
@@ -244,7 +244,7 @@ public function index(Request $request)
                         'quantite' => $data['quantite'],
                         'prix_unitaire' => $data['prix_unitaire'],
                         'taux_tva' =>  $request->type_facture === 'NORMALISE' ? ($request->taux_tva ?? 0) : 0,
-                        'taux_aib' => $request->type_facture === 'NORMALISE' ? ($request->taux_aib ?? 0) : 0                        
+                        'taux_aib' => $request->type_facture === 'NORMALISE' ? ($request->taux_aib ?? 0) : 0
                     ]);
                 }
             }
@@ -331,7 +331,6 @@ public function index(Request $request)
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Facture validée avec succès']);
-
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
@@ -389,7 +388,8 @@ public function index(Request $request)
         }
     }
 
-    public function rejectFacture(Request $request, $id) {
+    public function rejectFacture(Request $request, $id)
+    {
         $facture = FactureFournisseur::findorFail($id);
 
         $request->validate([

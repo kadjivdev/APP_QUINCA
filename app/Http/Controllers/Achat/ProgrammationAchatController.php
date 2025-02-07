@@ -50,71 +50,71 @@ class ProgrammationAchatController extends Controller
      * Enregistre une nouvelle programmation
      */
     public function store(Request $request)
-{
-    try {
-        DB::beginTransaction();
+    {
+        try {
+            DB::beginTransaction();
 
-        // Récupérer le point de vente de l'utilisateur connecté
-        $user = auth()->user();
-        if (!$user->point_de_vente_id) {
+            // Récupérer le point de vente de l'utilisateur connecté
+            $user = auth()->user();
+            if (!$user->point_de_vente_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucun point de vente associé à votre compte'
+                ], 400);
+            }
+
+            // Validation de base
+            $validated = $request->validate([
+                'code' => 'required|unique:programmation_achats,code',
+                'date_programmation' => 'required|date',
+                'fournisseur_id' => 'required|exists:fournisseurs,id',
+                'commentaire' => 'nullable|string'
+            ]);
+
+            // Validation séparée pour les tableaux
+            $request->validate([
+                'articles' => 'required|array|min:1',
+                'articles.*' => 'required|exists:articles,id',
+                'quantites' => 'required|array|min:1',
+                'quantites.*' => 'required|numeric|min:0.01',
+                'unites' => 'required|array|min:1',
+                'unites.*' => 'required|exists:unite_mesures,id'
+            ]);
+
+            // Création de la programmation avec le point de vente de l'utilisateur
+            $programmation = ProgrammationAchat::create([
+                'code' => $validated['code'],
+                'date_programmation' => Carbon::parse($validated['date_programmation'])->startOfDay(),
+                'point_de_vente_id' => $user->point_de_vente_id, // Point de vente automatique
+                'fournisseur_id' => $validated['fournisseur_id'],
+                'commentaire' => $validated['commentaire'] ?? null
+            ]);
+
+            // Création des lignes
+            foreach ($request->articles as $index => $articleId) {
+                LigneProgrammationAchat::create([
+                    'programmation_id' => $programmation->id,
+                    'article_id' => $articleId,
+                    'unite_mesure_id' => $request->unites[$index],
+                    'quantite' => $request->quantites[$index]
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Programmation créée avec succès',
+                'data' => $programmation
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Aucun point de vente associé à votre compte'
-            ], 400);
+                'message' => 'Erreur lors de la création de la programmation: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Validation de base
-        $validated = $request->validate([
-            'code' => 'required|unique:programmation_achats,code',
-            'date_programmation' => 'required|date',
-            'fournisseur_id' => 'required|exists:fournisseurs,id',
-            'commentaire' => 'nullable|string'
-        ]);
-
-        // Validation séparée pour les tableaux
-        $request->validate([
-            'articles' => 'required|array|min:1',
-            'articles.*' => 'required|exists:articles,id',
-            'quantites' => 'required|array|min:1',
-            'quantites.*' => 'required|numeric|min:0.01',
-            'unites' => 'required|array|min:1',
-            'unites.*' => 'required|exists:unite_mesures,id'
-        ]);
-
-        // Création de la programmation avec le point de vente de l'utilisateur
-        $programmation = ProgrammationAchat::create([
-            'code' => $validated['code'],
-            'date_programmation' => Carbon::parse($validated['date_programmation'])->startOfDay(),
-            'point_de_vente_id' => $user->point_de_vente_id, // Point de vente automatique
-            'fournisseur_id' => $validated['fournisseur_id'],
-            'commentaire' => $validated['commentaire'] ?? null
-        ]);
-
-        // Création des lignes
-        foreach ($request->articles as $index => $articleId) {
-            LigneProgrammationAchat::create([
-                'programmation_id' => $programmation->id,
-                'article_id' => $articleId,
-                'unite_mesure_id' => $request->unites[$index],
-                'quantite' => $request->quantites[$index]
-            ]);
-        }
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Programmation créée avec succès',
-            'data' => $programmation
-        ]);
-    } catch (Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la création de la programmation: ' . $e->getMessage()
-        ], 500);
     }
-}
 
     /**
      * Récupère les données pour l'édition
@@ -237,60 +237,58 @@ class ProgrammationAchatController extends Controller
     /**
      * Génère un nouveau code
      */
-   /**
- * Génère un nouveau code de programmation unique
- * Format : DATE-USR-XXXXX
- * Exemple : 20241217-JDO-7YK9X
- *
- * @return \Illuminate\Http\JsonResponse
- */
-public function generateCode()
-{
-    try {
-        // Obtenir la date actuelle au format YYYYMMDD
-        $date = now()->format('Ymd');
+    /**
+     * Génère un nouveau code de programmation unique
+     * Format : DATE-USR-XXXXX
+     * Exemple : 20241217-JDO-7YK9X
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function generateCode()
+    {
+        try {
+            // Obtenir la date actuelle au format YYYYMMDD
+            $date = now()->format('Ymd');
 
-        // Obtenir les 3 premières lettres du nom d'utilisateur
-        $user = auth()->user();
-        $userInitials = substr(strtoupper($user->name), 0, 3);
+            // Obtenir les 3 premières lettres du nom d'utilisateur
+            $user = auth()->user();
+            $userInitials = substr(strtoupper($user->name), 0, 3);
 
-        // Générer un UUID unique
-        do {
-            // Génération d'un UUID
-            $uuid = \Illuminate\Support\Str::uuid();
+            // Générer un UUID unique
+            do {
+                // Génération d'un UUID
+                $uuid = \Illuminate\Support\Str::uuid();
 
-            // Créer un hash unique basé sur l'UUID, l'ID utilisateur et le timestamp
-            $hash = md5($uuid . $user->id . time());
+                // Créer un hash unique basé sur l'UUID, l'ID utilisateur et le timestamp
+                $hash = md5($uuid . $user->id . time());
 
-            // Prendre les 5 premiers caractères et les convertir en majuscules
-            $uniqueId = strtoupper(substr($hash, 0, 5));
+                // Prendre les 5 premiers caractères et les convertir en majuscules
+                $uniqueId = strtoupper(substr($hash, 0, 5));
 
-            // Construire le code final
-            $newCode = "{$date}-{$userInitials}-{$uniqueId}";
+                // Construire le code final
+                $newCode = "{$date}-{$userInitials}-{$uniqueId}";
 
-            // Vérifier si le code existe déjà
-            $exists = ProgrammationAchat::where('code', $newCode)->exists();
+                // Vérifier si le code existe déjà
+                $exists = ProgrammationAchat::where('code', $newCode)->exists();
+            } while ($exists); // Continuer si le code existe déjà
 
-        } while ($exists); // Continuer si le code existe déjà
+            return response()->json([
+                'success' => true,
+                'code' => $newCode
+            ]);
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la génération du code de programmation', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'code' => $newCode
-        ]);
-
-    } catch (Exception $e) {
-        Log::error('Erreur lors de la génération du code de programmation', [
-            'user_id' => auth()->id(),
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la génération du code'
-        ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la génération du code'
+            ], 500);
+        }
     }
-}
 
     /**
      * Recherche de programmations
@@ -301,10 +299,10 @@ public function generateCode()
 
         $programmations = ProgrammationAchat::with(['pointVente', 'fournisseur'])
             ->where('code', 'LIKE', "%{$term}%")
-            ->orWhereHas('fournisseur', function($query) use ($term) {
+            ->orWhereHas('fournisseur', function ($query) use ($term) {
                 $query->where('nom', 'LIKE', "%{$term}%");
             })
-            ->orWhereHas('pointVente', function($query) use ($term) {
+            ->orWhereHas('pointVente', function ($query) use ($term) {
                 $query->where('nom', 'LIKE', "%{$term}%");
             })
             ->take(10)
@@ -349,8 +347,8 @@ public function generateCode()
     }
 
     /**
- * Récupère les détails d'une programmation pour le bon de commande
- */
+     * Récupère les détails d'une programmation pour le bon de commande
+     */
     public function show($id)
     {
         try {
@@ -374,7 +372,7 @@ public function generateCode()
                         ],
                         'validated_at' => $programmation->validated_at ? $programmation->validated_at->format('d/m/Y') : null
                     ],
-                    'articles' => $programmation->lignes->map(function($ligne) {
+                    'articles' => $programmation->lignes->map(function ($ligne) {
                         return [
                             'id' => $ligne->article->id,
                             'reference' => $ligne->article->code_article,
@@ -394,7 +392,8 @@ public function generateCode()
         }
     }
 
-    public function rejectProgrammation(Request $request, $id) {
+    public function rejectProgrammation(Request $request, $id)
+    {
         $programmation = ProgrammationAchat::findorFail($id);
 
         $request->validate([
@@ -414,9 +413,10 @@ public function generateCode()
         ]);
     }
 
-    
 
-    public function validees() {
+
+    public function validees()
+    {
         $user = auth()->user();
         $programmationsValidees = ProgrammationAchat::whereNotNull('validated_at')
             ->where('point_de_vente_id', $user->point_de_vente_id)

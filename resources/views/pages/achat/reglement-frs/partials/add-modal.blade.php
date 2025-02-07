@@ -27,18 +27,18 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <select class="form-select select2" name="facture_fournisseur_id" id="factureSelect"
+                                    <select class="form-select select2" name="facture_fournisseur_id" id="_factureSelect"
                                         required>
                                         <option value="">Sélectionner une facture</option>
                                         @foreach ($factures as $facture)
-                                            <option value="{{ $facture->id }}"
-                                                    data-code="{{ $facture->code }}"
-                                                    data-fournisseur="{{ $facture->fournisseur->raison_sociale }}"
-                                                    data-montant="{{ $facture->montant_ttc }}"
-                                                    data-solde="{{ $facture->montant_ttc - $facture->reglements->sum('montant_reglement') }}">
-                                                {{ $facture->code }} - {{ $facture->fournisseur->raison_sociale }}
-                                                (Reste: {{ number_format($facture->montant_ttc - $facture->reglements->sum('montant_reglement'), 2) }} FCFA)
-                                            </option>
+                                        <option value="{{ $facture->id }}"
+                                            data-code="{{ $facture->code }}"
+                                            data-fournisseur="{{ $facture->fournisseur->raison_sociale }}"
+                                            data-montant="{{ $facture->montant_ttc }}"
+                                            data-solde="{{ $facture->montant_ttc - $facture->reglements->sum('montant_reglement') }}">
+                                            {{ $facture->code }} - {{ $facture->fournisseur->raison_sociale }}
+                                            (Reste: {{ number_format($facture->montant_ttc - $facture->reglements->sum('montant_reglement'), 2) }} FCFA)
+                                        </option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">Veuillez sélectionner une facture</div>
@@ -73,7 +73,7 @@
                                                 <label class="form-label">Référence Document</label>
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" id="referenceDocument"
-                                                           name="reference_document" placeholder="Laissez vide pour auto-génération">
+                                                        name="reference_document" placeholder="Laissez vide pour auto-génération">
                                                     <button class="btn btn-outline-secondary" type="button" id="generateReference">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
@@ -106,7 +106,7 @@
                                                 <label class="form-label">Montant du Règlement</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" name="montant_reglement"
-                                                           id="montantReglement" step="0.01" min="0" required>
+                                                        id="montantReglement" step="0.01" min="0" required>
                                                     <span class="input-group-text">FCFA</span>
                                                 </div>
                                                 <div class="form-text mt-1">
@@ -117,7 +117,7 @@
                                             <div class="col-12">
                                                 <label class="form-label">Commentaire</label>
                                                 <textarea class="form-control" name="commentaire" rows="3"
-                                                          placeholder="Ajouter un commentaire (optionnel)"></textarea>
+                                                    placeholder="Ajouter un commentaire (optionnel)"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -142,169 +142,175 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Configuration initiale Select2
-    $('#factureSelect').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Sélectionner une facture'
-    });
-
-    let lastGeneratedNumber = 0;
-
-    // Fonction pour générer une référence unique selon le mode de règlement
-    function generateReference(mode) {
-        const date = new Date();
-        const year = date.getFullYear().toString().substr(-2);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        lastGeneratedNumber++;
-        const sequence = lastGeneratedNumber.toString().padStart(4, '0');
-
-        const prefixes = {
-            'ESPECE': 'ESP',
-            'CHEQUE': 'CHQ',
-            'VIREMENT': 'VIR',
-            'DECHARGE': 'DCH',
-            'AUTRES': 'AUT'
-        };
-
-        return `${prefixes[mode] || 'REG'}${year}${month}${sequence}`;
-    }
-
-    // Fonction pour générer le code règlement
-    function generateReglementCode() {
-        const date = new Date();
-        const year = date.getFullYear().toString().substr(-2);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const random = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
-        return `REG${year}${month}${random}`;
-    }
-
-    // Gestion du bouton de génération de référence
-    $('#generateReference').click(function() {
-        const mode = $('#modeReglement').val();
-        if (mode) {
-            $('#referenceDocument').val(generateReference(mode));
-        } else {
-            Toast.fire({
-                icon: 'warning',
-                title: 'Veuillez d\'abord sélectionner un mode de règlement'
+    $(document).ready(function() {
+        // Configuration initiale Select2
+        try {
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                dropdownParent: $('#addReglementModal')
             });
-        }
-    });
-
-    // Gestion de la sélection de facture avec loader
-    $('#factureSelect').change(function() {
-        const option = $(this).find(':selected');
-        if (option.val()) {
-            $('#factureLoader').show();
-            $('#reglementDetails').hide();
-
-            // Simuler un chargement
-            setTimeout(() => {
-                const montantRestant = parseFloat(option.data('solde'));
-                $('#montantRestant').text(montantRestant.toFixed(2));
-                $('#reglementDetails').show();
-                $('#btnSave').show();
-                $('#codeReglement').val(generateReglementCode());
-                $('#montantReglement').attr('max', montantRestant);
-                $('#factureLoader').hide();
-            }, 500);
-        } else {
-            $('#reglementDetails').hide();
-            $('#btnSave').hide();
-        }
-    });
-
-    // Gestion du mode de règlement
-    $('#modeReglement').change(function() {
-        const mode = $(this).val();
-        if (mode === 'CHEQUE' || mode === 'VIREMENT') {
-            $('#referenceField').show();
-            $('input[name="reference_reglement"]').prop('required', true);
-        } else {
-            $('#referenceField').hide();
-            $('input[name="reference_reglement"]').prop('required', false);
+        } catch (e) {
+            console.error('Erreur initialisation Select2:', e);
         }
 
-        // Générer automatiquement une nouvelle référence si le champ est vide
-        if ($('#referenceDocument').val() === '') {
-            $('#referenceDocument').val(generateReference(mode));
+
+        let lastGeneratedNumber = 0;
+
+        // Fonction pour générer une référence unique selon le mode de règlement
+        function generateReference(mode) {
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            lastGeneratedNumber++;
+            const sequence = lastGeneratedNumber.toString().padStart(4, '0');
+
+            const prefixes = {
+                'ESPECE': 'ESP',
+                'CHEQUE': 'CHQ',
+                'VIREMENT': 'VIR',
+                'DECHARGE': 'DCH',
+                'AUTRES': 'AUT'
+            };
+
+            return `${prefixes[mode] || 'REG'}${year}${month}${sequence}`;
         }
-    });
 
-    // Gestion de la soumission du formulaire
-    $('#addReglementForm').on('submit', function(e) {
-        e.preventDefault();
+        // Fonction pour générer le code règlement
+        function generateReglementCode() {
+            const date = new Date();
+            const year = date.getFullYear().toString().substr(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 9999).toString().padStart(4, '0');
+            return `REG${year}${month}${random}`;
+        }
 
-        if (this.checkValidity()) {
-            const formData = new FormData(this);
+        // Gestion du bouton de génération de référence
+        $('#generateReference').click(function() {
+            const mode = $('#modeReglement').val();
+            if (mode) {
+                $('#referenceDocument').val(generateReference(mode));
+            } else {
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Veuillez d\'abord sélectionner un mode de règlement'
+                });
+            }
+        });
 
-            // Si la référence document est vide, en générer une
-            if (!formData.get('reference_document')) {
-                const mode = formData.get('mode_reglement');
-                formData.set('reference_document', generateReference(mode));
+        // Gestion de la sélection de facture avec loader
+        $('#_factureSelect').change(function() {
+            const option = $(this).find(':selected');
+            if (option.val()) {
+                $('#factureLoader').show();
+                $('#reglementDetails').hide();
+
+                // Simuler un chargement
+                setTimeout(() => {
+                    const montantRestant = parseFloat(option.data('solde'));
+                    $('#montantRestant').text(montantRestant.toFixed(2));
+                    $('#reglementDetails').show();
+                    $('#btnSave').show();
+                    $('#codeReglement').val(generateReglementCode());
+                    $('#montantReglement').attr('max', montantRestant);
+                    $('#factureLoader').hide();
+                }, 500);
+            } else {
+                $('#reglementDetails').hide();
+                $('#btnSave').hide();
+            }
+        });
+
+        // Gestion du mode de règlement
+        $('#modeReglement').change(function() {
+            const mode = $(this).val();
+            if (mode === 'CHEQUE' || mode === 'VIREMENT') {
+                $('#referenceField').show();
+                $('input[name="reference_reglement"]').prop('required', true);
+            } else {
+                $('#referenceField').hide();
+                $('input[name="reference_reglement"]').prop('required', false);
             }
 
-            $.ajax({
-                url: $(this).attr('action'),
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response.success) {
-                        $('#addReglementModal').modal('hide');
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Règlement créé avec succès'
-                        });
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    }
-                },
-                error: function(xhr) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: xhr.responseJSON?.message || 'Erreur lors de la création du règlement'
-                    });
-                }
-            });
-        }
+            // Générer automatiquement une nouvelle référence si le champ est vide
+            if ($('#referenceDocument').val() === '') {
+                $('#referenceDocument').val(generateReference(mode));
+            }
+        });
 
-        $(this).addClass('was-validated');
+        // Gestion de la soumission du formulaire
+        $('#addReglementForm').on('submit', function(e) {
+            e.preventDefault();
+
+            if (this.checkValidity()) {
+                const formData = new FormData(this);
+
+                // Si la référence document est vide, en générer une
+                if (!formData.get('reference_document')) {
+                    const mode = formData.get('mode_reglement');
+                    formData.set('reference_document', generateReference(mode));
+                }
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#addReglementModal').modal('hide');
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Règlement créé avec succès'
+                            });
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    },
+                    error: function(xhr) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: xhr.responseJSON?.message || 'Erreur lors de la création du règlement'
+                        });
+                    }
+                });
+            }
+
+            $(this).addClass('was-validated');
+        });
     });
-});
 </script>
 @endpush
 
 @push('styles')
 <style>
-.select2-container {
-    width: 100% !important;
-}
+    .select2-container {
+        width: 100% !important;
+    }
 
-.modal-lg {
-    max-width: 800px;
-}
+    .modal-lg {
+        max-width: 800px;
+    }
 
-.was-validated .select2-selection {
-    border-color: #dc3545 !important;
-}
+    .was-validated .select2-selection {
+        border-color: #dc3545 !important;
+    }
 
-.was-validated .select2-selection--single:valid {
-    border-color: #198754 !important;
-}
+    .was-validated .select2-selection--single:valid {
+        border-color: #198754 !important;
+    }
 
-.form-control:disabled,
-.form-control[readonly] {
-    background-color: #f8f9fa;
-}
+    .form-control:disabled,
+    .form-control[readonly] {
+        background-color: #f8f9fa;
+    }
 
-#factureLoader {
-    background: rgba(255, 255, 255, 0.8);
-    position: relative;
-    z-index: 1;
-}
+    #factureLoader {
+        background: rgba(255, 255, 255, 0.8);
+        position: relative;
+        z-index: 1;
+    }
 </style>
 @endpush

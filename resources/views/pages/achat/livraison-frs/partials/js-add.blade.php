@@ -33,6 +33,18 @@
             //         dropdownParent: $('#editLivraisonFournisseurModal'),
             //         placeholder: 'Sélectionner une option'
             //     });
+
+            try {
+                $('.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    dropdownParent: $('#addLivraisonFournisseurModal'),
+                    // dropdownParent: $('#editLivraisonFournisseurModal'),
+                });
+
+            } catch (e) {
+                console.error('Erreur initialisation Select2:', e);
+            }
         },
 
         // Initialisation des écouteurs d'événements
@@ -183,8 +195,7 @@
                         icon: 'error',
                         title: 'Erreur',
                         html: details ?
-                            `${message}<br><pre class="mt-3 text-start bg-light p-3 small">${details}</pre>` :
-                            message,
+                            `${message}<br><pre class="mt-3 text-start bg-light p-3 small">${details}</pre>` : message,
                         ...this.swalConfig,
                         width: details ? '600px' : undefined
                     });
@@ -197,7 +208,7 @@
             });
         },
 
-        getUnitesOptions: async function () {
+        getUnitesOptions: async function() {
             try {
                 const responseUnites = await fetch(`${apiUrl}/parametres/unites-mesure/list`, {
                     method: 'GET',
@@ -222,7 +233,7 @@
                 console.error('Erreur lors de la récupération des unités:', error);
                 return '<option value="">Erreur lors du chargement des unités</option>';
             }
-        },  
+        },
 
 
         // Génération du HTML des lignes
@@ -488,14 +499,14 @@
                 // Marquer le véhicule sélectionné
                 const selectVehicule = $("[name='vehicule_id']");
                 const vehiculeOption = selectVehicule.find(`option[value="${result.livraison.vehicule_id}"]`);
-                if (vehiculeOption.length > 0){
+                if (vehiculeOption.length > 0) {
                     vehiculeOption.prop("selected", true);
                 }
 
                 // Marquer le chauffeur sélectionné
                 const selectChauffeur = $("[name='chauffeur_id']");
                 const chauffeurOption = selectChauffeur.find(`option[value="${result.livraison.chauffeur_id}"]`);
-                if (chauffeurOption.length > 0){
+                if (chauffeurOption.length > 0) {
                     chauffeurOption.prop("selected", true);
                 }
 
@@ -559,11 +570,11 @@
                     const selectUnite = $(`[name='lignes[${ligne.article_id}][unite_id]']`);
                     console.log(selectUnite)
                     const uniteOption = selectUnite.find(`option[value="${livraison.lignes[index]?.unite_supplementaire_id}"]`);
-                    if (uniteOption.length > 0){
+                    if (uniteOption.length > 0) {
                         uniteOption.prop("selected", true);
                     }
                 });
-                
+
                 editForm.querySelector('[name="commentaire"]').value = result.livraison.commentaire;
 
                 // editForm.querySelector('[name="nom"]').value = result.data.raison_sociale;
@@ -649,6 +660,4 @@
             submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Enregistrer les modifications';
         }
     });
-
-
 </script>

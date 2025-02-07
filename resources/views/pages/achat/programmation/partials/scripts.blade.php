@@ -127,12 +127,12 @@
     }
 
     function initializeSelect2() {
-        // $('.select2-standard').select2({
-        //     theme: 'bootstrap-5',
-        //     width: '100%',
-        //     placeholder: 'Sélectionner...',
-        //     allowClear: true
-        // });
+        $('.select2-standard').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Sélectionner...',
+            allowClear: true
+        });
     }
 
     function initializeDatepickers() {
@@ -373,7 +373,7 @@
             }
 
             const result = await response.json();
-            console.log(result);
+            // console.log(result);
 
             if (result.success) {
                 const editModal = document.getElementById('editProgrammationModal');
@@ -415,10 +415,10 @@
                     document.getElementById('lignesContainerMod').appendChild(clone);
 
                     // Initialisez Select2 pour le champ des articles
-                    // $(selectArticles).select2({
-                    //     theme: 'bootstrap-5',
-                    //     width: '100%'
-                    // });
+                    $(selectArticles).select2({
+                        theme: 'bootstrap-5',
+                        width: '100%'
+                    });
                 });                
                 
                 editForm.querySelector('[name="commentaire"]').value = result.data.commentaire;
