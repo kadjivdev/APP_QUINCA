@@ -155,24 +155,16 @@
                     placeholder="Recherche...."
                     name=""
                     class="form-control" id="articleSearch">
-                <select class="form-select " name="article_id_id" id="articles_block"
+                <select class="form-select" name="article_id" id="articles_block"
                     required>
                     <option class="article" value="">Selectionner un article</option>
                     @foreach ($articles as $article)
                     <option class="article" value="{{ $article->id }}">
-                        {{ $fournisseur->raison_sociale }}
+                        {{ $article->code_article }} - {{ $article->designation }} -({{ $article->id }})
                     </option>
                     @endforeach
                 </select>
             </div>
-            <!-- <select class="form-select select2 select2-articles" name="articles[]" required>
-                <option value="">Sélectionner un article</option>
-                @foreach ($articles as $article)
-                <option value="{{ $article->id }}">
-                    {{ $article->code_article }} - {{ $article->designation }}
-                </option>
-                @endforeach
-            </select> -->
             <div class="invalid-feedback">L'article est requis</div>
         </td>
         <td class="p-2">
@@ -202,12 +194,25 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('.select2').each(function() {
-            $(this).select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $(this).parent(),
+        // SEARCH ARTICLE
+        var articles = document.querySelectorAll('.article');
+        document.getElementById('articleSearch').addEventListener('keyup', function(e) {
+            var text = this.value.toLowerCase();
+            Array.prototype.forEach.call(articles, function(article) {
+                // On a bien trouvé les termes de recherche.
+                if (article.innerHTML.toLowerCase().indexOf(text) > -1) {
+                    article.style.display = 'block';
+                } else {
+                    article.style.display = 'none';
+                }
             });
-        });
+        })
+        if (document.getElementById('articleSearch').trim() == '') {
+            Array.prototype.forEach.call(articles, function(article) {
+                // On a bien trouvé les termes de recherche.
+                article.style.display = 'block';
+            });
+        }
 
         // SEARCH FOURNISSEUR
         var fournisseurs = document.querySelectorAll('.fournisseur');
