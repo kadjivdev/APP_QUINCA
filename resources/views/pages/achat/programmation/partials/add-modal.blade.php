@@ -160,7 +160,7 @@
                     <option class="article" value="">Selectionner un article</option>
                     @foreach ($articles as $article)
                     <option class="article" value="{{ $article->id }}">
-                        {{ $article->code_article }} - {{ $article->designation }} -({{ $article->id }})
+                        {{ $article->code_article }} - {{ $article->designation }}
                     </option>
                     @endforeach
                 </select>
