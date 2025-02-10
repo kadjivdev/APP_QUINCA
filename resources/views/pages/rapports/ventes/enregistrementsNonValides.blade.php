@@ -8,9 +8,9 @@
             <!-- En-tête avec filtres -->
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <form action="{{ route('rapports.vente-journaliere') }}" method="GET" class="row align-items-end">
+                    <form action="{{ route('rapports._enregistrementsNonValides') }}" method="GET" class="row align-items-end">
                         <div class="col-md-4">
-                            <label class="form-label">Date du rapport</label>
+                            <label class="form-label">Date du rapport <span class="badge bg-dark">m/d/Y</span> </label>
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i class="fas fa-calendar"></i>
@@ -62,8 +62,8 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>N°</th>
-                                    <th>Date Écriture</th>
-                                    <th>Date vente</th>
+                                    <th>Date Écriture <span class="badge bg-dark">m/d/Y</span></th>
+                                    <th>Date vente <span class="badge bg-dark">m/d/Y</span></th>
                                     <th>Référence</th>
                                     <th>Type vente</th>
                                     <th>Statut vente</th>

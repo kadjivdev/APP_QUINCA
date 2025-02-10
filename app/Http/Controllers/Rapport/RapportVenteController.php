@@ -572,24 +572,26 @@ class RapportVenteController extends Controller
 
     public function _enregistrementsNonValides(Request $request)
     {
+        // dd($request->date);
         try {
-            $date = Carbon::parse($request->date ?? now());
+            $date = Carbon::parse($request->date);
 
             try {
-                $ventes = FactureClient::with([
+                $query = FactureClient::with([
                     'client',
                     'createdBy',
                     'lignes.article', // Ajout des lignes et de l'article
-                    // 'reglements' => function ($query) {
-                    //     $query->where('statut', ReglementClient::STATUT_VALIDE);
-                    // },
                     'reglements'
                 ])
-                    // ->whereDate('date_facture', $date)
-                    // ->where('statut', 'validee')
-                    ->orderBy('date_facture', 'desc')
-                    ->get();
+                    ->orderBy('date_facture', 'desc');
 
+                if ($request->date) {
+                    $date = Carbon::parse($request->date);
+                    $ventes = $query->whereDate('date_facture', $date)
+                        ->get();
+                } else {
+                    $ventes = $query->get();
+                }
                 // dd($ventes);
 
                 if ($ventes->isEmpty()) {
@@ -625,8 +627,8 @@ class RapportVenteController extends Controller
                         return [
                             'id' => $facture->id,
                             'numero' => $facture->numero ?? 'N/A',
-                            'date_ecriture' => $facture->created_at->format('d/m/Y H:i'),
-                            'date_vente' => $facture->date_facture->format('d/m/Y'),
+                            'date_ecriture' => $facture->created_at->format('m/d/Y H:i'),
+                            'date_vente' => $facture->date_facture->format('m/d/Y'),
                             'reference' => $facture->numero ?? 'N/A',
                             'type_vente' => $type_vente,
                             'categorie_vente' => $facture->client->categorie ?? 'N/A',
