@@ -50,7 +50,8 @@ class FactureClientController extends Controller
                     'encaissed_at'
                 ])
                 ->orderBy('date_facture', 'desc')
-                ->paginate(10);
+                // ->paginate(10);
+                ->get();
 
             // Ajouter des attributs calculés pour chaque facture
             $factures->getCollection()->transform(function ($facture) {

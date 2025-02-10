@@ -6,12 +6,15 @@
     .modal-backdrop {
         z-index: 1040 !important;
     }
+
     .modal {
         z-index: 1050 !important;
     }
+
     .select2-container {
         z-index: 2000 !important;
     }
+
     .select2-dropdown {
         z-index: 2001 !important;
     }
@@ -39,18 +42,18 @@
 
 @section('content')
 
-    <div class="content">
-        @include('pages.ventes.facture.partials.header')
-        <div class="row g-3 list mt-3" id="stockEntriesList">
-            @include('pages.ventes.facture.partials.list')
-        </div>
+<div class="content">
+    @include('pages.ventes.facture.partials.header')
+    <div class="row g-3 list mt-3" id="stockEntriesList">
+        @include('pages.ventes.facture.partials.list')
     </div>
+</div>
 
-    @include('pages.ventes.facture.partials.add-modal')
-    @include('pages.ventes.facture.partials.update-modal')
-    @include('pages.ventes.facture.partials.edit-modal')
-    @include('pages.ventes.facture.partials.show-modal')
-    @include('pages.ventes.facture.partials.add-reg-modal')
+@include('pages.ventes.facture.partials.add-modal')
+@include('pages.ventes.facture.partials.update-modal')
+@include('pages.ventes.facture.partials.edit-modal')
+@include('pages.ventes.facture.partials.show-modal')
+@include('pages.ventes.facture.partials.add-reg-modal')
 @endsection
 
 @push('scripts')

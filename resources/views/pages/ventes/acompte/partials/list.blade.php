@@ -10,7 +10,7 @@
                         <select class="form-select form-select-sm" id="clientFilter" onchange="filterAcomptes()">
                             <option value="">Tous les clients</option>
                             @foreach ($clients as $client)
-                                <option value="{{ $client->id }}">{{ $client->code_client }} - {{ $client->raison_sociale }}</option>
+                            <option value="{{ $client->id }}">{{ $client->code_client }} - {{ $client->raison_sociale }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -44,10 +44,10 @@
                                 <i class="fas fa-search text-muted"></i>
                             </span>
                             <input type="text"
-                                   class="form-control form-control-sm border-start-0"
-                                   id="searchFilter"
-                                   placeholder="Référence..."
-                                   onkeyup="filterAcomptes()">
+                                class="form-control form-control-sm border-start-0"
+                                id="searchFilter"
+                                placeholder="Référence..."
+                                onkeyup="filterAcomptes()">
                         </div>
                     </div>
 
@@ -65,9 +65,9 @@
 
     {{-- Table des acomptes --}}
     <div class="col-12">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm p-3">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="acomptesTable">
+                <table id="example1" class="table table-hover align-middle mb-0" id="acomptesTable">
                     <thead class="bg-light">
                         <tr>
                             <th class="border-bottom-0 text-nowrap py-3">Référence</th>
@@ -82,270 +82,264 @@
                     </thead>
                     <tbody>
                         @forelse($acomptes as $acompte)
-                            <tr>
-                                <td class="text-nowrap py-3">
-                                    <span class="code-reference">{{ $acompte->reference }}</span>
-                                </td>
-                                <td class="text-nowrap">
-                                    {{ $acompte->date->format('d/m/Y') }}
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-client me-2">
-                                            {{ substr($acompte->client->raison_sociale, 0, 2) }}
-                                        </div>
-                                        <div>
-                                            <div class="fw-medium">{{ $acompte->client->raison_sociale }}</div>
-                                            <div class="text-muted small">{{ $acompte->client->code_client }}</div>
-                                        </div>
+                        <tr>
+                            <td class="text-nowrap py-3">
+                                <span class="code-reference">{{ $acompte->reference }}</span>
+                            </td>
+                            <td class="text-nowrap">
+                                {{ $acompte->date->format('d/m/Y') }}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-client me-2">
+                                        {{ substr($acompte->client->raison_sociale, 0, 2) }}
                                     </div>
-                                </td>
-                                <td class="text-center">
-                                    @switch($acompte->type_paiement)
-                                        @case('espece')
-                                            <span class="badge bg-success bg-opacity-10 text-success">
-                                                <i class="fas fa-money-bill-wave me-1"></i>Espèce
-                                            </span>
-                                        @break
-                                        @case('cheque')
-                                            <span class="badge bg-info bg-opacity-10 text-info">
-                                                <i class="fas fa-money-check me-1"></i>Chèque
-                                            </span>
-                                        @break
-                                        @case('virement')
-                                            <span class="badge bg-primary bg-opacity-10 text-primary">
-                                                <i class="fas fa-exchange-alt me-1"></i>Virement
-                                            </span>
-                                        @break
-                                    @endswitch
-                                </td>
-                                <td class="text-end">
-                                    <span class="fw-medium montant">
-                                        {{ number_format($acompte->montant, 0, ',', ' ') }} F
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="text-muted small">{{ $acompte->observation ?: '—' }}</span>
-                                </td>
-                                <td>
-                                    <small class="text-muted">
-                                        {{ $acompte->createdBy?->name ?: '—' }}
-                                    </small>
-                                </td>
-                                <td class="text-end">
-                                    <div class="btn-group">
-                                        {{-- Bouton voir détails - toujours visible --}}
-                                        <button class="btn btn-sm btn-light-primary btn-icon"
-                                                onclick="showAcompte({{ $acompte->id }})"
-                                                data-bs-toggle="tooltip"
-                                                title="Voir les détails">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
+                                    <div>
+                                        <div class="fw-medium">{{ $acompte->client->raison_sociale }}</div>
+                                        <div class="text-muted small">{{ $acompte->client->code_client }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                @switch($acompte->type_paiement)
+                                @case('espece')
+                                <span class="badge bg-success bg-opacity-10 text-success">
+                                    <i class="fas fa-money-bill-wave me-1"></i>Espèce
+                                </span>
+                                @break
+                                @case('cheque')
+                                <span class="badge bg-info bg-opacity-10 text-info">
+                                    <i class="fas fa-money-check me-1"></i>Chèque
+                                </span>
+                                @break
+                                @case('virement')
+                                <span class="badge bg-primary bg-opacity-10 text-primary">
+                                    <i class="fas fa-exchange-alt me-1"></i>Virement
+                                </span>
+                                @break
+                                @endswitch
+                            </td>
+                            <td class="text-end">
+                                <span class="fw-medium montant">
+                                    {{ number_format($acompte->montant, 0, ',', ' ') }} F
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted small">{{ $acompte->observation ?: '—' }}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    {{ $acompte->createdBy?->name ?: '—' }}
+                                </small>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    {{-- Bouton voir détails - toujours visible --}}
+                                    <button class="btn btn-sm btn-light-primary btn-icon"
+                                        onclick="showAcompte({{ $acompte->id }})"
+                                        data-bs-toggle="tooltip"
+                                        title="Voir les détails">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
 
-                                        {{-- Bouton modifier - visible uniquement si en attente --}}
-                                        @if($acompte->isEnAttente())
-                                            <button class="btn btn-sm btn-light-warning btn-icon ms-1"
-                                                    onclick="editAcompte({{ $acompte->id }})"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Modifier">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        @endif
+                                    {{-- Bouton modifier - visible uniquement si en attente --}}
+                                    @if($acompte->isEnAttente())
+                                    <button class="btn btn-sm btn-light-warning btn-icon ms-1"
+                                        onclick="editAcompte({{ $acompte->id }})"
+                                        data-bs-toggle="tooltip"
+                                        title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    @endif
 
-                                        {{-- Boutons de validation/rejet - visibles uniquement si en attente --}}
-                                        @if($acompte->isEnAttente())
-                                            <button class="btn btn-sm btn-light-success btn-icon ms-1"
-                                                    onclick="validateAcompte({{ $acompte->id }})"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Valider">
-                                                <i class="fas fa-check-circle"></i>
-                                            </button>
+                                    {{-- Boutons de validation/rejet - visibles uniquement si en attente --}}
+                                    @if($acompte->isEnAttente())
+                                    <button class="btn btn-sm btn-light-success btn-icon ms-1"
+                                        onclick="validateAcompte({{ $acompte->id }})"
+                                        data-bs-toggle="tooltip"
+                                        title="Valider">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
 
-                                            {{-- <button class="btn btn-sm btn-light-danger btn-icon ms-1"
+                                    {{-- <button class="btn btn-sm btn-light-danger btn-icon ms-1"
                                                     onclick="rejectAcompte({{ $acompte->id }})"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Rejeter">
-                                                <i class="fas fa-times-circle"></i>
-                                            </button> --}}
-                                        @endif
+                                    data-bs-toggle="tooltip"
+                                    title="Rejeter">
+                                    <i class="fas fa-times-circle"></i>
+                                    </button> --}}
+                                    @endif
 
-                                        {{-- Badge de statut --}}
-                                        <span class="ms-1">
-                                            @if($acompte->isValide())
-                                                <span class="badge bg-success" data-bs-toggle="tooltip" title="Validé par {{ $acompte->validatedBy?->name }} le {{ $acompte->validated_at?->format('d/m/Y H:i') }}">
-                                                    Validé
-                                                </span>
-                                            @elseif($acompte->isRejete())
-                                                <span class="badge bg-danger" data-bs-toggle="tooltip" title="Rejeté par {{ $acompte->validatedBy?->name }} le {{ $acompte->validated_at?->format('d/m/Y H:i') }}">
-                                                    Rejeté
-                                                </span>
-                                            @else
-                                                <span class="badge bg-warning">En attente</span>
-                                            @endif
+                                    {{-- Badge de statut --}}
+                                    <span class="ms-1">
+                                        @if($acompte->isValide())
+                                        <span class="badge bg-success" data-bs-toggle="tooltip" title="Validé par {{ $acompte->validatedBy?->name }} le {{ $acompte->validated_at?->format('d/m/Y H:i') }}">
+                                            Validé
                                         </span>
-
-                                        {{-- Bouton supprimer - visible si en attente et moins de 24h --}}
-                                        @if($acompte->isEnAttente() && $acompte->created_at->diffInHours(now()) <= 24)
-                                            <button class="btn btn-sm btn-light-danger btn-icon ms-1"
-                                                    onclick="deleteAcompte({{ $acompte->id }})"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Supprimer">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                        @elseif($acompte->isRejete())
+                                        <span class="badge bg-danger" data-bs-toggle="tooltip" title="Rejeté par {{ $acompte->validatedBy?->name }} le {{ $acompte->validated_at?->format('d/m/Y H:i') }}">
+                                            Rejeté
+                                        </span>
+                                        @else
+                                        <span class="badge bg-warning">En attente</span>
                                         @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-5">
-                                    <div class="empty-state">
-                                        <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
-                                        <h6 class="text-muted mb-1">Aucun acompte trouvé</h6>
-                                        <p class="text-muted small mb-3">Les acomptes que vous enregistrez apparaîtront ici</p>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAcompteModal">
-                                            <i class="fas fa-plus me-2"></i>Nouvel acompte
+                                    </span>
+
+                                    {{-- Bouton supprimer - visible si en attente et moins de 24h --}}
+                                    @if($acompte->isEnAttente() && $acompte->created_at->diffInHours(now()) <= 24)
+                                        <button class="btn btn-sm btn-light-danger btn-icon ms-1"
+                                        onclick="deleteAcompte({{ $acompte->id }})"
+                                        data-bs-toggle="tooltip"
+                                        title="Supprimer">
+                                        <i class="fas fa-trash"></i>
                                         </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                        @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted mb-1">Aucun acompte trouvé</h6>
+                                    <p class="text-muted small mb-3">Les acomptes que vous enregistrez apparaîtront ici</p>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAcompteModal">
+                                        <i class="fas fa-plus me-2"></i>Nouvel acompte
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            @if($acomptes->hasPages())
-                <div class="card-footer border-0 py-3">
-                    {{ $acomptes->links() }}
-                </div>
-            @endif
         </div>
     </div>
 </div>
 
 <style>
-/* On garde les mêmes styles que pour les clients en ajoutant quelques spécificités pour les acomptes */
+    /* On garde les mêmes styles que pour les clients en ajoutant quelques spécificités pour les acomptes */
 
-/* Référence acompte */
-.code-reference {
-    font-family: 'Monaco', 'Consolas', monospace;
-    color: var(--kadjiv-orange);
-    font-weight: 500;
-    padding: 0.3rem 0.6rem;
-    background-color: var(--kadjiv-orange-light);
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-}
+    /* Référence acompte */
+    .code-reference {
+        font-family: 'Monaco', 'Consolas', monospace;
+        color: var(--kadjiv-orange);
+        font-weight: 500;
+        padding: 0.3rem 0.6rem;
+        background-color: var(--kadjiv-orange-light);
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+    }
 
-/* Badge pour les types de paiement */
-.badge[class*="bg-opacity-10"] {
-    padding: 0.5em 0.8em;
-    font-weight: 500;
-    font-size: 0.75rem;
-}
+    /* Badge pour les types de paiement */
+    .badge[class*="bg-opacity-10"] {
+        padding: 0.5em 0.8em;
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
 
-/* Montant */
-.montant {
-    font-family: 'Consolas', monospace;
-    font-size: 0.875rem;
-}
+    /* Montant */
+    .montant {
+        font-family: 'Consolas', monospace;
+        font-size: 0.875rem;
+    }
 
-/* Style pour la période */
-.input-group-sm .form-control[type="date"] {
-    min-width: 130px;
-}
+    /* Style pour la période */
+    .input-group-sm .form-control[type="date"] {
+        min-width: 130px;
+    }
 </style>
 
 <script>
-function filterAcomptes() {
-    // Afficher le loader
-    Swal.fire({
-        title: 'Chargement...',
-        text: 'Filtrage des acomptes en cours',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+    function filterAcomptes() {
+        // Afficher le loader
+        Swal.fire({
+            title: 'Chargement...',
+            text: 'Filtrage des acomptes en cours',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Récupérer les valeurs des filtres
+        const filters = {
+            client_id: $('#clientFilter').val(),
+            type_paiement: $('#typePaiementFilter').val(),
+            date_debut: $('#dateDebut').val(),
+            date_fin: $('#dateFin').val(),
+            search: $('#searchFilter').val()
+        };
+
+        // Faire la requête AJAX avec les filtres
+        $.ajax({
+            url: `${apiUrl}/vente/acomptes/refresh-list`,
+            method: 'GET',
+            data: filters,
+            success: function(response) {
+                // Mettre à jour le tableau avec les nouvelles données
+                $('#acomptesTable tbody').html($(response.html).find('#acomptesTable tbody').html());
+
+                // Mettre à jour la pagination si elle existe
+                if ($('.card-footer').length) {
+                    $('.card-footer').html($(response.html).find('.card-footer').html());
+                }
+
+                // Mettre à jour les statistiques
+                if (response.stats) {
+                    $('.stat-total').text(response.stats.total.toLocaleString('fr-FR'));
+                    $('.stat-montant').text(response.stats.montant_total.toLocaleString('fr-FR'));
+                    $('.stat-mois').text(response.stats.acomptes_mois.toLocaleString('fr-FR'));
+                    $('.stat-montant-mois').text(response.stats.montant_mois.toLocaleString('fr-FR'));
+                }
+
+                // Réinitialiser les tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip();
+
+                // Fermer le loader
+                Swal.close();
+            },
+            error: function(xhr, status, error) {
+                Swal.close();
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Erreur lors du filtrage des acomptes'
+                });
+                console.error('Erreur:', error);
+            }
+        });
+    }
+
+    // Réinitialiser les filtres
+    function resetFilters() {
+        $('#clientFilter').val('');
+        $('#typePaiementFilter').val('');
+        $('#dateDebut').val('');
+        $('#dateFin').val('');
+        $('#searchFilter').val('');
+        filterAcomptes();
+    }
+
+    // Ajouter un délai pour la recherche
+    let searchTimeout;
+    $('#searchFilter').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(filterAcomptes, 500);
     });
 
-    // Récupérer les valeurs des filtres
-    const filters = {
-        client_id: $('#clientFilter').val(),
-        type_paiement: $('#typePaiementFilter').val(),
-        date_debut: $('#dateDebut').val(),
-        date_fin: $('#dateFin').val(),
-        search: $('#searchFilter').val()
-    };
-
-    // Faire la requête AJAX avec les filtres
-    $.ajax({
-        url: `${apiUrl}/vente/acomptes/refresh-list`,
-        method: 'GET',
-        data: filters,
-        success: function(response) {
-            // Mettre à jour le tableau avec les nouvelles données
-            $('#acomptesTable tbody').html($(response.html).find('#acomptesTable tbody').html());
-
-            // Mettre à jour la pagination si elle existe
-            if ($('.card-footer').length) {
-                $('.card-footer').html($(response.html).find('.card-footer').html());
-            }
-
-            // Mettre à jour les statistiques
-            if (response.stats) {
-                $('.stat-total').text(response.stats.total.toLocaleString('fr-FR'));
-                $('.stat-montant').text(response.stats.montant_total.toLocaleString('fr-FR'));
-                $('.stat-mois').text(response.stats.acomptes_mois.toLocaleString('fr-FR'));
-                $('.stat-montant-mois').text(response.stats.montant_mois.toLocaleString('fr-FR'));
-            }
-
-            // Réinitialiser les tooltips
-            $('[data-bs-toggle="tooltip"]').tooltip();
-
-            // Fermer le loader
-            Swal.close();
-        },
-        error: function(xhr, status, error) {
-            Swal.close();
-            Toast.fire({
-                icon: 'error',
-                title: 'Erreur lors du filtrage des acomptes'
-            });
-            console.error('Erreur:', error);
-        }
-    });
-}
-
-// Réinitialiser les filtres
-function resetFilters() {
-    $('#clientFilter').val('');
-    $('#typePaiementFilter').val('');
-    $('#dateDebut').val('');
-    $('#dateFin').val('');
-    $('#searchFilter').val('');
-    filterAcomptes();
-}
-
-// Ajouter un délai pour la recherche
-let searchTimeout;
-$('#searchFilter').on('keyup', function() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(filterAcomptes, 500);
-});
-
-// Fonction pour voir les détails d'un acompte
-function showAcompte(id) {
-    $.ajax({
-        url: `${apiUrl}/vente/acomptes/${id}`,
-        method: 'GET',
-        success: function(response) {
-            if (response.success) {
-                // Afficher les détails dans un modal ou une carte
-                const acompte = response.data.acompte;
-                Swal.fire({
-                    title: 'Détails de l\'acompte',
-                    html: `
+    // Fonction pour voir les détails d'un acompte
+    function showAcompte(id) {
+        $.ajax({
+            url: `${apiUrl}/vente/acomptes/${id}`,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    // Afficher les détails dans un modal ou une carte
+                    const acompte = response.data.acompte;
+                    Swal.fire({
+                        title: 'Détails de l\'acompte',
+                        html: `
                         <div class="text-start">
                             <p><strong>Référence:</strong> ${acompte.reference}</p>
                             <p><strong>Date:</strong> ${acompte.date}</p>
@@ -357,15 +351,15 @@ function showAcompte(id) {
                             <p><strong>Date création:</strong> ${acompte.created_at}</p>
                         </div>
                     `,
-                    icon: 'info'
-                });
+                        icon: 'info'
+                    });
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-// Fonction pour supprimer un acompte
-function deleteAcompte(id) {
+    // Fonction pour supprimer un acompte
+    function deleteAcompte(id) {
         Swal.fire({
             title: 'Confirmer la suppression',
             text: "Voulez-vous vraiment supprimer cet acompte ?",
@@ -378,23 +372,23 @@ function deleteAcompte(id) {
             showLoaderOnConfirm: true,
             preConfirm: () => {
                 return $.ajax({
-                    url: `${apiUrl}/vente/acomptes/${id}`,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                })
-                .then(response => {
-                    if (!response.success) {
-                        throw new Error(response.message || 'Erreur lors de la suppression');
-                    }
-                    return response;
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(
-                        error.responseJSON?.message || 'Erreur lors de la suppression'
-                    );
-                });
+                        url: `${apiUrl}/vente/acomptes/${id}`,
+                        type: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.success) {
+                            throw new Error(response.message || 'Erreur lors de la suppression');
+                        }
+                        return response;
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            error.responseJSON?.message || 'Erreur lors de la suppression'
+                        );
+                    });
             },
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
@@ -420,7 +414,7 @@ function deleteAcompte(id) {
                         title: `<strong>Détails de l'acompte</strong>`,
                         html: `
                             <div class="text-start">
-                                <table class="table table-sm">
+                                <table id='example1' class="table table-sm">
                                     <tr>
                                         <td class="fw-bold">Référence:</td>
                                         <td>${acompte.reference}</td>
@@ -568,109 +562,324 @@ function deleteAcompte(id) {
 
     // Fonction pour rafraîchir les statistiques
     function updateStats(stats) {
-        if(stats) {
+        if (stats) {
             $('#totalAcomptes').text(stats.total.toLocaleString('fr-FR'));
             $('#totalMontant').text(formatMontant(stats.total_montant));
             $('#acomptesMois').text(stats.acomptes_mois.toLocaleString('fr-FR'));
             $('#montantMois').text(formatMontant(stats.montant_mois));
         }
     }
-
 </script>
 <script>
     // Fonction pour valider un acompte
-function validateAcompte(id) {
-    Swal.fire({
-        title: 'Confirmer la validation',
-        text: 'Êtes-vous sûr de vouloir valider cet acompte ?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Oui, valider',
-        cancelButtonText: 'Annuler',
-        confirmButtonColor: '#28a745',
-        cancelButtonColor: '#dc3545'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: `${apiUrl}/vente/acomptes/${id}/validate`,
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
+    function validateAcompte(id) {
+        Swal.fire({
+            title: 'Confirmer la validation',
+            text: 'Êtes-vous sûr de vouloir valider cet acompte ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, valider',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#dc3545'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `${apiUrl}/vente/acomptes/${id}/validate`,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.message
+                            });
+                            window.location.reload();
+                        }
+                    },
+                    error: function(xhr) {
                         Toast.fire({
-                            icon: 'success',
-                            title: response.message
+                            icon: 'error',
+                            title: xhr.responseJSON?.message || 'Erreur lors de la validation'
                         });
-                        window.location.reload();
                     }
-                },
-                error: function(xhr) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: xhr.responseJSON?.message || 'Erreur lors de la validation'
-                    });
-                }
-            });
-        }
-    });
-}
-
-// Fonction pour rejeter un acompte
-function rejectAcompte(id) {
-    Swal.fire({
-        title: 'Motif du rejet',
-        text: 'Veuillez indiquer le motif du rejet',
-        input: 'text',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Rejeter',
-        cancelButtonText: 'Annuler',
-        confirmButtonColor: '#dc3545',
-        inputValidator: (value) => {
-            if (!value) {
-                return 'Le motif du rejet est requis';
+                });
             }
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: `${apiUrl}/vente/acomptes/${id}/reject`,
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    motif_rejet: result.value
-                },
-                success: function(response) {
-                    if (response.success) {
+        });
+    }
+
+    // Fonction pour rejeter un acompte
+    function rejectAcompte(id) {
+        Swal.fire({
+            title: 'Motif du rejet',
+            text: 'Veuillez indiquer le motif du rejet',
+            input: 'text',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Rejeter',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#dc3545',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Le motif du rejet est requis';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `${apiUrl}/vente/acomptes/${id}/reject`,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        motif_rejet: result.value
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Toast.fire({
+                                icon: 'success',
+                                title: response.message
+                            });
+                            window.location.reload();
+                        }
+                    },
+                    error: function(xhr) {
                         Toast.fire({
-                            icon: 'success',
-                            title: response.message
+                            icon: 'error',
+                            title: xhr.responseJSON?.message || 'Erreur lors du rejet'
                         });
-                        window.location.reload();
+                    }
+                });
+            }
+        });
+    }
+
+    // Fonction pour afficher le statut avec badge
+    function getStatusBadge(statut) {
+        const badges = {
+            en_attente: '<span class="badge bg-warning">En attente</span>',
+            valide: '<span class="badge bg-success">Validé</span>',
+            rejete: '<span class="badge bg-danger">Rejeté</span>'
+        };
+        return badges[statut] || '';
+    }
+</script>
+
+@push("scripts")
+<script>
+    $("#example1").DataTable({
+        "responsive": true,
+        "lengthChange": false,
+        "autoWidth": false,
+        "buttons": ["pdf", "print", "csv", "excel"],
+        "order": [
+            [0, 'asc']
+        ],
+        "pageLength": 15,
+        language: {
+            "emptyTable": "Aucune donnée disponible dans le tableau",
+            "lengthMenu": "Afficher _MENU_ éléments",
+            "loadingRecords": "Chargement...",
+            "processing": "Traitement...",
+            "zeroRecords": "Aucun élément correspondant trouvé",
+            "paginate": {
+                "first": "Premier",
+                "last": "Dernier",
+                "previous": "Précédent",
+                "next": "Suiv"
+            },
+            "aria": {
+                "sortAscending": ": activer pour trier la colonne par ordre croissant",
+                "sortDescending": ": activer pour trier la colonne par ordre décroissant"
+            },
+            "select": {
+                "rows": {
+                    "_": "%d lignes sélectionnées",
+                    "1": "1 ligne sélectionnée"
+                },
+                "cells": {
+                    "1": "1 cellule sélectionnée",
+                    "_": "%d cellules sélectionnées"
+                },
+                "columns": {
+                    "1": "1 colonne sélectionnée",
+                    "_": "%d colonnes sélectionnées"
+                }
+            },
+            "autoFill": {
+                "cancel": "Annuler",
+                "fill": "Remplir toutes les cellules avec <i>%d<\/i>",
+                "fillHorizontal": "Remplir les cellules horizontalement",
+                "fillVertical": "Remplir les cellules verticalement"
+            },
+            "searchBuilder": {
+                "conditions": {
+                    "date": {
+                        "after": "Après le",
+                        "before": "Avant le",
+                        "between": "Entre",
+                        "empty": "Vide",
+                        "equals": "Egal à",
+                        "not": "Différent de",
+                        "notBetween": "Pas entre",
+                        "notEmpty": "Non vide"
+                    },
+                    "number": {
+                        "between": "Entre",
+                        "empty": "Vide",
+                        "equals": "Egal à",
+                        "gt": "Supérieur à",
+                        "gte": "Supérieur ou égal à",
+                        "lt": "Inférieur à",
+                        "lte": "Inférieur ou égal à",
+                        "not": "Différent de",
+                        "notBetween": "Pas entre",
+                        "notEmpty": "Non vide"
+                    },
+                    "string": {
+                        "contains": "Contient",
+                        "empty": "Vide",
+                        "endsWith": "Se termine par",
+                        "equals": "Egal à",
+                        "not": "Différent de",
+                        "notEmpty": "Non vide",
+                        "startsWith": "Commence par"
+                    },
+                    "array": {
+                        "equals": "Egal à",
+                        "empty": "Vide",
+                        "contains": "Contient",
+                        "not": "Différent de",
+                        "notEmpty": "Non vide",
+                        "without": "Sans"
                     }
                 },
-                error: function(xhr) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: xhr.responseJSON?.message || 'Erreur lors du rejet'
-                    });
+                "add": "Ajouter une condition",
+                "button": {
+                    "0": "Recherche avancée",
+                    "_": "Recherche avancée (%d)"
+                },
+                "clearAll": "Effacer tout",
+                "condition": "Condition",
+                "data": "Donnée",
+                "deleteTitle": "Supprimer la règle de filtrage",
+                "logicAnd": "Et",
+                "logicOr": "Ou",
+                "title": {
+                    "0": "Recherche avancée",
+                    "_": "Recherche avancée (%d)"
+                },
+                "value": "Valeur"
+            },
+            "searchPanes": {
+                "clearMessage": "Effacer tout",
+                "count": "{total}",
+                "title": "Filtres actifs - %d",
+                "collapse": {
+                    "0": "Volet de recherche",
+                    "_": "Volet de recherche (%d)"
+                },
+                "countFiltered": "{shown} ({total})",
+                "emptyPanes": "Pas de volet de recherche",
+                "loadMessage": "Chargement du volet de recherche..."
+            },
+            "buttons": {
+                "copyKeys": "Appuyer sur ctrl ou u2318 + C pour copier les données du tableau dans votre presse-papier.",
+                "collection": "Collection",
+                "colvis": "Visibilité colonnes",
+                "colvisRestore": "Rétablir visibilité",
+                "copy": "Copier",
+                "copySuccess": {
+                    "1": "1 ligne copiée dans le presse-papier",
+                    "_": "%ds lignes copiées dans le presse-papier"
+                },
+                "copyTitle": "Copier dans le presse-papier",
+                "csv": "CSV",
+                "excel": "Excel",
+                "pageLength": {
+                    "-1": "Afficher toutes les lignes",
+                    "_": "Afficher %d lignes"
+                },
+                "pdf": "PDF",
+                "print": "Imprimer"
+            },
+            "decimal": ",",
+            "info": "Affichage de _START_ à _END_ sur _TOTAL_ éléments",
+            "infoEmpty": "Affichage de 0 à 0 sur 0 éléments",
+            "infoThousands": ".",
+            "search": "Rechercher:",
+            "thousands": ".",
+            "infoFiltered": "(filtrés depuis un total de _MAX_ éléments)",
+            "datetime": {
+                "previous": "Précédent",
+                "next": "Suivant",
+                "hours": "Heures",
+                "minutes": "Minutes",
+                "seconds": "Secondes",
+                "unknown": "-",
+                "amPm": [
+                    "am",
+                    "pm"
+                ],
+                "months": [
+                    "Janvier",
+                    "Fevrier",
+                    "Mars",
+                    "Avril",
+                    "Mai",
+                    "Juin",
+                    "Juillet",
+                    "Aout",
+                    "Septembre",
+                    "Octobre",
+                    "Novembre",
+                    "Decembre"
+                ],
+                "weekdays": [
+                    "Dim",
+                    "Lun",
+                    "Mar",
+                    "Mer",
+                    "Jeu",
+                    "Ven",
+                    "Sam"
+                ]
+            },
+            "editor": {
+                "close": "Fermer",
+                "create": {
+                    "button": "Nouveaux",
+                    "title": "Créer une nouvelle entrée",
+                    "submit": "Envoyer"
+                },
+                "edit": {
+                    "button": "Editer",
+                    "title": "Editer Entrée",
+                    "submit": "Modifier"
+                },
+                "remove": {
+                    "button": "Supprimer",
+                    "title": "Supprimer",
+                    "submit": "Supprimer",
+                    "confirm": {
+                        "1": "etes-vous sure de vouloir supprimer 1 ligne?",
+                        "_": "etes-vous sure de vouloir supprimer %d lignes?"
+                    }
+                },
+                "error": {
+                    "system": "Une erreur système s'est produite"
+                },
+                "multi": {
+                    "title": "Valeurs Multiples",
+                    "restore": "Rétablir Modification",
+                    "noMulti": "Ce champ peut être édité individuellement, mais ne fait pas partie d'un groupe. ",
+                    "info": "Les éléments sélectionnés contiennent différentes valeurs pour ce champ. Pour  modifier et "
                 }
-            });
-        }
-    });
-}
-
-// Fonction pour afficher le statut avec badge
-function getStatusBadge(statut) {
-    const badges = {
-        en_attente: '<span class="badge bg-warning">En attente</span>',
-        valide: '<span class="badge bg-success">Validé</span>',
-        rejete: '<span class="badge bg-danger">Rejeté</span>'
-    };
-    return badges[statut] || '';
-}
+            }
+        },
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 </script>
+@endpush

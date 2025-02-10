@@ -6,6 +6,7 @@
     .modal-backdrop {
         z-index: 1040 !important;
     }
+
     .modal {
         z-index: 1050 !important;
     }
@@ -14,6 +15,7 @@
     .main-content .select2-container {
         z-index: 1000 !important;
     }
+
     .main-content .select2-dropdown {
         z-index: 1001 !important;
     }
@@ -22,6 +24,7 @@
     .modal .select2-container {
         z-index: 2000 !important;
     }
+
     .modal .select2-dropdown {
         z-index: 2001 !important;
     }
@@ -45,16 +48,16 @@
 
 @section('content')
 
-    <div class="content">
-        @include('pages.ventes.reglement.partials.header')
-        <div class="row g-3 list mt-3" id="stockEntriesList">
-            @include('pages.ventes.reglement.partials.list')
-        </div>
+<div class="content">
+    @include('pages.ventes.reglement.partials.header')
+    <div class="row g-3 list mt-3" id="stockEntriesList">
+        @include('pages.ventes.reglement.partials.list')
     </div>
+</div>
 
-    @include('pages.ventes.reglement.partials.add-modal')
-    @include('pages.ventes.reglement.partials.show-modal')
-    @include('pages.ventes.reglement.partials.edit-modal')
+@include('pages.ventes.reglement.partials.add-modal')
+@include('pages.ventes.reglement.partials.show-modal')
+@include('pages.ventes.reglement.partials.edit-modal')
 @endsection
 @push('scripts')
 
@@ -70,33 +73,33 @@
 <script>
     // Fonction pour rafraîchir la liste
     function refreshList() {
-    const filters = {
-        client_id: $('#clientFilter').val(),
-        facture_id: $('#factureFilter').val(),
-        type_reglement: $('#typeFilter').val(),
-        statut: $('#statutFilter').val(),
-        date_debut: $('#dateDebut').val(),
-        date_fin: $('#dateFin').val()
-    };
+        const filters = {
+            client_id: $('#clientFilter').val(),
+            facture_id: $('#factureFilter').val(),
+            type_reglement: $('#typeFilter').val(),
+            statut: $('#statutFilter').val(),
+            date_debut: $('#dateDebut').val(),
+            date_fin: $('#dateFin').val()
+        };
 
-    $.get({
-        // Changer ceci
-        url: '{{ route("vente.reglement.refresh") }}', // Noter le changement de 'reglements' à 'reglement'
-        data: filters,
-        success: function(response) {
-            $('#reglementsTable').html(response.html);
-            updateStats(response.stats);
-            // Réinitialiser les tooltips
-            $('[data-bs-toggle="tooltip"]').tooltip();
-        },
-        error: function() {
-            Toast.fire({
-                icon: 'error',
-                title: 'Erreur lors du rafraîchissement de la liste'
-            });
-        }
-    });
-}
+        $.get({
+            // Changer ceci
+            url: '{{ route("vente.reglement.refresh") }}', // Noter le changement de 'reglements' à 'reglement'
+            data: filters,
+            success: function(response) {
+                $('#reglementsTable').html(response.html);
+                updateStats(response.stats);
+                // Réinitialiser les tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            },
+            error: function() {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Erreur lors du rafraîchissement de la liste'
+                });
+            }
+        });
+    }
 
     // Fonction pour mettre à jour les statistiques
     function updateStats(stats) {
@@ -113,7 +116,7 @@
             placeholder: 'Tous les clients'
         });
     });
-    </script>
+</script>
 
 <script>
     $(document).ready(function() {
@@ -160,6 +163,6 @@
             $('#montantEnAttente').text(formatMontant(stats.montant_en_attente));
         }
     });
-    </script>
+</script>
 
 @endpush

@@ -5,7 +5,6 @@
 @endpush
 
 @section('content')
-
     <div class="content">
         {{-- En-tête de la page --}}
         @include('pages.achat.bon-commande.partials.header')

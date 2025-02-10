@@ -63,7 +63,8 @@ class LivraisonClientController extends Controller
             $livraisons->whereDate('date_livraison', '<=', $request->date_fin);
         }
 
-        $livraisons = $livraisons->paginate(10);
+        // $livraisons = $livraisons->paginate(10);
+        $livraisons = $livraisons->get();
 
         // Données pour les filtres et le modal de création
         $clients =  Client::where('point_de_vente_id', Auth()->user()->point_de_vente_id)->orderBy('raison_sociale')->get();
@@ -85,27 +86,27 @@ class LivraisonClientController extends Controller
 
         // Recherche des factures valides pour le modal de création
         $factures = FactureClient::where('statut', 'validee')
-                    ->whereHas('lignes', function ($query) {
-                        $query->whereRaw('quantite_base > IFNULL((
+            ->whereHas('lignes', function ($query) {
+                $query->whereRaw('quantite_base > IFNULL((
                             SELECT SUM(llc.quantite_base)
                             FROM ligne_livraison_clients llc
                             JOIN livraison_clients lc ON llc.livraison_client_id = lc.id
                             WHERE llc.ligne_facture_id = ligne_facture_clients.id
                             AND lc.statut = "valide"
                         ), 0)');
-                    })
-                    ->with(['client', 'lignes' => function ($query) {
-                        $query->whereRaw('quantite_base > IFNULL((
+            })
+            ->with(['client', 'lignes' => function ($query) {
+                $query->whereRaw('quantite_base > IFNULL((
                             SELECT SUM(llc.quantite_base)
                             FROM ligne_livraison_clients llc
                             JOIN livraison_clients lc ON llc.livraison_client_id = lc.id
                             WHERE llc.ligne_facture_id = ligne_facture_clients.id
                             AND lc.statut = "valide"
                         ), 0)')
-                        ->with(['article', 'uniteVente']);
-                    }])
-                    ->latest()
-                    ->get();
+                    ->with(['article', 'uniteVente']);
+            }])
+            ->latest()
+            ->get();
 
 
         return view('pages.ventes.livraison.index', compact(
@@ -188,7 +189,7 @@ class LivraisonClientController extends Controller
                     if ($data['quantite'] > ($ligneFacture->quantite - $quantiteLivree)) {
                         throw new Exception(
                             "La quantité saisie dépasse le reste à livrer pour l'article " .
-                            $ligneFacture->article->designation
+                                $ligneFacture->article->designation
                         );
                     }
 
@@ -242,7 +243,6 @@ class LivraisonClientController extends Controller
                     ])
                 ]
             ]);
-
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json([
@@ -295,8 +295,8 @@ class LivraisonClientController extends Controller
                 if (!$stock || $stock->quantite_reelle < $ligne->quantite_base) {
                     throw new Exception(
                         "Stock insuffisant pour l'article {$ligne->article->designation} " .
-                        "(Demandé: {$ligne->quantite_base}, Disponible: " .
-                        ($stock ? $stock->quantite_reelle : 0) . ")"
+                            "(Demandé: {$ligne->quantite_base}, Disponible: " .
+                            ($stock ? $stock->quantite_reelle : 0) . ")"
                     );
                 }
 
@@ -336,9 +336,7 @@ class LivraisonClientController extends Controller
                         'notes' => "Livraison client #{$livraisonClient->numero}",
                         'user_id' => auth()->id()
                     ];
-
                 }
-
             }
 
             if ($livraisonClient->depot_dest_id !== null) {
@@ -371,7 +369,6 @@ class LivraisonClientController extends Controller
                     ])
                 ]
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la validation de la livraison:', [
@@ -488,7 +485,6 @@ class LivraisonClientController extends Controller
                 'success' => true,
                 'message' => 'Bon de livraison supprimé avec succès'
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la suppression de la livraison:', [
@@ -505,280 +501,278 @@ class LivraisonClientController extends Controller
     }
 
     public function verifierStock(Request $request)
-{
-    if (!$request->ajax()) {
-        return response()->json(['error' => 'Requête non autorisée'], 403);
-    }
+    {
+        if (!$request->ajax()) {
+            return response()->json(['error' => 'Requête non autorisée'], 403);
+        }
 
-    try {
-        $request->validate([
-            'article_id' => 'required|exists:articles,id',
-            'depot_id' => 'required|exists:depots,id'
-        ]);
+        try {
+            $request->validate([
+                'article_id' => 'required|exists:articles,id',
+                'depot_id' => 'required|exists:depots,id'
+            ]);
 
-        // Vérifier le stock disponible et prix moyen via StockDepot
-        $stock = StockDepot::where([
-            'article_id' => $request->article_id,
-            'depot_id' => $request->depot_id
-        ])->first();
+            // Vérifier le stock disponible et prix moyen via StockDepot
+            $stock = StockDepot::where([
+                'article_id' => $request->article_id,
+                'depot_id' => $request->depot_id
+            ])->first();
 
-        $article = Article::find($request->article_id);
+            $article = Article::find($request->article_id);
 
-        if ($stock) {
+            if ($stock) {
+                return response()->json([
+                    'success' => true,
+                    'quantite' => number_format($stock->quantite_reelle, 3, '.', ''),
+                    'prix_moyen' => number_format($stock->prix_moyen, 2, '.', ''),
+                    'message' => 'Stock vérifié avec succès',
+                    'unite' => $article->uniteMesure->libelle_unite
+                ]);
+            }
+
+            // Si aucun stock n'existe pour cet article dans ce magasin
             return response()->json([
                 'success' => true,
-                'quantite' => number_format($stock->quantite_reelle, 3, '.', ''),
-                'prix_moyen' => number_format($stock->prix_moyen, 2, '.', ''),
-                'message' => 'Stock vérifié avec succès',
+                'quantite' => '0.000',
+                'prix_moyen' => '0.00',
+                'message' => 'Aucun stock existant',
                 'unite' => $article->uniteMesure->libelle_unite
             ]);
-        }
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la vérification du stock:', [
+                'article_id' => $request->article_id,
+                'depot_id' => $request->depot_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-        // Si aucun stock n'existe pour cet article dans ce magasin
-        return response()->json([
-            'success' => true,
-            'quantite' => '0.000',
-            'prix_moyen' => '0.00',
-            'message' => 'Aucun stock existant',
-            'unite' => $article->uniteMesure->libelle_unite
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Erreur lors de la vérification du stock:', [
-            'article_id' => $request->article_id,
-            'depot_id' => $request->depot_id,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la vérification du stock'
-        ], 500);
-    }
-}
-
-public function edit(Request $request, LivraisonClient $livraisonClient)
-{
-    if (!$request->ajax()) {
-        return response()->json(['error' => 'Requête non autorisée'], 403);
-    }
-
-    try {
-        // Vérifier si la livraison est modifiable
-        if ($livraisonClient->statut !== 'brouillon') {
             return response()->json([
                 'success' => false,
-                'message' => 'Cette livraison ne peut plus être modifiée'
-            ], 422);
+                'message' => 'Erreur lors de la vérification du stock'
+            ], 500);
         }
-
-        // Charger les relations nécessaires
-        $livraisonClient->load([
-            'facture.client',
-            'depot',
-            'lignes.article.uniteMesure',
-            'lignes'
-        ]);
-
-        // Préparer les données des lignes
-        $lignes = $livraisonClient->lignes->map(function ($ligne) use ($livraisonClient) {
-            // Calculer la quantité déjà livrée pour cette ligne de facture
-            $quantiteLivree = DB::table('ligne_livraison_clients')
-                ->join('livraison_clients', 'livraison_clients.id', '=', 'ligne_livraison_clients.livraison_client_id')
-                ->where('ligne_livraison_clients.ligne_facture_id', $ligne->ligne_facture_id)
-                ->where('livraison_clients.statut', 'valide')
-                ->where('ligne_livraison_clients.id', '!=', $ligne->id) // Exclure la ligne courante
-                ->sum('ligne_livraison_clients.quantite_base');
-
-            // Récupérer le stock disponible depuis StockDepot
-            $stockDepot = StockDepot::where('article_id', $ligne->article_id)
-                ->where('depot_id', $livraisonClient->depot_id)
-                ->first();
-
-            $stockDisponible = $stockDepot ? $stockDepot->getQuantiteDisponibleAttribute() : 0;
-            $prixUnitaire = $stockDepot ? $stockDepot->prix_moyen : 0;
-
-            return [
-                'id' => $ligne->id,
-                'ligne_facture_id' => $ligne->ligne_facture_id,
-                'article' => [
-                    'id' => $ligne->article->id,
-                    'designation' => $ligne->article->designation,
-                    'reference' => $ligne->article->code_article
-                ],
-                'unite_mesure' => [
-                    'id' => $ligne->article->uniteMesure->id,
-                    'libelle' => $ligne->article->uniteMesure->libelle_unite
-                ],
-                'quantite' => $ligne->quantite,
-                'quantite_facturee' => $ligne->ligneFacture->quantite,
-                'quantite_livree' => $quantiteLivree,
-                'reste_a_livrer' => $ligne->ligneFacture->quantite - $quantiteLivree,
-                'prix_unitaire' => $prixUnitaire,
-                'montant_total' => $ligne->montant_total,
-                'stock_disponible' => $stockDisponible
-            ];
-        });
-
-        // Récupérer la liste des dépôts pour le select
-        $depots = Depot::actif()->orderBy('libelle_depot')->get();
-
-        return response()->json([
-            'success' => true,
-            'livraison' => [
-                'id' => $livraisonClient->id,
-                'numero' => $livraisonClient->numero,
-                'date_livraison' => $livraisonClient->date_livraison->format('d/m/Y'),
-                'depot_id' => $livraisonClient->depot_id,
-                'notes' => $livraisonClient->notes,
-                'facture' => [
-                    'id' => $livraisonClient->facture->id,
-                    'numero' => $livraisonClient->facture->numero,
-                    'date_facture' => $livraisonClient->facture->date_facture->format('d/m/Y'),
-                    'client' => [
-                        'id' => $livraisonClient->facture->client->id,
-                        'raison_sociale' => $livraisonClient->facture->client->raison_sociale
-                    ]
-                ]
-            ],
-            'lignes' => $lignes,
-            'depots' => $depots
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Erreur lors de la récupération des données de la livraison:', [
-            'livraison_id' => $livraisonClient->id,
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la récupération des données de la livraison'
-        ], 500);
     }
-}
 
-public function update(Request $request, LivraisonClient $livraisonClient)
-{
-    try {
-        if ($livraisonClient->statut !== 'brouillon') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cette livraison ne peut plus être modifiée'
-            ], 422);
+    public function edit(Request $request, LivraisonClient $livraisonClient)
+    {
+        if (!$request->ajax()) {
+            return response()->json(['error' => 'Requête non autorisée'], 403);
         }
 
-        $validated = $request->validate([
-            'depot_id' => 'required|exists:depots,id',
-            'lignes' => 'required|array',
-            'lignes.*.ligne_facture_id' => 'required|exists:ligne_facture_clients,id',
-            'lignes.*.article_id' => 'required|exists:articles,id',
-            'lignes.*.quantite' => 'required|numeric|min:0',
-            'notes' => 'nullable|string'
-        ]);
-
-        DB::beginTransaction();
-
-        // Mettre à jour la livraison
-        $livraisonClient->update([
-            'depot_id' => $validated['depot_id'],
-            'notes' => $validated['notes']
-        ]);
-
-        // Supprimer les anciennes lignes
-        $livraisonClient->lignes()->delete();
-
-        // Créer les nouvelles lignes
-        foreach ($validated['lignes'] as $data) {
-            if ($data['quantite'] > 0) {
-                $ligneFacture = LigneFacture::find($data['ligne_facture_id']);
-
-                // Vérifier les quantités par rapport à la facture
-                $quantiteLivree = $ligneFacture->lignesLivraison()
-                    ->whereHas('livraison', function ($query) use ($livraisonClient) {
-                        $query->where('statut', 'valide')
-                            ->where('id', '!=', $livraisonClient->id);
-                    })
-                    ->sum('quantite');
-
-                if ($data['quantite'] > ($ligneFacture->quantite - $quantiteLivree)) {
-                    throw new Exception(
-                        "La quantité saisie dépasse le reste à livrer pour l'article " .
-                        $ligneFacture->article->designation
-                    );
-                }
-
-                // Récupérer l'article avec son unité de mesure
-                $article = Article::with('uniteMesure')->findOrFail($data['article_id']);
-
-                if (!$article->unite_mesure_id) {
-                    throw new Exception("L'article {$article->designation} n'a pas d'unité de mesure définie");
-                }
-
-                // Vérifier le stock disponible
-                $stockDepot = StockDepot::where([
-                    'depot_id' => $validated['depot_id'],
-                    'article_id' => $article->id
-                ])->first();
-
-                if (!$stockDepot || $stockDepot->getQuantiteDisponibleAttribute() < $data['quantite']) {
-                    throw new \Exception("Stock insuffisant pour l'article {$article->designation}");
-                }
-
-                // Créer la ligne de livraison
-                $ligneLivraison = new LigneLivraisonClient();
-                $ligneLivraison->livraison_client_id = $livraisonClient->id;
-                $ligneLivraison->ligne_facture_id = $data['ligne_facture_id'];
-                $ligneLivraison->article_id = $data['article_id'];
-                $ligneLivraison->unite_vente_id = $article->unite_mesure_id; // Utiliser l'unité de l'article
-                $ligneLivraison->quantite = $data['quantite'];
-                $ligneLivraison->quantite_base = $data['quantite']; // Car unité liée à l'article
-                $ligneLivraison->prix_unitaire = $stockDepot->prix_moyen;
-                $ligneLivraison->montant_total = $data['quantite'] * $stockDepot->prix_moyen;
-                $ligneLivraison->save();
+        try {
+            // Vérifier si la livraison est modifiable
+            if ($livraisonClient->statut !== 'brouillon') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cette livraison ne peut plus être modifiée'
+                ], 422);
             }
+
+            // Charger les relations nécessaires
+            $livraisonClient->load([
+                'facture.client',
+                'depot',
+                'lignes.article.uniteMesure',
+                'lignes'
+            ]);
+
+            // Préparer les données des lignes
+            $lignes = $livraisonClient->lignes->map(function ($ligne) use ($livraisonClient) {
+                // Calculer la quantité déjà livrée pour cette ligne de facture
+                $quantiteLivree = DB::table('ligne_livraison_clients')
+                    ->join('livraison_clients', 'livraison_clients.id', '=', 'ligne_livraison_clients.livraison_client_id')
+                    ->where('ligne_livraison_clients.ligne_facture_id', $ligne->ligne_facture_id)
+                    ->where('livraison_clients.statut', 'valide')
+                    ->where('ligne_livraison_clients.id', '!=', $ligne->id) // Exclure la ligne courante
+                    ->sum('ligne_livraison_clients.quantite_base');
+
+                // Récupérer le stock disponible depuis StockDepot
+                $stockDepot = StockDepot::where('article_id', $ligne->article_id)
+                    ->where('depot_id', $livraisonClient->depot_id)
+                    ->first();
+
+                $stockDisponible = $stockDepot ? $stockDepot->getQuantiteDisponibleAttribute() : 0;
+                $prixUnitaire = $stockDepot ? $stockDepot->prix_moyen : 0;
+
+                return [
+                    'id' => $ligne->id,
+                    'ligne_facture_id' => $ligne->ligne_facture_id,
+                    'article' => [
+                        'id' => $ligne->article->id,
+                        'designation' => $ligne->article->designation,
+                        'reference' => $ligne->article->code_article
+                    ],
+                    'unite_mesure' => [
+                        'id' => $ligne->article->uniteMesure->id,
+                        'libelle' => $ligne->article->uniteMesure->libelle_unite
+                    ],
+                    'quantite' => $ligne->quantite,
+                    'quantite_facturee' => $ligne->ligneFacture->quantite,
+                    'quantite_livree' => $quantiteLivree,
+                    'reste_a_livrer' => $ligne->ligneFacture->quantite - $quantiteLivree,
+                    'prix_unitaire' => $prixUnitaire,
+                    'montant_total' => $ligne->montant_total,
+                    'stock_disponible' => $stockDisponible
+                ];
+            });
+
+            // Récupérer la liste des dépôts pour le select
+            $depots = Depot::actif()->orderBy('libelle_depot')->get();
+
+            return response()->json([
+                'success' => true,
+                'livraison' => [
+                    'id' => $livraisonClient->id,
+                    'numero' => $livraisonClient->numero,
+                    'date_livraison' => $livraisonClient->date_livraison->format('d/m/Y'),
+                    'depot_id' => $livraisonClient->depot_id,
+                    'notes' => $livraisonClient->notes,
+                    'facture' => [
+                        'id' => $livraisonClient->facture->id,
+                        'numero' => $livraisonClient->facture->numero,
+                        'date_facture' => $livraisonClient->facture->date_facture->format('d/m/Y'),
+                        'client' => [
+                            'id' => $livraisonClient->facture->client->id,
+                            'raison_sociale' => $livraisonClient->facture->client->raison_sociale
+                        ]
+                    ]
+                ],
+                'lignes' => $lignes,
+                'depots' => $depots
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la récupération des données de la livraison:', [
+                'livraison_id' => $livraisonClient->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des données de la livraison'
+            ], 500);
         }
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Livraison modifiée avec succès',
-            'data' => [
-                'livraison' => $livraisonClient->fresh([
-                    'facture.client',
-                    'lignes.article.uniteMesure',
-                    'lignes.ligneFacture',
-                    'lignes.mouvementStock',
-                    'depot'
-                ])
-            ]
-        ]);
-
-    } catch (ValidationException $e) {
-        DB::rollBack();
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur de validation',
-            'errors' => $e->errors(),
-            'type' => 'warning'
-        ], 422);
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Erreur lors de la modification de la livraison:', [
-            'livraison_id' => $livraisonClient->id,
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-            'type' => 'error'
-        ], 500);
     }
-}
+
+    public function update(Request $request, LivraisonClient $livraisonClient)
+    {
+        try {
+            if ($livraisonClient->statut !== 'brouillon') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cette livraison ne peut plus être modifiée'
+                ], 422);
+            }
+
+            $validated = $request->validate([
+                'depot_id' => 'required|exists:depots,id',
+                'lignes' => 'required|array',
+                'lignes.*.ligne_facture_id' => 'required|exists:ligne_facture_clients,id',
+                'lignes.*.article_id' => 'required|exists:articles,id',
+                'lignes.*.quantite' => 'required|numeric|min:0',
+                'notes' => 'nullable|string'
+            ]);
+
+            DB::beginTransaction();
+
+            // Mettre à jour la livraison
+            $livraisonClient->update([
+                'depot_id' => $validated['depot_id'],
+                'notes' => $validated['notes']
+            ]);
+
+            // Supprimer les anciennes lignes
+            $livraisonClient->lignes()->delete();
+
+            // Créer les nouvelles lignes
+            foreach ($validated['lignes'] as $data) {
+                if ($data['quantite'] > 0) {
+                    $ligneFacture = LigneFacture::find($data['ligne_facture_id']);
+
+                    // Vérifier les quantités par rapport à la facture
+                    $quantiteLivree = $ligneFacture->lignesLivraison()
+                        ->whereHas('livraison', function ($query) use ($livraisonClient) {
+                            $query->where('statut', 'valide')
+                                ->where('id', '!=', $livraisonClient->id);
+                        })
+                        ->sum('quantite');
+
+                    if ($data['quantite'] > ($ligneFacture->quantite - $quantiteLivree)) {
+                        throw new Exception(
+                            "La quantité saisie dépasse le reste à livrer pour l'article " .
+                                $ligneFacture->article->designation
+                        );
+                    }
+
+                    // Récupérer l'article avec son unité de mesure
+                    $article = Article::with('uniteMesure')->findOrFail($data['article_id']);
+
+                    if (!$article->unite_mesure_id) {
+                        throw new Exception("L'article {$article->designation} n'a pas d'unité de mesure définie");
+                    }
+
+                    // Vérifier le stock disponible
+                    $stockDepot = StockDepot::where([
+                        'depot_id' => $validated['depot_id'],
+                        'article_id' => $article->id
+                    ])->first();
+
+                    if (!$stockDepot || $stockDepot->getQuantiteDisponibleAttribute() < $data['quantite']) {
+                        throw new \Exception("Stock insuffisant pour l'article {$article->designation}");
+                    }
+
+                    // Créer la ligne de livraison
+                    $ligneLivraison = new LigneLivraisonClient();
+                    $ligneLivraison->livraison_client_id = $livraisonClient->id;
+                    $ligneLivraison->ligne_facture_id = $data['ligne_facture_id'];
+                    $ligneLivraison->article_id = $data['article_id'];
+                    $ligneLivraison->unite_vente_id = $article->unite_mesure_id; // Utiliser l'unité de l'article
+                    $ligneLivraison->quantite = $data['quantite'];
+                    $ligneLivraison->quantite_base = $data['quantite']; // Car unité liée à l'article
+                    $ligneLivraison->prix_unitaire = $stockDepot->prix_moyen;
+                    $ligneLivraison->montant_total = $data['quantite'] * $stockDepot->prix_moyen;
+                    $ligneLivraison->save();
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Livraison modifiée avec succès',
+                'data' => [
+                    'livraison' => $livraisonClient->fresh([
+                        'facture.client',
+                        'lignes.article.uniteMesure',
+                        'lignes.ligneFacture',
+                        'lignes.mouvementStock',
+                        'depot'
+                    ])
+                ]
+            ]);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors(),
+                'type' => 'warning'
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la modification de la livraison:', [
+                'livraison_id' => $livraisonClient->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'type' => 'error'
+            ], 500);
+        }
+    }
 
     public function show(Request $request, LivraisonClient $livraisonClient)
     {
@@ -878,19 +872,19 @@ public function update(Request $request, LivraisonClient $livraisonClient)
         $tot_ht = 0;
         foreach ($facture->lignes as $ligne) {
             $pdf->Row([
-            utf8_decode($ligne->article->designation),
-            number_format($ligne->quantite, 2, ',', ' '),
-            utf8_decode($ligne->uuniteVente->libelle_unite),
+                utf8_decode($ligne->article->designation),
+                number_format($ligne->quantite, 2, ',', ' '),
+                utf8_decode($ligne->uuniteVente->libelle_unite),
             ]);
             $tot_ht += $ligne->quantite * $ligne->prix_unitaire_ht;
         }
-        
+
         $pdf->SetXY(0, $pdf->GetY());
         $pdf->CheckPageBreak(20);
         $pdf->SetFont('', 'BU', 10);
-        $pdf->Text($pdf->GetX()+10, $pdf->GetY()+10, utf8_decode('LIVREUR'));
-        $pdf->Text($pdf->GetX()+80, $pdf->GetY()+10, utf8_decode('CHAUFFEUR'));
-        $pdf->Text($pdf->GetX()+160, $pdf->GetY()+10, utf8_decode('RECEPTIONNAIRE'));
+        $pdf->Text($pdf->GetX() + 10, $pdf->GetY() + 10, utf8_decode('LIVREUR'));
+        $pdf->Text($pdf->GetX() + 80, $pdf->GetY() + 10, utf8_decode('CHAUFFEUR'));
+        $pdf->Text($pdf->GetX() + 160, $pdf->GetY() + 10, utf8_decode('RECEPTIONNAIRE'));
 
         $pdf->SetFont('', 'B', 8);
         $pdf->Text($pdf->GetX() + 160, $pdf->GetY() + 35, utf8_decode('Cotonou le ' . date('d/m/Y')));

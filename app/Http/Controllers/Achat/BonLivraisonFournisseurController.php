@@ -24,54 +24,54 @@ class BonLivraisonFournisseurController extends Controller
         $this->serviceStockEntree = $serviceStockEntree;
     }
     /**
- * Affiche la liste des bons de livraison fournisseur
- */
-/**
- * Affiche la liste des bons de livraison fournisseur
- */
-public function index()
-{
-    // Récupération des bons de livraison avec leurs relations
-    $livraisons = BonLivraisonFournisseur::with([
-        'fournisseur',
-        'pointDeVente',
-        'vehicule',
-        'chauffeur',
-        'lignes'
-    ])->orderBy('created_at', 'desc')
-        ->paginate(10);
+     * Affiche la liste des bons de livraison fournisseur
+     */
+    /**
+     * Affiche la liste des bons de livraison fournisseur
+     */
+    public function index()
+    {
+        // Récupération des bons de livraison avec leurs relations
+        $livraisons = BonLivraisonFournisseur::with([
+            'fournisseur',
+            'pointDeVente',
+            'vehicule',
+            'chauffeur',
+            'lignes'
+        ])->orderBy('created_at', 'desc')
+            ->get();
 
-    // Récupération des factures validées sans bon de livraison ou partiellement livrées
-    $factures = FactureFournisseur::with('fournisseur')
-        ->whereNotNull('validated_at')
-        ->whereNull('rejected_at')
-        ->where(function($query) {
-            $query->where('statut_livraison', 'NON_LIVRE')
-                  ->orWhere('statut_livraison', 'PARTIELLEMENT_LIVRE');
-        })
-        ->orderBy('date_facture', 'desc')
-        ->get();
+        // Récupération des factures validées sans bon de livraison ou partiellement livrées
+        $factures = FactureFournisseur::with('fournisseur')
+            ->whereNotNull('validated_at')
+            ->whereNull('rejected_at')
+            ->where(function ($query) {
+                $query->where('statut_livraison', 'NON_LIVRE')
+                    ->orWhere('statut_livraison', 'PARTIELLEMENT_LIVRE');
+            })
+            ->orderBy('date_facture', 'desc')
+            ->get();
 
-    // Récupération des véhicules actifs
-    $vehicules = Vehicule::where('statut', true)
-        ->orderBy('matricule')
-        ->get();
+        // Récupération des véhicules actifs
+        $vehicules = Vehicule::where('statut', true)
+            ->orderBy('matricule')
+            ->get();
 
-    // Récupération des chauffeurs actifs
-    $chauffeurs = Chauffeur::where('statut', true)
-        ->orderBy('nom_chauf')
-        ->get();
+        // Récupération des chauffeurs actifs
+        $chauffeurs = Chauffeur::where('statut', true)
+            ->orderBy('nom_chauf')
+            ->get();
 
-    $depots = Depot::where('actif', true)->get();
+        $depots = Depot::where('actif', true)->get();
 
-    return view('pages.achat.livraison-frs.index', compact(
-        'livraisons',
-        'factures',
-        'vehicules',
-        'chauffeurs',
-        'depots'
-    ));
-}
+        return view('pages.achat.livraison-frs.index', compact(
+            'livraisons',
+            'factures',
+            'vehicules',
+            'chauffeurs',
+            'depots'
+        ));
+    }
 
 
     /**
@@ -193,7 +193,6 @@ public function index()
                 'message' => 'Bon de livraison créé avec succès',
                 'data' => $bonLivraison->load(['pointDeVente', 'fournisseur', 'depot', 'vehicule', 'chauffeur', 'lignes'])
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Erreur de validation:', ['errors' => $e->errors()]);
             return response()->json([
@@ -222,60 +221,61 @@ public function index()
         }
     }
 
-   /**
- * Affiche les détails d'une facture
- */
-// public function show(FactureFournisseur $facture)
-// {
-//     try {
-//         // Charger la facture avec ses relations
-//         $facture->load([
-//             'fournisseur',
-//             'lignes.article',
-//             'lignes.uniteMesure',
-//             'bonLivraison.lignes' // Chargement des bons de livraison et leurs lignes
-//         ]);
+    /**
+     * Affiche les détails d'une facture
+     */
+    // public function show(FactureFournisseur $facture)
+    // {
+    //     try {
+    //         // Charger la facture avec ses relations
+    //         $facture->load([
+    //             'fournisseur',
+    //             'lignes.article',
+    //             'lignes.uniteMesure',
+    //             'bonLivraison.lignes' // Chargement des bons de livraison et leurs lignes
+    //         ]);
 
-//         dd($facture);
+    //         dd($facture);
 
-//         // Pour chaque ligne de facture, calculer la quantité déjà livrée
-//         $lignes = $facture->lignes->map(function($ligne) use ($facture) {
-//             // Récupérer toutes les livraisons validées pour cet article
-//             $quantiteLivree = $facture->bonLivraison()
-//                 ->whereNotNull('validated_at')
-//                 ->whereNull('rejected_at')
-//                 ->join('ligne_bon_livraison_fournisseurs', 'bon_livraison_fournisseurs.id', '=', 'ligne_bon_livraison_fournisseurs.livraison_id')
-//                 ->where('ligne_bon_livraison_fournisseurs.article_id', $ligne->article_id)
-//                 ->sum(DB::raw('COALESCE(ligne_bon_livraison_fournisseurs.quantite, 0) + COALESCE(ligne_bon_livraison_fournisseurs.quantite_supplementaire, 0)'));
+    //         // Pour chaque ligne de facture, calculer la quantité déjà livrée
+    //         $lignes = $facture->lignes->map(function($ligne) use ($facture) {
+    //             // Récupérer toutes les livraisons validées pour cet article
+    //             $quantiteLivree = $facture->bonLivraison()
+    //                 ->whereNotNull('validated_at')
+    //                 ->whereNull('rejected_at')
+    //                 ->join('ligne_bon_livraison_fournisseurs', 'bon_livraison_fournisseurs.id', '=', 'ligne_bon_livraison_fournisseurs.livraison_id')
+    //                 ->where('ligne_bon_livraison_fournisseurs.article_id', $ligne->article_id)
+    //                 ->sum(DB::raw('COALESCE(ligne_bon_livraison_fournisseurs.quantite, 0) + COALESCE(ligne_bon_livraison_fournisseurs.quantite_supplementaire, 0)'));
 
-//             // Ajouter la quantité livrée à la ligne
-//             $ligne->quantite_livree = $quantiteLivree;
+    //             // Ajouter la quantité livrée à la ligne
+    //             $ligne->quantite_livree = $quantiteLivree;
 
-//             return $ligne;
-//         });
+    //             return $ligne;
+    //         });
 
-//         return response()->json([
-//             'success' => true,
-//             'data' => array_merge($facture->toArray(), [
-//                 'lignes' => $lignes
-//             ])
-//         ]);
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => array_merge($facture->toArray(), [
+    //                 'lignes' => $lignes
+    //             ])
+    //         ]);
 
-//     } catch (\Exception $e) {
-//         \Log::error('Erreur lors de la récupération des détails de la facture:', [
-//             'facture_id' => $facture->id,
-//             'error' => $e->getMessage(),
-//             'trace' => $e->getTraceAsString()
-//         ]);
+    //     } catch (\Exception $e) {
+    //         \Log::error('Erreur lors de la récupération des détails de la facture:', [
+    //             'facture_id' => $facture->id,
+    //             'error' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString()
+    //         ]);
 
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Une erreur est survenue lors de la récupération des détails de la facture'
-//         ], 500);
-//     }
-// }
-    
-    public function show(BonLivraisonFournisseur $bonLivraison){
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Une erreur est survenue lors de la récupération des détails de la facture'
+    //         ], 500);
+    //     }
+    // }
+
+    public function show(BonLivraisonFournisseur $bonLivraison)
+    {
         $bonLivraison->load([
             'fournisseur',
             'facture.lignes.article',
@@ -387,12 +387,11 @@ public function index()
                 'success' => true,
                 'message' => 'Bon de livraison mis à jour avec succès'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Une erreur est survenue lors de la mise à jour'.$e->getMessage()
+                'message' => 'Une erreur est survenue lors de la mise à jour' . $e->getMessage()
             ], 500);
         }
     }
@@ -436,8 +435,8 @@ public function index()
                 // Mettre à jour les données de la ligne de facture avec la quantité livrée
                 $ligneFact->update([
                     'quantite_livree' => $ligneFact->quantite_livree + ($ligneBonLivraison?->getQuantiteTotale() ?? 0),
-                ]);                
-                
+                ]);
+
                 // Log des prix unitaires
                 \Log::debug("Prix unitaire pour article {$ligneFact->article_id}: {$ligneFact->prix_unitaire}");
             }
@@ -518,12 +517,11 @@ public function index()
                 'message' => 'Bon de livraison validé et stocks mis à jour avec succès',
                 'details' => [
                     'mouvements' => $resultatStock['resultats'],
-                    'conversions' => collect($resultatStock['resultats'])->filter(function($res) {
+                    'conversions' => collect($resultatStock['resultats'])->filter(function ($res) {
                         return isset($res['quantite_origine']) && $res['quantite_origine'] !== $res['quantite_base'];
                     })
                 ]
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             \Log::error('Erreur validation bon livraison:', [
@@ -575,7 +573,6 @@ public function index()
                 'success' => true,
                 'message' => 'Bon de livraison rejeté avec succès'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -608,44 +605,43 @@ public function index()
     }
 
     /**
- * Supprime un bon de livraison
- */
-public function destroy(BonLivraisonFournisseur $bonLivraison)
-{
-    try {
-        if ($bonLivraison->validated_at || $bonLivraison->rejected_at) {
+     * Supprime un bon de livraison
+     */
+    public function destroy(BonLivraisonFournisseur $bonLivraison)
+    {
+        try {
+            if ($bonLivraison->validated_at || $bonLivraison->rejected_at) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce bon de livraison ne peut pas être supprimé car il a déjà été traité'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            // Suppression des lignes associées
+            $bonLivraison->lignes()->delete();
+            // Suppression du bon de livraison
+            $bonLivraison->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bon de livraison supprimé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Erreur suppression bon livraison:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ce bon de livraison ne peut pas être supprimé car il a déjà été traité'
-            ], 422);
+                'message' => 'Une erreur est survenue lors de la suppression'
+            ], 500);
         }
-
-        DB::beginTransaction();
-
-        // Suppression des lignes associées
-        $bonLivraison->lignes()->delete();
-        // Suppression du bon de livraison
-        $bonLivraison->delete();
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Bon de livraison supprimé avec succès'
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error('Erreur suppression bon livraison:', [
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Une erreur est survenue lors de la suppression'
-        ], 500);
     }
-}
 }

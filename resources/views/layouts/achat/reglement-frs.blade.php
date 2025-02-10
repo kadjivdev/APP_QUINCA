@@ -46,7 +46,6 @@
     <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 
-
     <!-- Custom Styles -->
     @stack('styles')
 </head>
@@ -115,9 +114,6 @@
         });
     </script>
 
-    <!-- Custom Scripts -->
-    @stack('scripts')
-
     <!-- DataTables  & Plugins -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
@@ -132,6 +128,8 @@
     <script src="{{asset('plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
     <script src="{{asset('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
 
+    <!-- Custom Scripts -->
+    @stack('scripts')
 </body>
 
 </html>

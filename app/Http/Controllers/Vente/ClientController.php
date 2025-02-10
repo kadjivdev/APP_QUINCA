@@ -58,7 +58,8 @@ class ClientController extends Controller
             $clients->avecCredit();
         }
 
-        $clients = $clients->paginate(10);
+        // $clients = $clients->paginate(10);
+        $clients = $clients->get();
 
         // Statistiques pour le header
         $stats = [

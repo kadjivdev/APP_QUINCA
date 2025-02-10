@@ -110,9 +110,6 @@
         });
     </script>
 
-    <!-- Custom Scripts -->
-    @stack('scripts')
-
     <!-- DataTables  & Plugins -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
@@ -126,6 +123,9 @@
     <script src="{{asset('plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
     <script src="{{asset('plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
     <script src="{{asset('plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+    <!-- Custom Scripts -->
+    @stack('scripts')
+
 </body>
 
 </html>

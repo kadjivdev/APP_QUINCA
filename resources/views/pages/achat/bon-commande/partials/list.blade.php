@@ -338,7 +338,6 @@
         });
     }
 
-
     function fillBonCommandeDetails(data) {
         console.log('Données à afficsssher:', data);
 

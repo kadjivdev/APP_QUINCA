@@ -63,7 +63,8 @@ class FactureFournisseurController extends Controller
         }
 
         // Récupération des factures paginées
-        $factures = $query->latest('date_facture')->paginate(10);
+        // $factures = $query->latest('date_facture')->paginate(10);
+        $factures = $query->latest('date_facture')->get();
 
         // Calcul des statistiques pour le header
         $statsQuery = FactureFournisseur::query();

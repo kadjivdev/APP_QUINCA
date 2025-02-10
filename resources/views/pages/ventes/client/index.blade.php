@@ -38,7 +38,6 @@
 @endpush
 
 @section('content')
-
     <div class="content">
         @include('pages.ventes.client.partials.header')
         <div class="row g-3 list mt-3" id="stockEntriesList">
@@ -58,6 +57,4 @@
 @include('pages.ventes.client.partials.js-edit-modal')
 @include('pages.ventes.client.partials.js-delete-modal')
 @include('pages.ventes.client.partials.js-import-modal')
-
-
 @endpush

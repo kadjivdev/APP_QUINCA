@@ -34,7 +34,7 @@ use League\CommonMark\Util\SpecReader;
 |
 */
 
-// Route::prefix("quinkadjiv_refont/public")->group(function () {
+Route::prefix("quinkadjiv_refont/public")->group(function () {
     // Routes publiques
     Route::middleware('guest')->group(function () {
         Route::get('/login-portail', [UserController::class, 'showLogin'])->name('login-portail');
@@ -996,4 +996,4 @@ use League\CommonMark\Util\SpecReader;
                 ->name('api.reglements.details');
         });
     });
-// });
+});

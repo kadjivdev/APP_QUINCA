@@ -46,7 +46,8 @@ class AcompteClientController extends Controller
             $acomptes->search($request->search);
         }
 
-        $acomptes = $acomptes->paginate(10);
+        // $acomptes = $acomptes->paginate(10);
+        $acomptes = $acomptes->get();
 
         // Statistiques
         $stats = [
@@ -126,67 +127,67 @@ class AcompteClientController extends Controller
      */
     public function store(Request $request)
     {
-       try {
-           // Validation des données
-           $validated = $request->validate(AcompteClient::rules(), [
-               'date.required' => 'La date est obligatoire',
-               'date.date' => 'La date n\'est pas valide',
-               'client_id.required' => 'Le client est obligatoire',
-               'client_id.exists' => 'Le client sélectionné n\'existe pas',
-               'type_paiement.required' => 'Le type de paiement est obligatoire',
-               'type_paiement.in' => 'Le type de paiement sélectionné n\'est pas valide',
-               'montant.required' => 'Le montant est obligatoire',
-               'montant.numeric' => 'Le montant doit être un nombre',
-               'montant.min' => 'Le montant doit être supérieur à 0'
-           ]);
+        try {
+            // Validation des données
+            $validated = $request->validate(AcompteClient::rules(), [
+                'date.required' => 'La date est obligatoire',
+                'date.date' => 'La date n\'est pas valide',
+                'client_id.required' => 'Le client est obligatoire',
+                'client_id.exists' => 'Le client sélectionné n\'existe pas',
+                'type_paiement.required' => 'Le type de paiement est obligatoire',
+                'type_paiement.in' => 'Le type de paiement sélectionné n\'est pas valide',
+                'montant.required' => 'Le montant est obligatoire',
+                'montant.numeric' => 'Le montant doit être un nombre',
+                'montant.min' => 'Le montant doit être supérieur à 0'
+            ]);
 
-           DB::beginTransaction();
+            DB::beginTransaction();
 
-           // Vérifier si le client existe et est actif
-           $client = Client::findOrFail($validated['client_id']);
-           if (!$client->statut) {
-               throw new Exception('Ce client est inactif');
-           }
+            // Vérifier si le client existe et est actif
+            $client = Client::findOrFail($validated['client_id']);
+            if (!$client->statut) {
+                throw new Exception('Ce client est inactif');
+            }
 
-           // Ajouter le statut par défaut aux données validées
-           $validated['statut'] = AcompteClient::STATUT_EN_ATTENTE;
+            // Ajouter le statut par défaut aux données validées
+            $validated['statut'] = AcompteClient::STATUT_EN_ATTENTE;
 
-           $acompte = new AcompteClient();
-           $acompte->fill($validated);
-           $acompte->created_by = auth()->id();
-           $acompte->point_de_vente_id = auth()->user()->point_de_vente_id;
-           $acompte->save();
+            $acompte = new AcompteClient();
+            $acompte->fill($validated);
+            $acompte->created_by = auth()->id();
+            $acompte->point_de_vente_id = auth()->user()->point_de_vente_id;
+            $acompte->save();
 
-           DB::commit();
+            DB::commit();
 
-           return response()->json([
-               'success' => true,
-               'message' => 'Acompte enregistré avec succès',
-               'data' => [
-                   'acompte' => $acompte->load(['client', 'createdBy'])
-               ]
-           ]);
-       } catch (ValidationException $e) {
-           DB::rollBack();
-           return response()->json([
-               'success' => false,
-               'message' => 'Erreur de validation',
-               'errors' => $e->errors(),
-               'type' => 'warning'
-           ], 422);
-       } catch (\Exception $e) {
-           DB::rollBack();
-           Log::error('Erreur lors de l\'enregistrement de l\'acompte:', [
-               'message' => $e->getMessage(),
-               'trace' => $e->getTraceAsString()
-           ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Acompte enregistré avec succès',
+                'data' => [
+                    'acompte' => $acompte->load(['client', 'createdBy'])
+                ]
+            ]);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors(),
+                'type' => 'warning'
+            ], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de l\'enregistrement de l\'acompte:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-           return response()->json([
-               'success' => false,
-               'message' => $e->getMessage(),
-               'type' => 'error'
-           ], 500);
-       }
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'type' => 'error'
+            ], 500);
+        }
     }
 
     /**
@@ -272,152 +273,150 @@ class AcompteClientController extends Controller
     }
 
     /**
- * Met à jour un acompte
- */
-public function update(Request $request, AcompteClient $acompte)
-{
-    try {
-        // Validation des données
-        $validated = $request->validate(AcompteClient::rules(), [
-            'date.required' => 'La date est obligatoire',
-            'date.date' => 'La date n\'est pas valide',
-            'client_id.required' => 'Le client est obligatoire',
-            'client_id.exists' => 'Le client sélectionné n\'existe pas',
-            'type_paiement.required' => 'Le type de paiement est obligatoire',
-            'type_paiement.in' => 'Le type de paiement sélectionné n\'est pas valide',
-            'montant.required' => 'Le montant est obligatoire',
-            'montant.numeric' => 'Le montant doit être un nombre'
-        ]);
+     * Met à jour un acompte
+     */
+    public function update(Request $request, AcompteClient $acompte)
+    {
+        try {
+            // Validation des données
+            $validated = $request->validate(AcompteClient::rules(), [
+                'date.required' => 'La date est obligatoire',
+                'date.date' => 'La date n\'est pas valide',
+                'client_id.required' => 'Le client est obligatoire',
+                'client_id.exists' => 'Le client sélectionné n\'existe pas',
+                'type_paiement.required' => 'Le type de paiement est obligatoire',
+                'type_paiement.in' => 'Le type de paiement sélectionné n\'est pas valide',
+                'montant.required' => 'Le montant est obligatoire',
+                'montant.numeric' => 'Le montant doit être un nombre'
+            ]);
 
-        DB::beginTransaction();
+            DB::beginTransaction();
 
-        // Récupérer les clients pour le select
-        $clients = Client::where('point_de_vente_id', Auth()->user()->point_de_vente_id)
-            ->orderBy('raison_sociale')
-            ->get(['id', 'raison_sociale', 'code_client']);
+            // Récupérer les clients pour le select
+            $clients = Client::where('point_de_vente_id', Auth()->user()->point_de_vente_id)
+                ->orderBy('raison_sociale')
+                ->get(['id', 'raison_sociale', 'code_client']);
 
-        $acompte->update($validated);
+            $acompte->update($validated);
 
-        DB::commit();
+            DB::commit();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Acompte modifié avec succès',
-            'data' => [
-                'acompte' => $acompte->load(['client', 'createdBy']),
-                'clients' => $clients
-            ]
-        ]);
-    } catch (Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 422);
+            return response()->json([
+                'success' => true,
+                'message' => 'Acompte modifié avec succès',
+                'data' => [
+                    'acompte' => $acompte->load(['client', 'createdBy']),
+                    'clients' => $clients
+                ]
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
-}
 
-/**
- * Valider un acompte
- */
-public function validate_acompte(Request $request, AcompteClient $acompte)
-{
-    try {
-        if (!$request->ajax()) {
-            return response()->json(['error' => 'Requête non autorisée'], 403);
+    /**
+     * Valider un acompte
+     */
+    public function validate_acompte(Request $request, AcompteClient $acompte)
+    {
+        try {
+            if (!$request->ajax()) {
+                return response()->json(['error' => 'Requête non autorisée'], 403);
+            }
+
+            // Vérifier si l'acompte peut être validé
+            if (!$acompte->isEnAttente()) {
+                throw new Exception('Cet acompte ne peut pas être validé car il n\'est pas en attente');
+            }
+
+            DB::beginTransaction();
+
+            // Valider l'acompte
+            $acompte->update([
+                'statut' => AcompteClient::STATUT_VALIDE,
+                'validated_at' => now(),
+                'validated_by' => auth()->id()
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Acompte validé avec succès',
+                'data' => [
+                    'acompte' => $acompte->load(['client', 'createdBy', 'validatedBy'])
+                ]
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la validation de l\'acompte:', [
+                'acompte_id' => $acompte->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
         }
-
-        // Vérifier si l'acompte peut être validé
-        if (!$acompte->isEnAttente()) {
-            throw new Exception('Cet acompte ne peut pas être validé car il n\'est pas en attente');
-        }
-
-        DB::beginTransaction();
-
-        // Valider l'acompte
-        $acompte->update([
-            'statut' => AcompteClient::STATUT_VALIDE,
-            'validated_at' => now(),
-            'validated_by' => auth()->id()
-        ]);
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Acompte validé avec succès',
-            'data' => [
-                'acompte' => $acompte->load(['client', 'createdBy', 'validatedBy'])
-            ]
-        ]);
-
-    } catch (Exception $e) {
-        DB::rollBack();
-        Log::error('Erreur lors de la validation de l\'acompte:', [
-            'acompte_id' => $acompte->id,
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 422);
     }
-}
 
-/**
- * Rejeter un acompte
- */
-public function reject(Request $request, AcompteClient $acompte)
-{
-    try {
-        if (!$request->ajax()) {
-            return response()->json(['error' => 'Requête non autorisée'], 403);
+    /**
+     * Rejeter un acompte
+     */
+    public function reject(Request $request, AcompteClient $acompte)
+    {
+        try {
+            if (!$request->ajax()) {
+                return response()->json(['error' => 'Requête non autorisée'], 403);
+            }
+
+            // Validation de la raison du rejet
+            $validated = $request->validate([
+                'motif_rejet' => 'required|string|max:255'
+            ]);
+
+            // Vérifier si l'acompte peut être rejeté
+            if (!$acompte->isEnAttente()) {
+                throw new Exception('Cet acompte ne peut pas être rejeté car il n\'est pas en attente');
+            }
+
+            DB::beginTransaction();
+
+            // Rejeter l'acompte
+            $acompte->update([
+                'statut' => AcompteClient::STATUT_REJETE,
+                'observation' => $validated['motif_rejet'],
+                'validated_at' => now(),
+                'validated_by' => auth()->id()
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Acompte rejeté avec succès',
+                'data' => [
+                    'acompte' => $acompte->load(['client', 'createdBy', 'validatedBy'])
+                ]
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors du rejet de l\'acompte:', [
+                'acompte_id' => $acompte->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
         }
-
-        // Validation de la raison du rejet
-        $validated = $request->validate([
-            'motif_rejet' => 'required|string|max:255'
-        ]);
-
-        // Vérifier si l'acompte peut être rejeté
-        if (!$acompte->isEnAttente()) {
-            throw new Exception('Cet acompte ne peut pas être rejeté car il n\'est pas en attente');
-        }
-
-        DB::beginTransaction();
-
-        // Rejeter l'acompte
-        $acompte->update([
-            'statut' => AcompteClient::STATUT_REJETE,
-            'observation' => $validated['motif_rejet'],
-            'validated_at' => now(),
-            'validated_by' => auth()->id()
-        ]);
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Acompte rejeté avec succès',
-            'data' => [
-                'acompte' => $acompte->load(['client', 'createdBy', 'validatedBy'])
-            ]
-        ]);
-
-    } catch (Exception $e) {
-        DB::rollBack();
-        Log::error('Erreur lors du rejet de l\'acompte:', [
-            'acompte_id' => $acompte->id,
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 422);
     }
-}
 }

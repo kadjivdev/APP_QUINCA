@@ -174,7 +174,7 @@
 
 {{-- Header Content --}}
 <div class="page-header">
-    <div class="container-fluid p-0">
+    <div class="container-fluid p-2">
         <div class="row align-items-center">
             <div class="col-auto me-auto">
                 <div class="d-flex align-items-center gap-3">
@@ -191,7 +191,7 @@
                             <span class="badge"
                                 style="background-color: rgba(255, 165, 0, 0.1); color: var(--kadjiv-primary)">
                                 <i class="fas fa-clipboard-list fs-xs me-1"></i>
-                                {{ $livraisons->total() }} bon(s)
+                                {{ count($livraisons)}} bon(s)
                             </span>
                         </div>
                     </div>
@@ -247,7 +247,7 @@
                         </div>
                         <div class="ms-3">
                             <div class="stat-label">Total Livraisons</div>
-                            <div class="stat-value">{{ $livraisons->total() }}</div>
+                            <div class="stat-value">{{ count($livraisons) }}</div>
                             <div class="stat-trend" style="color: var(--kadjiv-primary)">
                                 <i class="fas fa-calendar"></i> Global
                             </div>
@@ -282,7 +282,8 @@
                         <div class="ms-3">
                             <div class="stat-label">En Attente</div>
                             <div class="stat-value">
-                                {{ $livraisons->whereNull('validated_at')->whereNull('rejected_at')->count() }}</div>
+                                {{ $livraisons->whereNull('validated_at')->whereNull('rejected_at')->count() }}
+                            </div>
                             <div class="stat-trend" style="color: var(--kadjiv-primary)">
                                 <i class="fas fa-hourglass-half"></i> À traiter
                             </div>

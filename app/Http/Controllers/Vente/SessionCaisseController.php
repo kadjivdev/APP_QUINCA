@@ -23,7 +23,8 @@ class SessionCaisseController extends Controller
     // Récupérer les sessions avec la pagination
     $sessions = SessionCaisse::with(['factures', 'caisse', 'utilisateur'])
         ->orderBy('date_ouverture', 'desc')
-        ->paginate(10);
+        // ->paginate(10);
+        ->get();
 
     // Récupérer l'utilisateur connecté
     $user = auth()->user();

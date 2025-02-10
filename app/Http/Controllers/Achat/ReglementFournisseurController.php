@@ -19,55 +19,68 @@ class ReglementFournisseurController extends Controller
 
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
 
-       // Query de base avec relations
-       $query = ReglementFournisseur::with(['facture.fournisseur', 'creator'])
-           ->orderBy('created_at', 'desc');
+        // Query de base avec relations
+        $query = ReglementFournisseur::with(['facture.fournisseur', 'creator'])
+            ->orderBy('created_at', 'desc');
 
-       // Filtres
-       if ($request->has('search')) {
-           $query->search($request->search);
-       }
+        // Filtres
+        if ($request->has('search')) {
+            $query->search($request->search);
+        }
 
-       if ($request->has('period')) {
-           switch ($request->period) {
-               case 'today':
-                   $query->whereDate('date_reglement', Carbon::today());
-                   break;
-               case 'week':
-                   $query->whereBetween('date_reglement', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-                   break;
-               case 'month':
-                   $query->whereYear('date_reglement', Carbon::now()->year)
-                         ->whereMonth('date_reglement', Carbon::now()->month);
-                   break;
-           }
-       }
+        if ($request->has('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $query->whereDate('date_reglement', Carbon::today());
+                    break;
+                case 'week':
+                    $query->whereBetween('date_reglement', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                    break;
+                case 'month':
+                    $query->whereYear('date_reglement', Carbon::now()->year)
+                        ->whereMonth('date_reglement', Carbon::now()->month);
+                    break;
+            }
+        }
 
-       if ($request->has('mode')) {
-           $query->where('mode_reglement', $request->mode);
-       }
+        if ($request->has('mode')) {
+            $query->where('mode_reglement', $request->mode);
+        }
 
-       // Récupération des règlements paginés
-       $reglements = $query->paginate(15);
+        // Récupération des règlements paginés
+        // $reglements = $query->paginate(15);
+        $reglements = $query->get();
 
-       // Statistiques
-       $stats = [
-           'date' => Carbon::now()->format('d/m/Y'),
-           'nombreReglements' => ReglementFournisseur::whereNotNull('validated_at')
-               ->whereYear('date_reglement', Carbon::now()->year)
-               ->whereMonth('date_reglement', Carbon::now()->month)
-               ->count(),
-           'montantTotal' => ReglementFournisseur::whereNotNull('validated_at')
-               ->sum('montant_reglement'),
-           'facturesPayees' => FactureFournisseur::where('statut_paiement', 'PAYE')->count()
-       ];
+        // Statistiques
+        $stats = [
+            'date' => Carbon::now()->format('d/m/Y'),
+            'nombreReglements' => ReglementFournisseur::whereNotNull('validated_at')
+                ->whereYear('date_reglement', Carbon::now()->year)
+                ->whereMonth('date_reglement', Carbon::now()->month)
+                ->count(),
+            'montantTotal' => ReglementFournisseur::whereNotNull('validated_at')
+                ->sum('montant_reglement'),
+            'facturesPayees' => FactureFournisseur::where('statut_paiement', 'PAYE')->count()
+        ];
 
-       // Récupération des factures non ou partiellement payées
-       $factures = FactureFournisseur::whereIn('statut_paiement', ['NON_PAYE', 'PARTIELLEMENT_PAYE'])
-           ->with('fournisseur', 'reglements')
-           ->get();
+        // Récupération des factures non ou partiellement payées
+        $factures = FactureFournisseur::whereIn('statut_paiement', ['NON_PAYE', 'PARTIELLEMENT_PAYE'])
+            ->with('fournisseur', 'reglements')
+            ->get();
 
-       if ($request->ajax()) {
+        if ($request->ajax()) {
+            return view('pages.achat.reglement-frs.index', [
+                'date' => $date,
+                'reglements' => $reglements,
+                'nombreReglements' => $stats['nombreReglements'],
+                'montantTotal' => $stats['montantTotal'],
+                'facturesPayees' => $stats['facturesPayees'],
+                'factures' => $factures
+            ]);
+
+            //    return view('achat.reglements.liste-partielle', compact('reglements', 'stats'))->render();
+        }
+
         return view('pages.achat.reglement-frs.index', [
             'date' => $date,
             'reglements' => $reglements,
@@ -76,18 +89,6 @@ class ReglementFournisseurController extends Controller
             'facturesPayees' => $stats['facturesPayees'],
             'factures' => $factures
         ]);
-
-        //    return view('achat.reglements.liste-partielle', compact('reglements', 'stats'))->render();
-       }
-
-       return view('pages.achat.reglement-frs.index', [
-        'date' => $date,
-        'reglements' => $reglements,
-        'nombreReglements' => $stats['nombreReglements'],
-        'montantTotal' => $stats['montantTotal'],
-        'facturesPayees' => $stats['facturesPayees'],
-        'factures' => $factures
-    ]);
         // return view('pages.achat.reglement-frs.index', compact('date','reglements', 'stats', 'factures'));
     }
 
@@ -112,15 +113,13 @@ class ReglementFournisseurController extends Controller
                 'message' => 'Règlement créé avec succès',
                 'data' => $reglement
             ]);
-
         } catch (ValidationException $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur de validation'.$e->getMessage(),
+                'message' => 'Erreur de validation' . $e->getMessage(),
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création du règlement : ' . $e->getMessage());
@@ -136,12 +135,12 @@ class ReglementFournisseurController extends Controller
     {
         $reglement->load(['facture.fournisseur', 'creator', 'validator']);
         $facture = FactureFournisseur::whereIn('statut_paiement', ['NON_PAYE', 'PARTIELLEMENT_PAYE'])
-           ->where('id', $reglement->facture_fournisseur_id)
-           ->with(['reglements' => function ($query) {
+            ->where('id', $reglement->facture_fournisseur_id)
+            ->with(['reglements' => function ($query) {
                 $query->whereNotNull('validated_at'); // Filtrer uniquement les règlements valides
             }])
-           ->first();
-        
+            ->first();
+
         $montantRestant = $facture?->montant_ttc - $facture?->reglements->sum('montant_reglement');
 
         return response()->json([
@@ -173,7 +172,6 @@ class ReglementFournisseurController extends Controller
                 'message' => 'Règlement modifié avec succès',
                 'data' => $reglement
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la modification du règlement : ' . $e->getMessage());
@@ -200,7 +198,6 @@ class ReglementFournisseurController extends Controller
                 'success' => true,
                 'message' => 'Règlement supprimé avec succès'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -226,7 +223,6 @@ class ReglementFournisseurController extends Controller
                 'success' => true,
                 'message' => 'Le règlement a été validé avec succès'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la validation du règlement : ' . $e->getMessage());

@@ -3,13 +3,12 @@
 @section('content')
     <div class="content">
 
-
         {{-- Liste des livraisons --}}
-        <div class="row g-3 list ">
+        @include('pages.achat.livraison-frs.partials.header')
+        <div class="row g-3 list">
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="table-responsive">
-                        @include('pages.achat.livraison-frs.partials.header')
                         @include('pages.achat.livraison-frs.partials.list')
                     </div>
                 </div>

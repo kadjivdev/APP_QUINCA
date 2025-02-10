@@ -2,9 +2,9 @@
 <div class="row g-3">
     {{-- Table des factures --}}
     <div class="col-12">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm p-3">
             <div class="table-responsive">
-                <table class="example1 table table-hover align-middle mb-0" id="facturesTable">
+                <table id="example1" class="table table-hover align-middle mb-0" id="facturesTable">
                     <thead class="bg-light">
                         <tr>
                             <th class="border-bottom-0 text-nowrap py-3">Code</th>
@@ -159,11 +159,6 @@
                     </tbody>
                 </table>
             </div>
-            <!-- @if ($factures->hasPages())
-            <div class="card-footer bg-white border-0 pt-0">
-                {{ $factures->links() }}
-            </div>
-            @endif -->
         </div>
     </div>
 </div>
@@ -258,11 +253,9 @@
     // Autres fonctions JS (showFacture, deleteFacture, etc.)
     // ... (similaires à celles des bons de commande)
 </script>
-@endpush
 
-@push('scripts')
 <script>
-    $(".example1").DataTable({
+    $("#example1").DataTable({
         "responsive": true,
         "lengthChange": false,
         "autoWidth": false,
@@ -472,6 +465,6 @@
                 }
             }
         },
-    }).buttons().container().appendTo('.example1_wrapper .col-md-6:eq(0)');
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 </script>
 @endpush

@@ -42,7 +42,6 @@
     <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
 
-
     <script>
         var apiUrl = "{{ config('app.url_ajax') }}"
     </script>
