@@ -71,10 +71,25 @@
                                             </div>
                                             <div class="invalid-feedback">Le fournisseur est requis</div>
                                         </div>
+
+                                        <!-- <div class="col-4">
+                                            <div class="input-group">
+                                                <label class="form-label fw-medium required my-1" for="#">Article</label>
+                                                <select class="form-select select2" name="" required>
+                                                    <option value="">Selectionner un article</option>
+                                                    @foreach ($articles as $article)
+                                                    <option value="{{ $article->id }}">
+                                                        {{ $article->code_article }} - {{ $article->designation }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
+
 
                         {{-- Section articles --}}
                         <div class="col-12">
@@ -142,7 +157,7 @@
         <td class="p-2">
             <div class="input-group">
                 <label class="form-label fw-medium required my-1" for="">Article</label>
-                <select class="form-select select2-articles" name="articles[]" id="" required>
+                <select class="form-select  select2-articles" name="articles[]" id="" required>
                     <option value="">Selectionner un article</option>
                     @foreach ($articles as $article)
                     <option value="{{ $article->id }}">
@@ -187,36 +202,9 @@
                 width: '100%',
                 dropdownParent: $('#addProgrammationModal')
             });
-
-            $('.select2-articles').select2({
-                theme: 'bootstrap-5',
-                width: '100%',
-                // dropdownParent: $('#addProgrammationModal')
-            });
-
         } catch (e) {
             console.error('Erreur initialisation Select2:', e);
         }
-
-        // // SEARCH FOURNISSEUR
-        // var fournisseurs = document.querySelectorAll('.fournisseur');
-        // document.getElementById('fournisseurSearch').addEventListener('keyup', function(e) {
-        //     var text = this.value.toLowerCase();
-        //     Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
-        //         // On a bien trouvé les termes de recherche.
-        //         if (fournisseur.innerHTML.toLowerCase().indexOf(text) > -1) {
-        //             fournisseur.style.display = 'block';
-        //         } else {
-        //             fournisseur.style.display = 'none';
-        //         }
-        //     });
-        // })
-        // if (document.getElementById('fournisseurSearch').trim() == '') {
-        //     Array.prototype.forEach.call(fournisseurs, function(fournisseur) {
-        //         // On a bien trouvé les termes de recherche.
-        //         fournisseur.style.display = 'block';
-        //     });
-        // }
 
         // Charger les articles quand le fournisseur change
         $('#_fournisseurSelect').on('change', function() {
@@ -245,10 +233,10 @@
             $(this).addClass('was-validated');
         });
     });
-
+    
     function loadArticles(fournisseurId) {
         $.ajax({
-            url: `${apiUrl}/achat/programmation/articles/${fournisseurId}`,
+            url: `${apiUrl}/achat/programmations/fournisseurs/${fournisseurId}/articles`,
             method: 'GET',
             success: function(response) {
                 const articles = response;
@@ -258,7 +246,7 @@
     }
 
     function updateArticlesOptions(articles) {
-        let options = '<option value="">Sélectionner un article</option>';
+        let options = '<option value="">Sélectionner un article ...</option>';
         articles.forEach(article => {
             options += `<option value="${article.id}" data-unites='${JSON.stringify(article.unites)}'>
                     ${article.designation}

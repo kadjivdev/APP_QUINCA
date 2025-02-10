@@ -476,9 +476,6 @@ use League\CommonMark\Util\SpecReader;
                     ->name('livraisons.article.prix');
             });
 
-
-
-
             // Routes des rapports
             Route::prefix('reports-fact')->group(function () {
                 Route::get('/factures-stats', [FactureFournisseurController::class, 'factureStats'])->name('factures.stats');
@@ -610,7 +607,7 @@ use League\CommonMark\Util\SpecReader;
                 // Liste des factures
                 Route::get('/', [FactureClientController::class, 'index'])->name('vente.facture.index');
 
-                Route::get('/', [FactureClientController::class, 'index'])->name('vente.facture.index');
+                // Route::get('/', [FactureClientController::class, 'index'])->name('vente.facture.index');
 
                 // Créer une nouvelle facture
                 Route::post('/store', [FactureClientController::class, 'store'])->name('vente.facture.store');
@@ -859,6 +856,10 @@ use League\CommonMark\Util\SpecReader;
 
             Route::get('/ventes-journalier', [RapportVenteController::class, 'ventesJournalieres'])
                 ->name('rapports.vente-journaliere');
+
+            // LES ENREGISTREMENTS NON VALIDES
+            Route::get('/enregistrement-non-valides', [RapportVenteController::class, '_enregistrementsNonValides'])
+                ->name('rapports._enregistrementsNonValides');
 
             Route::post('rapports/stock/change-depot', 'RapportController@changeDepot')->name('rapports.stock.changeDepot');
             Route::get('/stock-alert', [StockAlertController::class, 'index'])

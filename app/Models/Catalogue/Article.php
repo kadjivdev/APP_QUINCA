@@ -72,7 +72,7 @@ class Article extends Model
         'emplacement_stock',
         'statut',
         'photo',
-        'unite_mesure_id'
+        'unite_mesure_id',
     ];
 
     /**

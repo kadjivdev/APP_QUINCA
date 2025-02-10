@@ -118,6 +118,7 @@
                                             <i class="fas fa-box me-2"></i>Articles
                                         </h6>
                                     </div>
+                                    
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table class="table table-bordered">

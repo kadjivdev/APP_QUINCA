@@ -415,10 +415,10 @@
                     document.getElementById('lignesContainerMod').appendChild(clone);
 
                     // Initialisez Select2 pour le champ des articles
-                    $(selectArticles).select2({
-                        theme: 'bootstrap-5',
-                        width: '100%'
-                    });
+                    // $(selectArticles).select2({
+                    //     theme: 'bootstrap-5',
+                    //     width: '100%'
+                    // });
                 });                
                 
                 editForm.querySelector('[name="commentaire"]').value = result.data.commentaire;

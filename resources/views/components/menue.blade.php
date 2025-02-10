@@ -185,7 +185,7 @@
                         </a></li>
                     @endcan
 
-                     <li><a class="dropdown-item" href="{{ route('vente.acomptes.index') }}">
+                    <li><a class="dropdown-item" href="{{ route('vente.acomptes.index') }}">
                             <div class="dropdown-item-wrapper">Accomptes Clients</div>
                         </a></li>
 
@@ -259,7 +259,7 @@
 
             <!-- RAPPORTS ACHATS -->
             @canany(['rapports.pre-commandes.view', 'rapports.bon-commandes.view', 'rapports.facture-achats.view',
-                    'rapports.livraison-achats.view', 'rapports.reglement-achats.view', 'rapports.compte-fournisseur.view'])
+            'rapports.livraison-achats.view', 'rapports.reglement-achats.view', 'rapports.compte-fournisseur.view'])
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle lh-1" href="#" role="button" data-bs-toggle="dropdown"
                     data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
@@ -307,8 +307,8 @@
 
             <!-- RAPPORTS VENTES -->
             @canany(['rapports.ventes-articles.view', 'rapports.ventes-familles.view', 'rapports.ventes-clients.view',
-                    'rapports.vente-journaliere.view', 'rapports.creances.view', 'vente.sessions.rapport.view',
-                    'rapports.compte-client.view'])
+            'rapports.vente-journaliere.view', 'rapports.creances.view', 'vente.sessions.rapport.view',
+            'rapports.compte-client.view'])
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle lh-1" href="#" role="button" data-bs-toggle="dropdown"
                     data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
@@ -336,6 +336,11 @@
                     @can('rapports.vente-journaliere.view')
                     <li><a class="dropdown-item" href="{{ route('rapports.vente-journaliere') }}">
                             <div class="dropdown-item-wrapper">Ventes Journalière</div>
+                        </a></li>
+
+                    <!-- ENREGISTREMENTS (facturation vente clients dans le panel ventes) NON VALIDES -->
+                    <li><a class="dropdown-item" href="{{ route('rapports._enregistrementsNonValides') }}">
+                            <div class="dropdown-item-wrapper">Tous les enregistrements</div>
                         </a></li>
                     @endcan
 
@@ -433,78 +438,78 @@
 </nav>
 
 @push('styles')
-    <style>
-        .navbar-top {
-            background-color: #fff;
-            border-bottom: 1px solid #e3e6ed;
-        }
+<style>
+    .navbar-top {
+        background-color: #fff;
+        border-bottom: 1px solid #e3e6ed;
+    }
 
-        .navbar-slim {
-            min-height: 44px;
-            padding: 0.5rem 1rem;
-        }
+    .navbar-slim {
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+    }
 
-        .navbar-brand {
-            font-weight: 700;
-        }
+    .navbar-brand {
+        font-weight: 700;
+    }
 
-        .navbar-nav-top .nav-item {
-            position: relative;
-        }
+    .navbar-nav-top .nav-item {
+        position: relative;
+    }
 
-        .navbar-nav-top .nav-link {
-            padding: 0.5rem 1rem;
-            color: #5e6e82;
+    .navbar-nav-top .nav-link {
+        padding: 0.5rem 1rem;
+        color: #5e6e82;
+    }
+
+    .dropdown-menu {
+        border: 1px solid #e3e6ed;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15);
+        min-width: 12rem;
+    }
+
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        color: #5e6e82;
+    }
+
+    .dropdown-item-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown-indicator-icon {
+        margin-right: 0.5rem;
+    }
+
+    .navbar-dropdown-caret {
+        margin-top: 0.125rem;
+    }
+
+    .dropdown-submenu {
+        position: relative;
+    }
+
+    .dropdown-submenu .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -1px;
+    }
+
+    @media (max-width: 991.98px) {
+        .navbar-collapse {
+            background: #fff;
+            padding: 1rem;
         }
 
         .dropdown-menu {
-            border: 1px solid #e3e6ed;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15);
-            min-width: 12rem;
-        }
-
-        .dropdown-item {
-            padding: 0.5rem 1rem;
-            color: #5e6e82;
-        }
-
-        .dropdown-item-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
-        .dropdown-indicator-icon {
-            margin-right: 0.5rem;
-        }
-
-        .navbar-dropdown-caret {
-            margin-top: 0.125rem;
-        }
-
-        .dropdown-submenu {
-            position: relative;
+            border: none;
+            box-shadow: none;
         }
 
         .dropdown-submenu .dropdown-menu {
-            top: 0;
-            left: 100%;
-            margin-top: -1px;
+            margin-left: 1rem;
         }
-
-        @media (max-width: 991.98px) {
-            .navbar-collapse {
-                background: #fff;
-                padding: 1rem;
-            }
-
-            .dropdown-menu {
-                border: none;
-                box-shadow: none;
-            }
-
-            .dropdown-submenu .dropdown-menu {
-                margin-left: 1rem;
-            }
-        }
-    </style>
+    }
+</style>
 @endpush
