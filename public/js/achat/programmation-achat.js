@@ -126,11 +126,11 @@ class ProgrammationAchat {
         $('#lignesContainer').append($newLine);
 
         // Initialiser Select2 sur la nouvelle ligne
-        const $select = $('#lignesContainer tr:last').find('.select2-articles');
-        $select.select2({
+        
+        $('.select2-articles').select2({
             theme: 'bootstrap-5',
             width: '100%',
-            placeholder: 'Sélectionner un article'
+            dropdownParent: $('#addProgrammationModal')
         });
 
         // Pré-remplir les options d'articles si disponibles

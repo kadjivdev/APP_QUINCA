@@ -9,7 +9,8 @@
             </button>
         </div>
     </div>
-    <div class="card-body p-0">
+    <br>
+    <div class="card-body p-3">
         <div class="table-responsive">
             <table class="example1 table table-hover align-middle" id="usersTable">
                 <thead>
@@ -198,7 +199,7 @@
         });
     });
 </script>
-
+@push('scripts')
 <script>
     $(".example1").DataTable({
         "responsive": true,
@@ -209,15 +210,6 @@
             [0, 'asc']
         ],
         "pageLength": 15,
-        // "columnDefs": [{
-        //         "targets": 2,
-        //         "orderable": false
-        //     },
-        //     {
-        //         "targets": 0,
-        //         "orderable": false
-        //     }
-        // ],
         language: {
             "emptyTable": "Aucune donnée disponible dans le tableau",
             "lengthMenu": "Afficher _MENU_ éléments",
@@ -419,5 +411,6 @@
                 }
             }
         },
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    }).buttons().container().appendTo('.example1_wrapper .col-md-6:eq(0)');
 </script>
+@endpush
