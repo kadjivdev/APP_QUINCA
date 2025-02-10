@@ -572,7 +572,6 @@ class RapportVenteController extends Controller
 
     public function _enregistrementsNonValides(Request $request)
     {
-        // dd($request->date);
         try {
             $date = Carbon::parse($request->date);
 
@@ -592,7 +591,6 @@ class RapportVenteController extends Controller
                 } else {
                     $ventes = $query->get();
                 }
-                // dd($ventes);
 
                 if ($ventes->isEmpty()) {
                     return view('pages.rapports.ventes.enregistrementsNonValides')

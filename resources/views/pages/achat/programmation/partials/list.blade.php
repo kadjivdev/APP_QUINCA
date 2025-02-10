@@ -1,7 +1,7 @@
 <div class="row g-3">
     {{-- Table des programmations --}}
     <div class="col-12">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm p-3">
             <div class="table-responsive">
                 <table id="example1" class="table table-hover align-middle mb-0" id="programmationsTable">
                     <thead class="bg-light">
