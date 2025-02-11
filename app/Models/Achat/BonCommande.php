@@ -133,7 +133,7 @@ class BonCommande extends Model
     {
         return $query->where(function ($query) use ($term) {
             $query->where('code', 'LIKE', "%{$term}%")
-                  ->orWhere('commentaire', 'LIKE', "%{$term}%");
+                ->orWhere('commentaire', 'LIKE', "%{$term}%");
         });
     }
 
@@ -196,6 +196,7 @@ class BonCommande extends Model
     /**
      * Relation avec l'utilisateur qui a mis à jour le bon de commande
      */
+
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');

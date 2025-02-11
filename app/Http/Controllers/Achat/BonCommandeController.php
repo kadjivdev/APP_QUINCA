@@ -11,6 +11,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Codedge\Fpdf\Fpdf\ChiffreEnLettre;
+use Codedge\Fpdf\Fpdf\PDF_MC_Table;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -22,9 +24,9 @@ class BonCommandeController extends Controller
      * Affiche la liste des bons de commande
      */
     /**
- * Affiche la liste des bons de commande
- */
-public function index()
+     * Affiche la liste des bons de commande
+     */
+    public function index()
     {
         // Récupérer l'utilisateur connecté et son point de vente
         $user = auth()->user();
@@ -45,9 +47,9 @@ public function index()
             'creator',
             'updater'
         ])
-        ->where('point_de_vente_id', $user->point_de_vente_id)
-        ->latest()
-        ->paginate(12);
+            ->where('point_de_vente_id', $user->point_de_vente_id)
+            ->latest()
+            ->paginate(12);
 
         // Programmations validées du point de vente de l'utilisateur
         $programmationsValidees = ProgrammationAchat::whereNotNull('validated_at')
@@ -108,14 +110,14 @@ public function index()
         try {
             DB::beginTransaction();
 
-           // Récupérer le point de vente de l'utilisateur connecté
-        $user = auth()->user();
-        if (!$user->point_de_vente_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Aucun point de vente associé à votre compte'
-            ], 400);
-        }
+            // Récupérer le point de vente de l'utilisateur connecté
+            $user = auth()->user();
+            if (!$user->point_de_vente_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucun point de vente associé à votre compte'
+                ], 400);
+            }
 
             // Validation des données de base
             $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
@@ -189,7 +191,6 @@ public function index()
                 'message' => 'Bon de commande créé avec succès',
                 'data' => $bonCommande
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la création du bon de commande', [
@@ -258,8 +259,8 @@ public function index()
 
                 // Trouver la ligne de programmation correspondante pour obtenir l'unite_mesure_id
                 $ligneProgrammation = $programmation->lignes
-                ->where('article_id', $ligne['article_id'])
-                ->first();
+                    ->where('article_id', $ligne['article_id'])
+                    ->first();
 
                 $ligneBonCommande = new LigneBonCommande();
                 $ligneBonCommande->article_id = $ligne['article_id'];
@@ -280,7 +281,6 @@ public function index()
                 'message' => 'Bon de commande mis à jour avec succès',
                 'data' => $bonCommande
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la mise à jour du bon de commande', [
@@ -312,7 +312,6 @@ public function index()
                 'success' => true,
                 'message' => 'Bon de commande supprimé avec succès'
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur lors de la suppression du bon de commande', [
@@ -349,7 +348,6 @@ public function index()
                 'success' => true,
                 'code' => $newCode
             ]);
-
         } catch (Exception $e) {
             Log::error('Erreur lors de la génération du code', [
                 'error' => $e->getMessage(),
@@ -404,7 +402,7 @@ public function index()
         return redirect()->back();
     }
 
-      /**
+    /**
      * Récupère les articles d'un bon de commande
      */
     public function getArticles(BonCommande $bonCommande)
@@ -431,7 +429,6 @@ public function index()
                 'success' => true,
                 'data' => $articles
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -466,7 +463,8 @@ public function index()
         }
     }
 
-    public function rejectBonCommande(Request $request, $id) {
+    public function rejectBonCommande(Request $request, $id)
+    {
         $bonCommande = BonCommande::findorFail($id);
 
         $request->validate([
@@ -484,5 +482,79 @@ public function index()
             'message' => 'Bon commande rejetée avec succès',
             'data' => $bonCommande
         ]);
+    }
+
+    public function generatePDF($id)
+    {
+        $bcde = BonCommande::with(['fournisseur'])->where('id', $id)->first();
+
+        // dd($bcde->fournisseur);
+        $pdf = new PDF_MC_Table();
+        $pdf->AliasNbPages();  // To use the total number of pages
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 16);
+
+        $pdf->Image("assets/img/logos/logo.jpeg", 150, 10, 50, 30);
+        $pdf->Image("assets/img/logos/head_facture.jpg", 10, 10, 70, 30);
+
+        $pdf->SetFont('', 'B', 10);
+        $pdf->Text(150, 42, 'Cotonou, le ' . date("d m Y"));
+
+        $pdf->SetFont('', 'B', 12);
+        // $pdf->Text(10, 55, 'FOURNISSEUR');
+        $pdf->SetFont('', 'B', 12);
+        $pdf->Text(10, 62, utf8_decode('FOURNISSEUR : ' . $bcde->fournisseur->raison_sociale));
+        $pdf->SetFont('', 'B', 12);
+        $pdf->Text(10, 69, utf8_decode('OBJET : '));
+
+        // $pdf->Text(13, 80, 'Client : '.$devis->client->nom_client);
+        $pdf->SetXY(10, 73);
+        $pdf->MultiCell(190, 15, utf8_decode('BON DE COMMANDE : ' . $bcde->code), '', 'C');
+
+        $pdf->SetXY(10, 85);
+        $pdf->SetFont('', 'B', 12);
+        $pdf->SetWidths(array(100, 20, 30, 40));
+        $pdf->SetAligns(array('L', 'C', 'R', 'R'));
+        $pdf->Row(array(utf8_decode('Désignation'), utf8_decode('Quantité'), utf8_decode('PU'), utf8_decode('Montant')));
+
+        $ligne_commandes = DB::table('ligne_bon_commandes')
+            // ->with("article")
+            ->join('articles', 'articles.id', '=', 'ligne_bon_commandes.article_id')
+            ->where('ligne_bon_commandes.bon_commande_id', $bcde->id)
+            ->select('*')
+            ->get();
+
+        $tot_ht = 0;
+        foreach ($ligne_commandes  as $ligne_commande) {
+            $art = Article::find($ligne_commande->article_id);
+            $pdf->Row(array($art->nom, $ligne_commande->quantite, number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
+            $tot_ht += $ligne_commande->quantite * $ligne_commande->prix_unitaire;
+        }
+
+        $pdf->SetWidths(array(150, 40));
+        $pdf->SetAligns(array('C', 'R'));
+        $pdf->Row(array('TOTAL', number_format($tot_ht, 2, ',', ' ')));
+
+        $lettre = new ChiffreEnLettre;
+        $prix_lettre = $lettre->Conversion($tot_ht);
+
+        $pdf->SetFont('', 'B', 10);
+        $pdf->CheckPageBreak(10);
+        $pdf->Text($pdf->GetX(), $pdf->GetY() + 10, utf8_decode('Arrêté le présent bon de commande à la somme de : ' . $prix_lettre));
+
+        $pdf->CheckPageBreak(45);
+        $pdf->SetFont('', 'B', 10);
+        $pdf->Text($pdf->GetX() + 150, $pdf->GetY() + 45, utf8_decode('LA DIRECTRICE'));
+        $pdf->Text($pdf->GetX() + 142, $pdf->GetY() + 75, utf8_decode('Kadidjatou A. DJAOUGA'));
+
+        // Générer le nom de fichier unique pour le PDF
+        $fileName = uniqid('Bon_Commande_', true) . '.pdf';
+
+        // Stocker le PDF dans le système de fichiers temporaire
+        // $tempFilePath = storage_path('app/temp/' . $fileName);
+        if ($pdf->Output('I', $fileName)) {
+
+            // return redirect()->route('devis.index')->with('success', 'Proforma enregistré avec succès.');
+        }
     }
 }

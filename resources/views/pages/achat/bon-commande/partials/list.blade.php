@@ -351,6 +351,8 @@
         $('#dateProgrammationShow').text(data.programmation.date_programmation.split('T')[0]);
         $('#fournisseurShow').text(data.fournisseur.raison_sociale);
 
+        $("#exportPdf").attr("href", `/quinkadjiv_refont/public/achat/bon-commandes/${data.id}/pdf`);
+
         const statutBadge = data.programmation.rejected_at ?
             '<span class="badge bg-danger bg-opacity-10 text-danger"><i class="fas fa-minus-circle"></i> Rejetée</span>' :
             data.programmation.validated_at ?

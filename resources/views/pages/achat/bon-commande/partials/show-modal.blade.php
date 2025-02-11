@@ -10,7 +10,7 @@
                     </div>
                     <div>
                         <h5 class="modal-title fw-bold mb-0">Bon de Commande</h5>
-                        <p class="text-muted small mb-0" >Code : <span id="bonCodeShow"></span></p>
+                        <p class="text-muted small mb-0">Code : <span id="bonCodeShow"></span></p>
                     </div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -142,7 +142,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a class="dropdown-item" href="#" onclick="exportPDF()">
+                            <a id="exportPdf" class="dropdown-item" target="_blank" >
                                 <i class="fas fa-file-pdf me-2"></i>Exporter en PDF
                             </a>
                         </li>
