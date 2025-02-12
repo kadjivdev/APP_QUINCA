@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ $client->departement->libelle }}</td>
+                            <td>{{ $client->departement?$client->departement->libelle:"---" }}</td>
                             <td>{{ $client->agent?->nom }}</td>
                             <td>
                                 <div class="d-flex flex-column">

@@ -25,6 +25,7 @@ class ClientController extends Controller
     /**
      * Affiche la liste des clients
      */
+
     public function index(Request $request)
     {
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
@@ -531,7 +532,6 @@ class ClientController extends Controller
                         'raison_sociale' => $client->raison_sociale,
                         'imported_by' => auth()->id()
                     ]);
-
                 } catch (\Exception $e) {
                     $errors[] = "Ligne $rowNumber : " . $e->getMessage();
                     $skipped++;
@@ -575,136 +575,135 @@ class ClientController extends Controller
     /**
      * Générer et télécharger le template d'import
      */
-//     public function downloadTemplate()
-// {
-//     // Chemin vers le fichier template
-//     $filePath = public_path('templates/modele_import_clients.xlsx');
+    //     public function downloadTemplate()
+    // {
+    //     // Chemin vers le fichier template
+    //     $filePath = public_path('templates/modele_import_clients.xlsx');
 
-//     // Si le fichier n'existe pas, on utilise storage_path
-//     if (!file_exists($filePath)) {
-//         $filePath = storage_path('app/templates/modele_import_clients.xlsx');
-//     }
+    //     // Si le fichier n'existe pas, on utilise storage_path
+    //     if (!file_exists($filePath)) {
+    //         $filePath = storage_path('app/templates/modele_import_clients.xlsx');
+    //     }
 
-//     // Vérifier si le fichier existe
-//     if (!file_exists($filePath)) {
-//         return response()->json([
-//             'message' => 'Le fichier template n\'existe pas'
-//         ], 404);
-//     }
+    //     // Vérifier si le fichier existe
+    //     if (!file_exists($filePath)) {
+    //         return response()->json([
+    //             'message' => 'Le fichier template n\'existe pas'
+    //         ], 404);
+    //     }
 
-//     return response()->download($filePath, 'modele_import_clients.xlsx', [
-//         'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-//     ]);
-// }
+    //     return response()->download($filePath, 'modele_import_clients.xlsx', [
+    //         'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    //     ]);
+    // }
 
 
-public function downloadTemplate()
-{
-    try {
-        // S'assurer que le dossier templates existe
-        Storage::makeDirectory('templates');
+    public function downloadTemplate()
+    {
+        try {
+            // S'assurer que le dossier templates existe
+            Storage::makeDirectory('templates');
 
-        $filePath = storage_path('app/templates/modele_import_clients.xlsx');
+            $filePath = storage_path('app/templates/modele_import_clients.xlsx');
 
-        // Créer un nouveau spreadsheet à chaque fois pour éviter les problèmes de cache
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Import Clients');
+            // Créer un nouveau spreadsheet à chaque fois pour éviter les problèmes de cache
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Import Clients');
 
-        // Définir les en-têtes
-        $headers = [
-            'Raison Sociale*',
-            'Catégorie* (particulier/professionnel/societe)',
-            'IFU',
-            'RCCM',
-            'Téléphone*',
-            'Email',
-            'Adresse',
-            'Ville',
-            'Plafond Crédit',
-            'Délai Paiement (jours)',
-            'Solde Initial',
-            'Taux AIB',
-            'Notes'
-        ];
+            // Définir les en-têtes
+            $headers = [
+                'Raison Sociale*',
+                'Catégorie* (particulier/professionnel/societe)',
+                'IFU',
+                'RCCM',
+                'Téléphone*',
+                'Email',
+                'Adresse',
+                'Ville',
+                'Plafond Crédit',
+                'Délai Paiement (jours)',
+                'Solde Initial',
+                'Taux AIB',
+                'Notes'
+            ];
 
-        // Insérer les en-têtes
-        foreach ($headers as $index => $header) {
-            $col = chr(65 + $index);
-            $sheet->setCellValue($col . '1', $header);
+            // Insérer les en-têtes
+            foreach ($headers as $index => $header) {
+                $col = chr(65 + $index);
+                $sheet->setCellValue($col . '1', $header);
 
-            // Style pour les en-têtes
-            $sheet->getStyle($col . '1')->applyFromArray([
-                'font' => [
-                    'bold' => true,
-                    'color' => ['rgb' => '000000'],
-                ],
-                'fill' => [
-                    'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => 'E2EFDA']
-                ],
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_THIN
+                // Style pour les en-têtes
+                $sheet->getStyle($col . '1')->applyFromArray([
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['rgb' => '000000'],
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'E2EFDA']
+                    ],
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN
+                        ]
                     ]
-                ]
+                ]);
+
+                // Ajuster la largeur des colonnes
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            // Exemple de données
+            $example = [
+                'ENTREPRISE EXAMPLE',
+                'professionnel',
+                'IFU123456',
+                'RCCM123456',
+                '22670000000',
+                'contact@example.com',
+                'Rue 123',
+                'Ouagadougou',
+                '1000000',
+                '30',
+                '0',
+                '1',
+                'Client régulier'
+            ];
+
+            // Ajouter l'exemple
+            foreach ($example as $index => $value) {
+                $col = chr(65 + $index);
+                $sheet->setCellValue($col . '2', $value);
+            }
+
+            // Style pour l'exemple
+            $sheet->getStyle('A2:M2')->getFont()->setItalic(true);
+            $sheet->getStyle('A2:M2')->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('808080'));
+
+            // Protection de la feuille
+            $sheet->getProtection()->setSheet(true);
+            $sheet->getProtection()->setSort(false);
+            $sheet->getProtection()->setInsertRows(false);
+
+            // Sauvegarder dans un fichier temporaire
+            $tempFile = tempnam(sys_get_temp_dir(), 'template_');
+            $writer = new Xlsx($spreadsheet);
+            $writer->save($tempFile);
+
+            return response()->download($tempFile, 'modele_import_clients.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la génération du template:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            // Ajuster la largeur des colonnes
-            $sheet->getColumnDimension($col)->setAutoSize(true);
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la génération du template: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Exemple de données
-        $example = [
-            'ENTREPRISE EXAMPLE',
-            'professionnel',
-            'IFU123456',
-            'RCCM123456',
-            '22670000000',
-            'contact@example.com',
-            'Rue 123',
-            'Ouagadougou',
-            '1000000',
-            '30',
-            '0',
-            '1',
-            'Client régulier'
-        ];
-
-        // Ajouter l'exemple
-        foreach ($example as $index => $value) {
-            $col = chr(65 + $index);
-            $sheet->setCellValue($col . '2', $value);
-        }
-
-        // Style pour l'exemple
-        $sheet->getStyle('A2:M2')->getFont()->setItalic(true);
-        $sheet->getStyle('A2:M2')->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color('808080'));
-
-        // Protection de la feuille
-        $sheet->getProtection()->setSheet(true);
-        $sheet->getProtection()->setSort(false);
-        $sheet->getProtection()->setInsertRows(false);
-
-        // Sauvegarder dans un fichier temporaire
-        $tempFile = tempnam(sys_get_temp_dir(), 'template_');
-        $writer = new Xlsx($spreadsheet);
-        $writer->save($tempFile);
-
-        return response()->download($tempFile, 'modele_import_clients.xlsx', [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        ])->deleteFileAfterSend(true);
-
-    } catch (\Exception $e) {
-        Log::error('Erreur lors de la génération du template:', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Une erreur est survenue lors de la génération du template: ' . $e->getMessage()
-        ], 500);
     }
-}
 }

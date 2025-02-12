@@ -149,6 +149,7 @@ class FactureClientController extends Controller
 
     public function store(Request $request)
     {
+
         try {
             Log::info('Début création facture', ['request' => $request->all()]);
 
