@@ -19,10 +19,10 @@
                                     {{ $factures->where('statut_reel', 'payee')->count() }} payées
                                 </span>
                                 @if($factures->where('statut', 'en_attente')->count() > 0)
-                                    <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill">
-                                        <i class="fas fa-clock me-1"></i>
-                                        {{ $factures->where('statut', 'en_attente')->count() }} en attente
-                                    </span>
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ $factures->where('statut', 'en_attente')->count() }} en attente
+                                </span>
                                 @endif
                             </div>
                         </div>
@@ -37,9 +37,9 @@
                 </button>
 
                 <button type="button"
-                        class="btn btn-primary px-3 d-inline-flex align-items-center"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addFactureModal">
+                    class="btn btn-primary px-3 d-inline-flex align-items-center"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addFactureModal">
                     <i class="fas fa-plus me-2"></i>
                     Nouvelle Facture
                 </button>
@@ -152,144 +152,144 @@
 <link href="{{ asset('css/theme/header.css') }}" rel="stylesheet">
 
 <style>
-:root {
-    --kadjiv-orange: #FFA500;
-    --kadjiv-orange-light: rgba(255, 165, 0, 0.1);
-}
-
-.page-header {
-    margin-bottom: 2rem;
-}
-
-/* Icônes et badges */
-.stats-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.header-icon .icon-wrapper {
-    background-color: var(--kadjiv-orange-light) !important;
-    transition: transform 0.3s ease;
-}
-
-.header-icon .icon-wrapper i {
-    color: var(--kadjiv-orange) !important;
-}
-
-.header-icon:hover .icon-wrapper {
-    transform: scale(1.1);
-}
-
-/* Cartes */
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
-}
-
-/* Badges */
-.badge {
-    padding: 0.5rem 0.75rem;
-}
-
-.badge.bg-success {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-}
-
-.badge.bg-warning {
-    background-color: rgba(255, 193, 7, 0.1) !important;
-}
-
-/* Stats icons couleurs */
-.stats-icon.bg-primary {
-    background-color: var(--kadjiv-orange-light) !important;
-}
-
-.stats-icon.text-primary {
-    color: var(--kadjiv-orange) !important;
-}
-
-.stats-icon.bg-success {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-}
-
-.stats-icon.bg-warning {
-    background-color: rgba(255, 193, 7, 0.1) !important;
-}
-
-.stats-icon.bg-info {
-    background-color: rgba(13, 202, 240, 0.1) !important;
-}
-
-/* Boutons */
-.btn {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.btn i {
-    transition: transform 0.3s ease;
-}
-
-.btn:active i {
-    transform: scale(0.9);
-}
-
-.btn-primary {
-    background-color: var(--kadjiv-orange) !important;
-    border-color: var(--kadjiv-orange) !important;
-}
-
-.btn-primary:hover {
-    background-color: #e69400 !important;
-    border-color: #e69400 !important;
-}
-
-/* Animation de rafraîchissement */
-.refresh-spinner {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
+    :root {
+        --kadjiv-orange: #FFA500;
+        --kadjiv-orange-light: rgba(255, 165, 0, 0.1);
     }
-}
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    /* Icônes et badges */
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-icon .icon-wrapper {
+        background-color: var(--kadjiv-orange-light) !important;
+        transition: transform 0.3s ease;
+    }
+
+    .header-icon .icon-wrapper i {
+        color: var(--kadjiv-orange) !important;
+    }
+
+    .header-icon:hover .icon-wrapper {
+        transform: scale(1.1);
+    }
+
+    /* Cartes */
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .badge.bg-success {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+
+    .badge.bg-warning {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    /* Stats icons couleurs */
+    .stats-icon.bg-primary {
+        background-color: var(--kadjiv-orange-light) !important;
+    }
+
+    .stats-icon.text-primary {
+        color: var(--kadjiv-orange) !important;
+    }
+
+    .stats-icon.bg-success {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+
+    .stats-icon.bg-warning {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+    }
+
+    .stats-icon.bg-info {
+        background-color: rgba(13, 202, 240, 0.1) !important;
+    }
+
+    /* Boutons */
+    .btn {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn:active i {
+        transform: scale(0.9);
+    }
+
+    .btn-primary {
+        background-color: var(--kadjiv-orange) !important;
+        border-color: var(--kadjiv-orange) !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #e69400 !important;
+        border-color: #e69400 !important;
+    }
+
+    /* Animation de rafraîchissement */
+    .refresh-spinner {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 
 <script>
-function refreshPage() {
-    const refreshBtn = document.querySelector('.btn-light-secondary');
-    refreshBtn.classList.add('refreshing');
-    refreshBtn.disabled = true;
+    function refreshPage() {
+        const refreshBtn = document.querySelector('.btn-light-secondary');
+        refreshBtn.classList.add('refreshing');
+        refreshBtn.disabled = true;
 
-    setTimeout(() => {
-        window.location.reload();
-    }, 500);
-}
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
 
-// Fonction pour mettre à jour les statistiques
-function updateStats(stats) {
-    Object.keys(stats).forEach(key => {
-        const element = document.querySelector(`[data-stat="${key}"]`);
-        if (element) {
-            if (key.includes('montant')) {
-                element.textContent = new Intl.NumberFormat('fr-FR').format(stats[key]) + ' F';
-            } else {
-                element.textContent = stats[key];
+    // Fonction pour mettre à jour les statistiques
+    function updateStats(stats) {
+        Object.keys(stats).forEach(key => {
+            const element = document.querySelector(`[data-stat="${key}"]`);
+            if (element) {
+                if (key.includes('montant')) {
+                    element.textContent = new Intl.NumberFormat('fr-FR').format(stats[key]) + ' F';
+                } else {
+                    element.textContent = stats[key];
+                }
             }
-        }
-    });
-}
+        });
+    }
 </script>

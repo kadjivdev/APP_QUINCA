@@ -26,6 +26,7 @@ class FactureClientController extends Controller
 
     public function index()
     {
+
         try {
             Log::info('Début du chargement de la liste des factures');
             $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
@@ -53,8 +54,10 @@ class FactureClientController extends Controller
                 // ->paginate(10);
                 ->get();
 
+            // dd($factures->getCollection());
+
             // Ajouter des attributs calculés pour chaque facture
-            $factures->getCollection()->transform(function ($facture) {
+            $factures->transform(function ($facture) {
                 // Calcul du reste à payer
                 $facture->reste_a_payer = $facture->montant_ttc - $facture->montant_regle;
 
@@ -78,7 +81,7 @@ class FactureClientController extends Controller
                 return $facture;
             });
 
-            $facturesResteAPayer = $factures->getCollection()->filter(function ($facture) {
+            $facturesResteAPayer = $factures->filter(function ($facture) {
                 return $facture->reste_a_payer > 0;
             });
             $montantResteAPyer = $facturesResteAPayer->sum('montant_ttc');
@@ -87,9 +90,9 @@ class FactureClientController extends Controller
             $currentMonth = Carbon::now()->month;
             $currentYear = Carbon::now()->year;
 
-            $facturesDuMois = $factures->getCollection()->filter(function ($facture) use ($currentMonth, $currentYear) {
+            $facturesDuMois = $factures->filter(function ($facture) use ($currentMonth, $currentYear) {
                 return Carbon::parse($facture->date_facture)->month == $currentMonth &&
-                       Carbon::parse($facture->date_facture)->year == $currentYear;
+                    Carbon::parse($facture->date_facture)->year == $currentYear;
             });
 
             $montantFactureMois = $facturesDuMois->sum('montant_ttc');
@@ -99,8 +102,6 @@ class FactureClientController extends Controller
                 return !is_null($facture->encaissed_at);
             });
 
-            // dd($facturesDuMois);
-            
             $totalEncaisse = $facturesEncaissees->sum('montant_ttc');
             $nombreEncaisse = $facturesEncaissees->count();
 
@@ -112,10 +113,8 @@ class FactureClientController extends Controller
                 'factures_en_attente' => $facturesResteAPayer,
             ];
 
-            // dd($statsFactures);
-
             Log::info('Liste des factures chargée avec succès', [
-                'nombre_factures' => $factures->total()
+                'nombre_factures' => count($factures)
             ]);
 
             if (request()->ajax()) {
@@ -275,11 +274,14 @@ class FactureClientController extends Controller
                     'status' => 'success',
                     'message' => 'Facture créée avec succès',
                     'data' => ['facture' => $facture->load([
-                        'client', 'lignes.article', 'lignes.uniteVente',
-                        'sessionCaisse', 'createdBy', 'reglements'
+                        'client',
+                        'lignes.article',
+                        'lignes.uniteVente',
+                        'sessionCaisse',
+                        'createdBy',
+                        'reglements'
                     ])]
                 ]);
-
             } catch (Exception $e) {
                 DB::rollBack();
                 throw $e;
@@ -423,11 +425,13 @@ class FactureClientController extends Controller
                     'status' => 'success',
                     'message' => 'Facture mise à jour avec succès',
                     'data' => ['facture' => $facture->load([
-                        'client', 'lignes.article', 'lignes.uniteVente',
-                        'sessionCaisse', 'reglements'
+                        'client',
+                        'lignes.article',
+                        'lignes.uniteVente',
+                        'sessionCaisse',
+                        'reglements'
                     ])]
                 ]);
-
             } catch (Exception $e) {
                 DB::rollBack();
                 throw $e;
@@ -453,17 +457,17 @@ class FactureClientController extends Controller
         $depot = Depot::find($pv->id);
 
         $articles = Article::query()
-                ->where(function ($query) use ($search) {
-                    $query->where('code_article', 'like', "%{$search}%")
-                        ->orWhere('designation', 'like', "%{$search}%");
-                })
-                ->where('statut', 'actif')
-                ->with(['stocks' => function ($query) use ($depot) {
-                    $query->where('depot_id', $depot->id);
-                }])
-                ->select(['id', 'code_article', 'designation'])
-                ->limit(10)
-                ->get();  // Ceci retourne maintenant une Collection
+            ->where(function ($query) use ($search) {
+                $query->where('code_article', 'like', "%{$search}%")
+                    ->orWhere('designation', 'like', "%{$search}%");
+            })
+            ->where('statut', 'actif')
+            ->with(['stocks' => function ($query) use ($depot) {
+                $query->where('depot_id', $depot->id);
+            }])
+            ->select(['id', 'code_article', 'designation'])
+            ->limit(10)
+            ->get();  // Ceci retourne maintenant une Collection
 
         return response()->json([
             'results' => $articles->map(function ($article) {
@@ -654,7 +658,6 @@ class FactureClientController extends Controller
                     'unites' => $unites->values()->all()
                 ]
             ]);
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération des unités', [
                 'article_id' => $articleId,
@@ -725,7 +728,7 @@ class FactureClientController extends Controller
             }
 
             $sessionCaisse = SessionCaisse::ouverte()
-            ->where('point_de_vente_id', auth()->user()->point_de_vente_id)
+                ->where('point_de_vente_id', auth()->user()->point_de_vente_id)
                 ->first();
 
             if (!$sessionCaisse) {
@@ -758,7 +761,6 @@ class FactureClientController extends Controller
                 'message' => 'Facture validée',
                 'data' => ['facture' => $facture->fresh(['client', 'createdBy'])]
             ]);
-
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Erreur validation facture', [
@@ -882,7 +884,7 @@ class FactureClientController extends Controller
             'montant_ht' => number_format($facture->montant_ht, 0, ',', ' '),
             'montant_tva' => number_format($facture->montant_tva, 0, ',', ' '),
             'montant_ttc' => number_format($facture->montant_ttc, 0, ',', ' '),
-            'lignes' => $facture->lignes->map(function($ligne) {
+            'lignes' => $facture->lignes->map(function ($ligne) {
                 return [
                     'article' => [
                         'designation' => $ligne->article->designation

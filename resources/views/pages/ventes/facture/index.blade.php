@@ -69,7 +69,6 @@
         // Votre code de configuration et classe ici        
         @include('pages.ventes.facture.partials.scripts-part1')
 
-
         // Initialisation unique
         if (!window.factureManager) {
             console.log('Création nouvelle instance FactureManager');
