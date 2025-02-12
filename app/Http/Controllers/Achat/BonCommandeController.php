@@ -527,7 +527,8 @@ class BonCommandeController extends Controller
         $tot_ht = 0;
         foreach ($ligne_commandes  as $ligne_commande) {
             $art = Article::find($ligne_commande->article_id);
-            $pdf->Row(array($art->nom, $ligne_commande->quantite, number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
+            // dd($art);
+            $pdf->Row(array($art->designation . " ($art->code_article)", $ligne_commande->quantite, number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
             $tot_ht += $ligne_commande->quantite * $ligne_commande->prix_unitaire;
         }
 
