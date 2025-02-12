@@ -5,7 +5,6 @@
 @endpush
 
 @section('content')
-
     <div class="content">
         {{-- En-tête de la page --}}
         @include('pages.catalogues.article.partials.header')
@@ -26,5 +25,4 @@
     @include('pages.catalogues.article.partials.scripts')
     @include('pages.catalogues.article.partials.scripts_filter')
     @include('pages.catalogues.article.partials.js-import-modal')
-
 @endpush

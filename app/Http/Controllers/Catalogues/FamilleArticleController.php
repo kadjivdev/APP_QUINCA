@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\Catalogues;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Http\Controllers\Controller;
 use App\Models\Catalogue\FamilleArticle;
 use App\Models\Parametre\UniteMesure;
@@ -13,10 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\{Fill, Border, Alignment};
@@ -26,13 +20,9 @@ class FamilleArticleController extends Controller
 
     public function index()
     {
-
-        // $familleArticles = FamilleArticle::with([
-        //     'articles'     // Pour compter les articles
-        // ])
         // Récupération des familles d'articles avec leurs relations
         $familleArticles = FamilleArticle::orderBy('created_at', 'desc')  // Les plus récentes en premier
-        ->get();
+            ->get();
 
         $uniteMesures = UniteMesure::orderBy('created_at', 'desc')->get();
 
@@ -85,13 +75,11 @@ class FamilleArticleController extends Controller
                 'message' => 'Famille d\'articles créée avec succès',
                 'data' => $familleArticle
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -110,7 +98,6 @@ class FamilleArticleController extends Controller
                 'success' => true,
                 'data' => $familleArticle
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -149,13 +136,11 @@ class FamilleArticleController extends Controller
                 'message' => 'Famille d\'articles mise à jour avec succès',
                 'data' => $familleArticle
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -183,7 +168,6 @@ class FamilleArticleController extends Controller
                 'success' => true,
                 'message' => 'Famille d\'articles supprimée avec succès'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -312,7 +296,6 @@ class FamilleArticleController extends Controller
             return response()->download($tempFile, 'modele_import_familles.xlsx', [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             ])->deleteFileAfterSend(true);
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de la génération du template:', [
                 'message' => $e->getMessage(),
@@ -407,7 +390,6 @@ class FamilleArticleController extends Controller
                     ]);
 
                     $imported++;
-
                 } catch (\Exception $e) {
                     Log::error('Erreur lors de l\'import d\'une famille d\'articles', [
                         'ligne' => $rowNumber,
@@ -448,14 +430,12 @@ class FamilleArticleController extends Controller
                 'message' => 'Aucune famille n\'a été importée.',
                 'errors' => $errors
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Le fichier fourni est invalide.',
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'import des familles d\'articles', [
                 'erreur' => $e->getMessage(),
@@ -493,7 +473,8 @@ class FamilleArticleController extends Controller
         }
     }
 
-    public function uniqueCode(Request $request) {
+    public function uniqueCode(Request $request)
+    {
         // Valider que "code_famille" est présent
         $request->validate([
             'code_famille' => 'required|string|max:255',
@@ -507,7 +488,5 @@ class FamilleArticleController extends Controller
 
         // Retourner une réponse JSON
         return response()->json(['exists' => $exists]);
-    
     }
-
 }

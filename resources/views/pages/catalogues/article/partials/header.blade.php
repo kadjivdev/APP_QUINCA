@@ -5,18 +5,17 @@
     </div>
 
     <button type="button"
-    class="btn btn-dark btn-sm d-flex align-items-center"
-    data-bs-toggle="modal"
-    data-bs-target="#importArticleModal">
-<i class="fas fa-plus me-2"></i>
-Importer Article
-</button>
-
+        class="btn btn-dark btn-sm d-flex align-items-center"
+        data-bs-toggle="modal"
+        data-bs-target="#importArticleModal">
+        <i class="fas fa-plus me-2"></i>
+        Importer Article
+    </button>
 
     <div class="d-flex gap-2">
         <div class="position-relative">
             <input type="text" class="form-control search-bar" id="searchArticle"
-                   placeholder="Rechercher un article..." data-search-url="{{ route('articles.search') }}">
+                placeholder="Rechercher un article..." data-search-url="{{ route('articles.search') }}">
             <i class="bi bi-search search-icon text-muted"></i>
         </div>
 
@@ -74,7 +73,7 @@ Importer Article
     <select class="form-select d-inline-block w-auto ms-2" id="filterFamille">
         <option value="">Toutes les familles</option>
         @foreach($familles as $famille)
-            <option value="{{ $famille->id }}">{{ $famille->libelle_famille }}</option>
+        <option value="{{ $famille->id }}">{{ $famille->libelle_famille }}</option>
         @endforeach
     </select>
 
