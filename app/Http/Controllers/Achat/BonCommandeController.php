@@ -488,7 +488,7 @@ class BonCommandeController extends Controller
     {
         $bcde = BonCommande::with(['fournisseur'])->where('id', $id)->first();
 
-        // dd($bcde->fournisseur);
+        // dd($bcde->fournisseur); test
         $pdf = new PDF_MC_Table();
         $pdf->AliasNbPages();  // To use the total number of pages
         $pdf->AddPage();
