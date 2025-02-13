@@ -16,7 +16,7 @@
                     </div>
 
                     {{-- Recherche --}}
-                    <div class="col-md-4">
+                    <!-- <div class="col-md-4">
                         <label class="form-label small">Recherche</label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light border-end-0">
@@ -28,7 +28,7 @@
                                 placeholder="Nom, Code, IFU, RCCM, Téléphone..."
                                 onkeyup="filterClients()">
                         </div>
-                    </div>
+                    </div> -->
 
                     {{-- Filtre Statut --}}
                     <div class="col-md-2">
@@ -62,12 +62,10 @@
                     </div>
 
                     {{-- Bouton réinitialiser --}}
-                    <div class="col-12 d-flex justify-content-end mt-2">
-                        <button class="btn btn-light btn-sm" onclick="resetFilters()">
-                            <i class="fas fa-undo me-1"></i>
-                            Réinitialiser les filtres
-                        </button>
-                    </div>
+                    <button class="col-md-2 btn btn-light btn-sm mt-3" onclick="resetFilters()">
+                        <i class="fas fa-undo me-1"></i>
+                        Réinitialiser les filtres
+                    </button>
                 </div>
             </div>
         </div>
