@@ -45,10 +45,10 @@
                                         <div class="col-md-3">
                                             <label class="form-label fw-medium required">Client</label>
                                             <div class="input-group">
-                                                <span class="input-group-text bg-white">
+                                                <!-- <span class="input-group-text bg-white">
                                                     <i class="fas fa-user text-primary"></i>
-                                                </span>
-                                                <select class="form-select" name="client_id" required>
+                                                </span> -->
+                                                <select class="form-select select2" name="client_id" required>
                                                     <option value="">Sélectionner un client</option>
                                                     @foreach ($clients as $client)
                                                     <option value="{{ $client->id }}"
@@ -305,3 +305,13 @@
         </td>
     </tr>
 </template>
+
+@push("scripts")
+<script>
+    $(".select2").select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        dropdownParent: addFactureModal,
+    })
+</script>
+@endpush

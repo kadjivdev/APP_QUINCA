@@ -285,7 +285,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::put('/bulk', [LigneProgrammationAchatController::class, 'bulkUpdate'])->name('ligne-programmations.bulk.update');
             });
 
-
             // Routes pour les bons de commande
             Route::prefix('bon-commandes')->group(function () {
                 // Routes principales des bons de commande

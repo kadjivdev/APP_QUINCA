@@ -47,9 +47,7 @@
             this.initTypeFacture();
             this.initMontantRegleEvents();
         }
-
-
-
+        
         async handleArticleSelect(e, $line) {
             const articleId = e.target.value;
             if (!articleId) return;
