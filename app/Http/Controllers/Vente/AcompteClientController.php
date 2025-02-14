@@ -9,7 +9,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AcompteClientController extends Controller
@@ -17,6 +16,7 @@ class AcompteClientController extends Controller
     /**
      * Affiche la liste des acomptes
      */
+
     public function index(Request $request)
     {
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
@@ -155,6 +155,7 @@ class AcompteClientController extends Controller
             $acompte = new AcompteClient();
             $acompte->fill($validated);
             $acompte->created_by = auth()->id();
+            // $acompte->reference = $request->reference?->reference;
             $acompte->point_de_vente_id = auth()->user()->point_de_vente_id;
             $acompte->save();
 
@@ -180,6 +181,10 @@ class AcompteClientController extends Controller
             Log::error('Erreur lors de l\'enregistrement de l\'acompte:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
+            ]);
+
+            Log::info("Request again", [
+                "message" => $request->all()
             ]);
 
             return response()->json([

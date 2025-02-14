@@ -50,14 +50,11 @@
     @include('pages.ventes.acompte.partials.show-modal')
     @include('pages.ventes.acompte.partials.edit-modal')
     @include('pages.ventes.acompte.partials.import-modal')
-
 @endsection
-@push('scripts')
 
+@push('scripts')
 @include('pages.ventes.acompte.partials.js-add-modal')
 @include('pages.ventes.acompte.partials.js-edit-modal')
 @include('pages.ventes.acompte.partials.js-delete-modal')
 @include('pages.ventes.acompte.partials.js-import-modal')
-
-
 @endpush

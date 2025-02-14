@@ -68,7 +68,7 @@ class AcompteClient extends Model
     {
         return $query->where(function ($q) use ($term) {
             $q->where('reference', 'like', "%{$term}%")
-              ->orWhere('observation', 'like', "%{$term}%");
+                ->orWhere('observation', 'like', "%{$term}%");
         });
     }
 
@@ -145,7 +145,6 @@ class AcompteClient extends Model
                 self::TYPE_VIREMENT,
                 self::TYPE_CHEQUE
             ]),
-            'montant' => 'required|numeric|min:0',
             'client_id' => 'required|exists:clients,id',
             'observation' => 'nullable|string',
             'statut' => 'nullable|in:' . implode(',', [
