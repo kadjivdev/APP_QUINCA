@@ -60,7 +60,7 @@
                                     <span class="text-muted small">{{ $reglement->type_reglement }}</span>
                             </td> --}}
                             <td>
-                                <span class="text-muted small">{{ $reglement->reference_paiement }}</span>
+                                <span class="badge bg-dark">{{ $reglement->reference_preuve }}</span>
                             </td>
                             <td class="text-center">
                                 @switch($reglement->statut)
@@ -147,11 +147,6 @@
                 </table>
             </div>
 
-            @if ($reglements->hasPages())
-            <div class="card-footer border-0 py-3">
-                {{ $reglements->links() }}
-            </div>
-            @endif
         </div>
     </div>
 </div>

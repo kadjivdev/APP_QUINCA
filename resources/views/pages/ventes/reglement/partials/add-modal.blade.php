@@ -110,6 +110,12 @@
                                             <div class="invalid-feedback">Veuillez sélectionner une date d'échéance
                                             </div>
                                         </div>
+
+                                        {{-- Reference --}}
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-medium">Reference</label>
+                                            <input type="text" placeholder="########" class="form-control" name="reference_preuve">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

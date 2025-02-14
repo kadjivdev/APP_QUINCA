@@ -86,7 +86,7 @@ class ReglementClient extends Model
             self::TYPE_CARTE_BANCAIRE => 'Carte Bancaire',
             self::TYPE_MOMO => 'MoMo',
             self::TYPE_FLOOZ => 'Flooz',
-            self::TYPE_CELTIS =>'Celtis_Pay',
+            self::TYPE_CELTIS => 'Celtis_Pay',
             self::TYPE_EFFET => 'Effet',
             self::TYPE_AVOIR => 'Avoir'
         ];
@@ -154,49 +154,47 @@ class ReglementClient extends Model
      * @return bool
      */
 
-     public function verifierMontant()
-     {
-         // S'assurer que la facture est chargée
-         if (!$this->facture) {
-             throw new \Exception("La relation facture doit être chargée pour vérifier le montant");
-         }
+    public function verifierMontant()
+    {
+        // S'assurer que la facture est chargée
+        if (!$this->facture) {
+            throw new \Exception("La relation facture doit être chargée pour vérifier le montant");
+        }
 
-         // Si c'est un nouveau règlement
-         if (!$this->exists) {
-             // Pour un nouveau règlement, calculer le total déjà réglé
-             $totalDejaRegle = $this->facture->reglements()
-                 ->where('statut', 'validee')
-                 ->sum(DB::raw('ROUND(montant, 3)'));
-         } else {
-             // Pour un règlement existant, exclure le règlement actuel
-             $totalDejaRegle = $this->facture->reglements()
-                 ->where('id', '!=', $this->id)
-                 ->where('statut', 'validee')
-                 ->sum(DB::raw('ROUND(montant, 3)'));
-         }
+        // Si c'est un nouveau règlement
+        if (!$this->exists) {
+            // Pour un nouveau règlement, calculer le total déjà réglé
+            $totalDejaRegle = $this->facture->reglements()
+                ->where('statut', 'validee')
+                ->sum(DB::raw('ROUND(montant, 3)'));
+        } else {
+            // Pour un règlement existant, exclure le règlement actuel
+            $totalDejaRegle = $this->facture->reglements()
+                ->where('id', '!=', $this->id)
+                ->where('statut', 'validee')
+                ->sum(DB::raw('ROUND(montant, 3)'));
+        }
 
-         // Arrondir les montants à 3 décimales pour la comparaison
-         $montantTTC = round($this->facture->montant_ttc, 3);
-         $montantReglement = round($this->montant, 3);
-         $resteAPayer = round($montantTTC - $totalDejaRegle, 3);
+        // Arrondir les montants à 3 décimales pour la comparaison
+        $montantTTC = round($this->facture->montant_ttc, 3);
+        $montantReglement = round($this->montant, 3);
+        $resteAPayer = round($montantTTC - $totalDejaRegle, 3);
 
-         // Debug pour voir les valeurs
-         Log::info('Vérification du montant du règlement', [
-             'facture_id' => $this->facture->id,
-             'montant_ttc' => $montantTTC,
-             'total_deja_regle' => $totalDejaRegle,
-             'reste_a_payer' => $resteAPayer,
-             'montant_reglement' => $montantReglement
-         ]);
+        // Debug pour voir les valeurs
+        Log::info('Vérification du montant du règlement', [
+            'facture_id' => $this->facture->id,
+            'montant_ttc' => $montantTTC,
+            'total_deja_regle' => $totalDejaRegle,
+            'reste_a_payer' => $resteAPayer,
+            'montant_reglement' => $montantReglement
+        ]);
 
-         // Vérifier si le montant est positif et ne dépasse pas le reste à payer
-         // Utiliser une petite marge d'erreur pour les arrondis
-         $epsilon = 0.001; // Marge d'erreur de 0.001
-         return $montantReglement > 0 &&
-                $montantReglement <= ($resteAPayer + $epsilon);
-     }
-
-
+        // Vérifier si le montant est positif et ne dépasse pas le reste à payer
+        // Utiliser une petite marge d'erreur pour les arrondis
+        $epsilon = 0.001; // Marge d'erreur de 0.001
+        return $montantReglement > 0 &&
+            $montantReglement <= ($resteAPayer + $epsilon);
+    }
 
     /**
      * Vérifie si le règlement peut être validé
@@ -211,6 +209,7 @@ class ReglementClient extends Model
             && $this->verifierInformationsRequises()
             && !$this->facture->est_solde;  // Vérification supplémentaire
     }
+
     /**
      * Valide le règlement
      *
@@ -219,9 +218,7 @@ class ReglementClient extends Model
      * @return bool
      */
 
-
-
-      public function valider(int $userId): bool
+    public function valider(int $userId): bool
     {
         // Vérifier si le règlement peut être validé
         if ($this->statut !== self::STATUT_BROUILLON) {
