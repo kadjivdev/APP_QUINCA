@@ -25,6 +25,7 @@ class FactureClient extends Model
         'date_facture',
         'date_echeance',
         'date_validation',
+        'type_facture',
         'client_id',
         'statut',
         'montant_ht',
@@ -238,8 +239,6 @@ class FactureClient extends Model
 
         return true;
     }
-
-
 
     /**
      * Vérifie si la ligne peut encore être livrée

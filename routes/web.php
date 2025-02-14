@@ -631,7 +631,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::put('/{id}/update', [FactureClientController::class, 'update'])->name('vente.facture.update')->where('id', '[0-9]+');
             });
 
-
             // Routes pour les reglements
             Route::prefix('reglement')->group(function () {
                 // Liste des factures

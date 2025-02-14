@@ -26,7 +26,6 @@ class FactureClientController extends Controller
 
     public function index()
     {
-
         try {
             Log::info('Début du chargement de la liste des factures');
             $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
@@ -149,7 +148,6 @@ class FactureClientController extends Controller
 
     public function store(Request $request)
     {
-
         try {
             Log::info('Début création facture', ['request' => $request->all()]);
 
@@ -200,6 +198,7 @@ class FactureClientController extends Controller
                     'created_by' => auth()->id(),
                     'observations' => $request->observations,
                     'statut' => 'brouillon',
+                    'type_facture' => $request->type_facture === "normaliser" ? "NORMALISE" : "SIMPLE",
                     'montant_ht' => 0,
                     'montant_remise' => 0,
                     'montant_tva' => 0,
@@ -251,7 +250,7 @@ class FactureClientController extends Controller
                     'montant_tva' => $totalTVA,
                     'montant_aib' => $totalAIB,
                     'montant_ttc' => $montantTTC,
-                    'montant_regle' => $request->montant_regle
+                    'montant_regle' => $request->montant_regle,
                 ]);
 
                 // Création du règlement si nécessaire
