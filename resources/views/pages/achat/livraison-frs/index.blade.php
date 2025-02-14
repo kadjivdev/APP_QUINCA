@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="content">
-
         {{-- Liste des livraisons --}}
         @include('pages.achat.livraison-frs.partials.header')
         <div class="row g-3 list">

@@ -347,7 +347,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                     ->name('ligne-bon-commandes.validate');
             });
 
-
             Route::prefix('factures')->group(function () {
                 // Routes CRUD principales
                 Route::get('/', [FactureFournisseurController::class, 'index'])->name('factures.index');
@@ -680,7 +679,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                     ->name('refresh');
             });
 
-
             Route::prefix('livraisons')->group(function () {
                 Route::get('/verifier-stock', [LivraisonClientController::class, 'verifierStock'])->name('vente.livraisons.verifier-stock');
 
@@ -699,17 +697,14 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::get('/{livraisonClient}/edit', [LivraisonClientController::class, 'edit'])
                     ->name('vente.livraisons.edit');
 
-
                 Route::put('/{livraisonClient}', [LivraisonClientController::class, 'update'])
                     ->name('vente.livraisons.update');
-
 
                 // Supprimer une livraison
                 Route::delete('/{livraisonClient}', [LivraisonClientController::class, 'destroy'])->name('vente.livraisons.destroy');
 
                 // Valider une livraison
                 Route::post('{livraisonClient}/validate', [LivraisonClientController::class, 'validateLivraison'])->name('vente.livraisons.validate');
-
 
                 Route::post('/{livraisonClient}/validate', [LivraisonClientController::class, 'validateLivraison'])
                     ->name('vente.livraisons.validate');
@@ -735,8 +730,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 // Récupérer les lignes de facture disponibles pour livraison
                 Route::get('/facture/{factureClient}/lignes-disponibles', [LivraisonClientController::class, 'getLignesFactureDisponibles'])
                     ->name('vente.livraisons.lignes-facture-disponibles');
-
-
 
                 // Export des livraisons
                 Route::get('/export', [LivraisonClientController::class, 'export'])

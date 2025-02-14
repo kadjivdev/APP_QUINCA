@@ -515,87 +515,6 @@ class FactureClientController extends Controller
         }
     }
 
-    // public function getUnites(Request $request, $articleId)
-    // {
-    //     try {
-    //         Log::info('Début récupération des unités', ['article_id' => $articleId]);
-
-    //         // Récupérer l'article avec sa famille
-    //         $article = Article::with('famille.uniteBase')->findOrFail($articleId);
-
-    //         if (!$article->famille) {
-    //             throw new \Exception("Cet article n'a pas de famille associée");
-    //         }
-
-    //         $familleId = $article->famille_id;
-
-    //         // 1. Obtenir l'unité de base de la famille si elle existe
-    //         $unites = collect();
-    //         if ($article->famille->uniteBase) {
-    //             $unites->push([
-    //                 'id' => $article->famille->uniteBase->id,
-    //                 'text' => $article->famille->uniteBase->libelle_unite
-    //             ]);
-    //         }
-
-    //         // 2. Obtenir toutes les unités ayant des conversions pour cette famille
-    //         $unitesConversion = ConversionUnite::where('famille_id', $familleId)
-    //             ->where('statut', true)
-    //             ->with(['uniteSource', 'uniteDest'])
-    //             ->get();
-
-    //         // Ajouter les unités source
-    //         $unitesConversion->pluck('uniteSource')
-    //             ->where('statut', true)
-    //             ->unique('id')
-    //             ->each(function ($unite) use (&$unites) {
-    //                 if (!$unites->contains('id', $unite->id)) {
-    //                     $unites->push([
-    //                         'id' => $unite->id,
-    //                         'text' => $unite->libelle_unite
-    //                     ]);
-    //                 }
-    //             });
-
-    //         // Ajouter les unités destination
-    //         $unitesConversion->pluck('uniteDest')
-    //             ->where('statut', true)
-    //             ->unique('id')
-    //             ->each(function ($unite) use (&$unites) {
-    //                 if (!$unites->contains('id', $unite->id)) {
-    //                     $unites->push([
-    //                         'id' => $unite->id,
-    //                         'text' => $unite->libelle_unite
-    //                     ]);
-    //                 }
-    //             });
-
-    //         Log::info('Unités récupérées avec succès', [
-    //             'article_id' => $articleId,
-    //             'nombre_unites' => $unites->count(),
-    //             'unites' => $unites->toArray()
-    //         ]);
-
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'data' => [
-    //                 'unites' => $unites->values()->all()
-    //             ]
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Erreur lors de la récupération des unités', [
-    //             'article_id' => $articleId,
-    //             'message' => $e->getMessage(),
-    //             'trace' => $e->getTraceAsString()
-    //         ]);
-
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur lors de la récupération des unités: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
     public function getUnites(Request $request, $articleId)
     {
         try {
@@ -819,6 +738,7 @@ class FactureClientController extends Controller
             ], 500);
         }
     }
+
     public function details(FactureClient $facture)
     {
         return response()->json([
@@ -855,13 +775,13 @@ class FactureClientController extends Controller
         return $pdf->stream("facture_{$facture->numero}.pdf");
     }
 
-
     /**
      * Obtenir les détails d'une facture
      *
      * @param FactureClient $facture
      * @return JsonResponse
      */
+    
     public function getDetailsFacture(FactureClient $facture): JsonResponse
     {
         // Changement dans le chargement des relations

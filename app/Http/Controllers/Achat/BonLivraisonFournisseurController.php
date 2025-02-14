@@ -29,6 +29,7 @@ class BonLivraisonFournisseurController extends Controller
     /**
      * Affiche la liste des bons de livraison fournisseur
      */
+
     public function index()
     {
         // Récupération des bons de livraison avec leurs relations
@@ -73,10 +74,10 @@ class BonLivraisonFournisseurController extends Controller
         ));
     }
 
-
     /**
      * Affiche le formulaire de création
      */
+
     public function create()
     {
         // Récupérer les données nécessaires pour le formulaire
@@ -221,59 +222,6 @@ class BonLivraisonFournisseurController extends Controller
         }
     }
 
-    /**
-     * Affiche les détails d'une facture
-     */
-    // public function show(FactureFournisseur $facture)
-    // {
-    //     try {
-    //         // Charger la facture avec ses relations
-    //         $facture->load([
-    //             'fournisseur',
-    //             'lignes.article',
-    //             'lignes.uniteMesure',
-    //             'bonLivraison.lignes' // Chargement des bons de livraison et leurs lignes
-    //         ]);
-
-    //         dd($facture);
-
-    //         // Pour chaque ligne de facture, calculer la quantité déjà livrée
-    //         $lignes = $facture->lignes->map(function($ligne) use ($facture) {
-    //             // Récupérer toutes les livraisons validées pour cet article
-    //             $quantiteLivree = $facture->bonLivraison()
-    //                 ->whereNotNull('validated_at')
-    //                 ->whereNull('rejected_at')
-    //                 ->join('ligne_bon_livraison_fournisseurs', 'bon_livraison_fournisseurs.id', '=', 'ligne_bon_livraison_fournisseurs.livraison_id')
-    //                 ->where('ligne_bon_livraison_fournisseurs.article_id', $ligne->article_id)
-    //                 ->sum(DB::raw('COALESCE(ligne_bon_livraison_fournisseurs.quantite, 0) + COALESCE(ligne_bon_livraison_fournisseurs.quantite_supplementaire, 0)'));
-
-    //             // Ajouter la quantité livrée à la ligne
-    //             $ligne->quantite_livree = $quantiteLivree;
-
-    //             return $ligne;
-    //         });
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => array_merge($facture->toArray(), [
-    //                 'lignes' => $lignes
-    //             ])
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         \Log::error('Erreur lors de la récupération des détails de la facture:', [
-    //             'facture_id' => $facture->id,
-    //             'error' => $e->getMessage(),
-    //             'trace' => $e->getTraceAsString()
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Une erreur est survenue lors de la récupération des détails de la facture'
-    //         ], 500);
-    //     }
-    // }
-
     public function show(BonLivraisonFournisseur $bonLivraison)
     {
         $bonLivraison->load([
@@ -326,6 +274,7 @@ class BonLivraisonFournisseurController extends Controller
     /**
      * Met à jour un bon de livraison
      */
+
     public function update(Request $request, BonLivraisonFournisseur $bonLivraison)
     {
         if ($bonLivraison->validated_at || $bonLivraison->rejected_at) {
@@ -502,16 +451,12 @@ class BonLivraisonFournisseurController extends Controller
             // Mise à jour du statut de la facture
             $totalQuantiteFacture = $bonLivraison->facture->lignes->sum('quantite');
             $totalQuantiteLivree = $bonLivraison->facture->lignes->sum('quantite_livree');
-            // $totalQuantiteLivree = $bonLivraison->lignes->sum(function($ligne) {
-            //     return $ligne->getQuantiteTotale();
-            // });
 
             $bonLivraison->facture->update([
                 'statut_livraison' => $totalQuantiteLivree >= $totalQuantiteFacture ? 'LIVRE' : 'PARTIELLEMENT_LIVRE'
             ]);
 
             DB::commit();
-
             return response()->json([
                 'success' => true,
                 'message' => 'Bon de livraison validé et stocks mis à jour avec succès',
