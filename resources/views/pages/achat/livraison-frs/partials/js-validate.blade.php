@@ -29,7 +29,6 @@
                         Swal.showValidationMessage(
                             error.responseJSON?.message || error.message || 'Une erreur est survenue lors de la validation'
                         );
-                        console.error("Erreure:", error.debug.error);
                     });
             },
             allowOutsideClick: () => !Swal.isLoading()
