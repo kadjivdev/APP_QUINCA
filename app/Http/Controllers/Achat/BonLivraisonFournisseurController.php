@@ -382,8 +382,12 @@ class BonLivraisonFournisseurController extends Controller
                 $ligneBonLivraison = $bonLivraison->lignes->where('article_id', $ligneFact->article_id)->first();
 
                 // Mettre à jour les données de la ligne de facture avec la quantité livrée
+                $QteTotal = 0;
+                if ($ligneBonLivraison) {
+                    $QteTotal += $ligneBonLivraison->getQuantiteTotale();
+                }
                 $ligneFact->update([
-                    'quantite_livree' => $ligneFact->quantite_livree + ($ligneBonLivraison?->getQuantiteTotale() ?? 0),
+                    'quantite_livree' => $ligneFact->quantite_livree + $QteTotal,
                 ]);
 
                 // Log des prix unitaires
@@ -490,6 +494,7 @@ class BonLivraisonFournisseurController extends Controller
     /**
      * Rejette un bon de livraison
      */
+
     public function reject(Request $request, BonLivraisonFournisseur $bonLivraison)
     {
         if ($bonLivraison->validated_at || $bonLivraison->rejected_at) {
@@ -530,6 +535,7 @@ class BonLivraisonFournisseurController extends Controller
     /**
      * Génère un code unique pour le bon de livraison
      */
+
     private function generateCode()
     {
         $prefix = 'BLF';
