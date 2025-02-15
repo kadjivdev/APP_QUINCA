@@ -515,7 +515,7 @@ class BonCommandeController extends Controller
         $pdf->SetFont('', 'B', 12);
         $pdf->Text(10, 62, utf8_decode('FOURNISSEUR : ' . $bcde->fournisseur->raison_sociale));
         $pdf->SetFont('', 'B', 12);
-        $pdf->Text(10, 69, utf8_decode('OBJET : '));
+        $pdf->Text(10, 69, utf8_decode('OBJET : Bon de commande'));
 
         // $pdf->Text(13, 80, 'Client : '.$devis->client->nom_client);
         $pdf->SetXY(10, 73);
