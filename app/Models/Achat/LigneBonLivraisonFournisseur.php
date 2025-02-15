@@ -173,8 +173,6 @@ class LigneBonLivraisonFournisseur extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    
-
     private function rechercherConversion(int $unite_source_id, int $unite_base_id, int $article_id): ?ConversionUnite
     {
         return ConversionUnite::where(function ($query) use ($unite_source_id, $unite_base_id) {

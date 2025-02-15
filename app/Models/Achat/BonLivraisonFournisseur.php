@@ -148,7 +148,7 @@ class BonLivraisonFournisseur extends Model
         return $this->belongsTo(Vehicule::class, 'vehicule_id');
     }
 
-     /**
+    /**
      * Relation avec le point de vente
      */
     public function pointDeVente()
@@ -157,15 +157,14 @@ class BonLivraisonFournisseur extends Model
     }
 
     public function fournisseur()
-{
-    return $this->belongsTo(Fournisseur::class, 'fournisseur_id');
-}
+    {
+        return $this->belongsTo(Fournisseur::class, 'fournisseur_id');
+    }
 
-public function depot()
-{
-    return $this->belongsTo(Depot::class, 'depot_id');
-}
-
+    public function depot()
+    {
+        return $this->belongsTo(Depot::class, 'depot_id');
+    }
 
     /**
      * Relation avec les lignes du bon de livraison
@@ -188,7 +187,7 @@ public function depot()
         return $this->belongsTo(FactureFournisseur::class, 'facture_id');
     }
 
-      /**
+    /**
      * Relation avec l'utilisateur qui a validé le bon de livraison
      */
     public function validator()

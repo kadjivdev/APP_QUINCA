@@ -38,28 +38,6 @@
                     <i class="fas fa-sync-alt me-2 refresh-icon"></i>
                     <span class="refresh-text">Actualiser</span>
                 </button>
-
-                {{-- Filtre dropdown --}}
-                <div class="dropdown">
-                    <button class="btn btn-light-primary btn-sm dropdown-toggle d-flex align-items-center"
-                        type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-filter me-2"></i>
-                        Filtrer par
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="filterByDate('today')">Aujourd'hui</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByDate('week')">Cette semaine</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByDate('month')">Ce mois</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('NON_LIVRE')">Non livrées</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('PARTIELLEMENT_LIVRE')">Partiellement livrées</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByStatus('LIVRE')">Livrées</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByPayment('NON_PAYE')">Non payées</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByPayment('PARTIELLEMENT_PAYE')">Partiellement payées</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterByPayment('PAYE')">Payées</a></li>
-                    </ul>
-                </div>
             </div>
         </div>
 
@@ -131,6 +109,7 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -252,14 +231,14 @@
     }
 
     function filterByDate(period) {
-        window.location.href = `/achat/factures?period=${period}`;
+        window.location.href = `/quinkadjiv_refont/public/achat/factures?period=${period}`;
     }
 
     function filterByStatus(status) {
-        window.location.href = `/achat/factures?status=${status}`;
+        window.location.href = `/quinkadjiv_refont/public/achat/factures?status=${status}`;
     }
 
     function filterByPayment(payment) {
-        window.location.href = `/achat/factures?payment=${payment}`;
+        window.location.href = `/quinkadjiv_refont/public/achat/factures?payment=${payment}`;
     }
 </script>
