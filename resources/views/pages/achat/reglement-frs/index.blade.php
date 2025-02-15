@@ -1,25 +1,24 @@
 @extends('layouts.achat.reglement-frs')
 
 @push('styles')
-    @include('pages.achat.reglement-frs.partials.styles')
+@include('pages.achat.reglement-frs.partials.styles')
 @endpush
 
 @section('content')
+<div class="content">
+    {{-- En-tête de la page --}}
+    @include('pages.achat.reglement-frs.partials.header')
 
-    <div class="content">
-        {{-- En-tête de la page --}}
-        @include('pages.achat.reglement-frs.partials.header')
-
-        {{-- Liste des reglement-frss --}}
-        <div class="row g-3 list mt-3" id="reglement-frssList">
-            @include('pages.achat.reglement-frs.partials.list')
-        </div>
+    {{-- Liste des reglement-frss --}}
+    <div class="row g-3 list mt-3" id="reglement-frssList">
+        @include('pages.achat.reglement-frs.partials.list')
     </div>
+</div>
 
-    {{-- Modals --}}
-    @include('pages.achat.reglement-frs.partials.add-modal')
-    @include('pages.achat.reglement-frs.partials.show-modal')
-    @include('pages.achat.reglement-frs.partials.edit-modal')
+{{-- Modals --}}
+@include('pages.achat.reglement-frs.partials.add-modal')
+@include('pages.achat.reglement-frs.partials.show-modal')
+@include('pages.achat.reglement-frs.partials.edit-modal')
 @endsection
 
 @push('scripts')

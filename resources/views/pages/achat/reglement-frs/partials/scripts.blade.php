@@ -1,103 +1,103 @@
 <script>
     // Function to validate a payment
     function validateReglement(id) {
-    Swal.fire({
-        title: 'Valider le règlement',
-        text: 'Êtes-vous sûr de vouloir valider ce règlement ? Cette action est irréversible.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Oui, valider',
-        cancelButtonText: 'Annuler'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Validation en cours...',
-                html: 'Veuillez patienter...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+        Swal.fire({
+            title: 'Valider le règlement',
+            text: 'Êtes-vous sûr de vouloir valider ce règlement ? Cette action est irréversible.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, valider',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Validation en cours...',
+                    html: 'Veuillez patienter...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-            $.ajax({
-                url: `${apiUrl}/achat/reglements/${id}/validate`,
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                success: function(response) {
-                    if (response.success) {
+                $.ajax({
+                    url: `${apiUrl}/achat/reglements/${id}/validate`,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Validation réussie',
+                                text: response.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    },
+                    error: function(xhr) {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Validation réussie',
-                            text: response.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.reload();
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: xhr.responseJSON?.message || 'Erreur lors de la validation'
                         });
                     }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: xhr.responseJSON?.message || 'Erreur lors de la validation'
-                    });
-                }
-            });
-        }
-    });
-}
+                });
+            }
+        });
+    }
 
-// Function to delete a payment
-function deleteReglement(id) {
-    Swal.fire({
-        title: 'Supprimer le règlement',
-        text: 'Êtes-vous sûr de vouloir supprimer ce règlement ?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: `${apiUrl}/achat/reglements/${id}`,
-                type: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
+    // Function to delete a payment
+    function deleteReglement(id) {
+        Swal.fire({
+            title: 'Supprimer le règlement',
+            text: 'Êtes-vous sûr de vouloir supprimer ce règlement ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `${apiUrl}/achat/reglements/${id}`,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Suppression réussie',
+                                text: 'Le règlement a été supprimé avec succès',
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    },
+                    error: function(xhr) {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Suppression réussie',
-                            text: 'Le règlement a été supprimé avec succès',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            window.location.reload();
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: xhr.responseJSON?.message || 'Erreur lors de la suppression'
                         });
                     }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: xhr.responseJSON?.message || 'Erreur lors de la suppression'
-                    });
-                }
-            });
-        }
-    });
-}
+                });
+            }
+        });
+    }
 
-// Function to show payment details
-function showReglement(id) {
+    // Function to show payment details
+    function showReglement(id) {
         Swal.fire({
             title: 'Chargement...',
             text: 'Veuillez patienter...',
@@ -148,112 +148,112 @@ function showReglement(id) {
             }
         });
     }
-    $('#detailReglementModal').on('hidden.bs.modal', function () {
-    $('[data-bs-toggle="tooltip"]').tooltip('dispose');
-});
+    $('#detailReglementModal').on('hidden.bs.modal', function() {
+        $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+    });
 
-// Function to print payment
-function printReglement(id) {
-    window.open(`/achat/reglements/${id}/print`, '_blank');
-}
-
-// Function to filter by date
-function filterByDate(period) {
-    window.location.href = `/achat/reglements?period=${period}`;
-}
-
-// Function to filter by payment mode
-function filterByMode(mode) {
-    window.location.href = `/achat/reglements?mode=${mode}`;
-}
-
-// Function to refresh page
-function refreshPage() {
-    const refreshBtn = document.querySelector('.btn-light-secondary');
-    refreshBtn.classList.add('refreshing');
-    refreshBtn.disabled = true;
-
-    setTimeout(() => {
-        window.location.reload();
-    }, 500);
-}
-
-async function editReglement(id) {
-    try {
-        Swal.fire({
-            title: 'Chargement...',
-            text: 'Veuillez patienter...',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            allowEnterKey: false,
-            showConfirmButton: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        const response = await fetch(`${apiUrl}/achat/reglements/${id}`, {  // URL mise à jour
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors du chargement des données');
-        }
-
-        const result = await response.json();
-        console.log(result.data);
-
-        if (result.success) {
-            const editModal = document.getElementById('editReglementModal');
-            const editForm = document.getElementById('editReglementForm');
-
-            const data = result.data;
-
-            editForm.action = `${apiUrl}/achat/reglements/${id}`;  // URL mise à jour
-
-            $("#codeReg").html(data.code);
-            $("[name='facture_fournisseur_id']").val(data.facture_fournisseur_id);
-            $("#factureSelectMod").html(data.facture.code);
-
-            $('#codeReglementMod').val(data.code);
-            $('#referenceDocumentMod').val(data.reference_document);
-            $("#montantRestantMod").html(result.montant_restant)
-
-            // $('#fournisseurMod').text(data.fournisseur.raison_sociale);
-            $("[name='date_reglement']").val(data.date_reglement.split('T')[0]);
-
-            // Marquer le mode de reglement
-            const modeList = $("#modeReglementMod");
-            const modeOption = modeList.find(`option[value="${data.mode_reglement}"]`);
-            if (modeOption.length > 0) {
-                modeOption.prop("selected", true);
-            }
-
-            $('#montantReglementMod').val(data.montant_reglement);
-            $("[name='commentaire']").val(data.commentaire);
-
-            const modal = new bootstrap.Modal(editModal);
-            modal.show();                
-            Swal.close();
-        } else {
-            throw new Error(result.message || 'Erreur lors du chargement des données');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        Toast.fire({
-            icon: 'error',
-            title: error.message || 'Erreur lors du chargement des données',
-            timer: 3000
-        });
+    // Function to print payment
+    function printReglement(id) {
+        window.open(`/quinkadjiv_refont/public/achat/reglements/${id}/print`, '_blank');
     }
-}
 
-$('#editReglementForm').on('submit', function(e) {
-    e.preventDefault();
+    // Function to filter by date
+    function filterByDate(period) {
+        window.location.href = `/quinkadjiv_refont/public/achat/reglements?period=${period}`;
+    }
+
+    // Function to filter by payment mode
+    function filterByMode(mode) {
+        window.location.href = `/quinkadjiv_refont/public/achat/reglements?mode=${mode}`;
+    }
+
+    // Function to refresh page
+    function refreshPage() {
+        const refreshBtn = document.querySelector('.btn-light-secondary');
+        refreshBtn.classList.add('refreshing');
+        refreshBtn.disabled = true;
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
+
+    async function editReglement(id) {
+        try {
+            Swal.fire({
+                title: 'Chargement...',
+                text: 'Veuillez patienter...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const response = await fetch(`${apiUrl}/achat/reglements/${id}`, { // URL mise à jour
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur lors du chargement des données');
+            }
+
+            const result = await response.json();
+            console.log(result.data);
+
+            if (result.success) {
+                const editModal = document.getElementById('editReglementModal');
+                const editForm = document.getElementById('editReglementForm');
+
+                const data = result.data;
+
+                editForm.action = `${apiUrl}/achat/reglements/${id}`; // URL mise à jour
+
+                $("#codeReg").html(data.code);
+                $("[name='facture_fournisseur_id']").val(data.facture_fournisseur_id);
+                $("#factureSelectMod").html(data.facture.code);
+
+                $('#codeReglementMod').val(data.code);
+                $('#referenceDocumentMod').val(data.reference_document);
+                $("#montantRestantMod").html(result.montant_restant)
+
+                // $('#fournisseurMod').text(data.fournisseur.raison_sociale);
+                $("[name='date_reglement']").val(data.date_reglement.split('T')[0]);
+
+                // Marquer le mode de reglement
+                const modeList = $("#modeReglementMod");
+                const modeOption = modeList.find(`option[value="${data.mode_reglement}"]`);
+                if (modeOption.length > 0) {
+                    modeOption.prop("selected", true);
+                }
+
+                $('#montantReglementMod').val(data.montant_reglement);
+                $("[name='commentaire']").val(data.commentaire);
+
+                const modal = new bootstrap.Modal(editModal);
+                modal.show();
+                Swal.close();
+            } else {
+                throw new Error(result.message || 'Erreur lors du chargement des données');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            Toast.fire({
+                icon: 'error',
+                title: error.message || 'Erreur lors du chargement des données',
+                timer: 3000
+            });
+        }
+    }
+
+    $('#editReglementForm').on('submit', function(e) {
+        e.preventDefault();
         const formData = $("#editReglementForm").serialize();
         console.log($(this).attr('action'))
 
@@ -284,7 +284,6 @@ $('#editReglementForm').on('submit', function(e) {
             }
         });
 
-    $(this).addClass('was-validated');
-});
-
+        $(this).addClass('was-validated');
+    });
 </script>
