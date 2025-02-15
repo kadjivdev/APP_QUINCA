@@ -20,6 +20,9 @@
                 <li><a class="dropdown-item" href="#" onclick="filterByPayment('NON_PAYE')">Non payées</a></li>
                 <li><a class="dropdown-item" href="#" onclick="filterByPayment('PARTIELLEMENT_PAYE')">Partiellement payées</a></li>
                 <li><a class="dropdown-item" href="#" onclick="filterByPayment('PAYE')">Payées</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByType('SIMPLE')">SIMPLE</a></li>
+                <li><a class="dropdown-item" href="#" onclick="filterByType('NORMALISE')">NORMALISE</a></li>
             </ul>
         </div>
     </div>

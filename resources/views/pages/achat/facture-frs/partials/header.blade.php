@@ -241,4 +241,8 @@
     function filterByPayment(payment) {
         window.location.href = `/quinkadjiv_refont/public/achat/factures?payment=${payment}`;
     }
+
+    function filterByType(type) {
+        window.location.href = `/quinkadjiv_refont/public/achat/factures?type=${type}`;
+    }
 </script>

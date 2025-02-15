@@ -50,6 +50,18 @@ class FactureFournisseurController extends Controller
             }
         }
 
+        // FILTRE PAR TYPE DE FACTURE
+        if ($request->filled('type')) {
+            switch ($request->type) {
+                case 'SIMPLE':
+                    $query->where("type_facture", 'SIMPLE');
+                    break;
+                default:
+                    $query->where("type_facture", "NORMALISE");
+                    break;
+            }
+        }
+
         if ($request->filled('status')) {
             $query->where('statut_livraison', $request->status);
         }
@@ -99,6 +111,7 @@ class FactureFournisseurController extends Controller
             ->whereNotNull('validated_at')
             ->with(['pointVente', 'fournisseur'])
             ->get();
+
 
         // Retour de la vue avec toutes les données nécessaires
         return view('pages.achat.facture-frs.index', [
