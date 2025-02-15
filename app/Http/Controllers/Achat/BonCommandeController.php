@@ -17,6 +17,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use TCPDF;
 
 class BonCommandeController extends Controller
 {
@@ -491,14 +492,23 @@ class BonCommandeController extends Controller
         // dd($bcde->fournisseur); test
         $pdf = new PDF_MC_Table();
         $pdf->AliasNbPages();  // To use the total number of pages
+        // $pdf->setLanguageArray($pdf->getLanguageArray('fr'));
         $pdf->AddPage();
         $pdf->SetFont('Arial', 'B', 16);
+
+        // Définir la police à "DejaVu Sans" qui supporte les caractères UTF-8
+        // $pdf->SetFont('DejaVu Sans', '', 12); // Ou 'dejavusans' pour une version UTF-8
 
         $pdf->Image("assets/img/logos/logo.jpeg", 150, 10, 50, 30);
         $pdf->Image("assets/img/logos/head_facture.jpg", 10, 10, 70, 30);
 
+        $date = Carbon::now();
+        $date->locale('fr');
+
         $pdf->SetFont('', 'B', 10);
-        $pdf->Text(150, 42, 'Cotonou, le ' . date("d m Y"));
+        $dateText =Carbon::now()->locale('fr')->isoFormat('D MMMM YYYY');
+
+        $pdf->Text(150, 42, 'Cotonou, le ' . utf8_decode($dateText));
 
         $pdf->SetFont('', 'B', 12);
         // $pdf->Text(10, 55, 'FOURNISSEUR');
