@@ -555,7 +555,7 @@ class BonCommandeController extends Controller
 
         $pdf->CheckPageBreak(45);
         $pdf->SetFont('', 'B', 10);
-        $pdf->Text($pdf->GetX() + 150, $pdf->GetY() + 45, utf8_decode('LA DIRECTRICE'));
+        $pdf->Text($pdf->GetX() + 150, $pdf->GetY() + 45, utf8_decode('LA DIRECTRICE GENERALE'));
         $pdf->Text($pdf->GetX() + 142, $pdf->GetY() + 75, utf8_decode('Kadidjatou A. DJAOUGA'));
 
         // Générer le nom de fichier unique pour le PDF
