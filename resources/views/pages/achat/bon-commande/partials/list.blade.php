@@ -338,12 +338,36 @@
         });
     }
 
+    function closeObject() {
+        $("#show_object").attr('hidden', true)
+    }
+
+    function exportPdf() {
+        $("#show_object").removeAttr("hidden")
+    }
+
+    function exportation() {
+        let bon_id = $("#bon_id").val()
+        let bon_object = $("#bon_object").val()
+        if (bon_object) {
+            window.open(`/quinkadjiv_refont/public/achat/bon-commandes/${bon_id}/${bon_object}/pdf`)
+            // window.location.href = `/quinkadjiv_refont/public/achat/bon-commandes/${bon_id}/${bon_object}/pdf`
+        }
+        alert("Saisissez un object dans le champ ...")
+    }
+
+    $("#exportForm").on("submit", function(e) {
+        e.preventDefault()
+        alert("submit .....")
+    })
+
     function fillBonCommandeDetails(data) {
         console.log('Données à afficsssher:', data);
 
         // Réinitialiser le contenu précédent
         $('#articlesSectionShow').empty();
 
+        $('#bon_id').val(data.id)
         // Afficher les informations de base
         $('#bonCodeShow').text(data.code);
         $('#refProgrammationShow').text(data.programmation.code);
@@ -351,7 +375,7 @@
         $('#dateProgrammationShow').text(data.programmation.date_programmation.split('T')[0]);
         $('#fournisseurShow').text(data.fournisseur.raison_sociale);
 
-        $("#exportPdf").attr("href", `/quinkadjiv_refont/public/achat/bon-commandes/${data.id}/pdf`);
+        // $("#exportPdf").attr("href", `/quinkadjiv_refont/public/achat/bon-commandes/${data.id}/pdf`);
 
         const statutBadge = data.programmation.rejected_at ?
             '<span class="badge bg-danger bg-opacity-10 text-danger"><i class="fas fa-minus-circle"></i> Rejetée</span>' :
@@ -496,7 +520,6 @@
 
     // Initialisation des tooltips
     $(document).ready(function() {
-        alert('555');
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);

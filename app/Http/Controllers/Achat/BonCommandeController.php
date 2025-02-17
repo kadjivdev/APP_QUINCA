@@ -485,7 +485,7 @@ class BonCommandeController extends Controller
         ]);
     }
 
-    public function generatePDF($id)
+    public function generatePDF($id, $bon_object)
     {
         $bcde = BonCommande::with(['fournisseur'])->where('id', $id)->first();
 
@@ -506,7 +506,7 @@ class BonCommandeController extends Controller
         $date->locale('fr');
 
         $pdf->SetFont('', 'B', 10);
-        $dateText =Carbon::now()->locale('fr')->isoFormat('D MMMM YYYY');
+        $dateText = Carbon::now()->locale('fr')->isoFormat('D MMMM YYYY');
 
         $pdf->Text(150, 42, 'Cotonou, le ' . utf8_decode($dateText));
 
@@ -515,7 +515,7 @@ class BonCommandeController extends Controller
         $pdf->SetFont('', 'B', 12);
         $pdf->Text(10, 62, utf8_decode('FOURNISSEUR : ' . $bcde->fournisseur->raison_sociale));
         $pdf->SetFont('', 'B', 12);
-        $pdf->Text(10, 69, utf8_decode('OBJET : Bon de commande'));
+        $pdf->Text(10, 69, utf8_decode("OBJET : $bon_object"));
 
         // $pdf->Text(13, 80, 'Client : '.$devis->client->nom_client);
         $pdf->SetXY(10, 73);

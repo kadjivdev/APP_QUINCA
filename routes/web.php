@@ -311,7 +311,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::get('/{bonCommande}/export', [BonCommandeController::class, 'export'])->name('bon-commandes.export');
 
                 // Export PDF
-                Route::get('/{bonCommande}/pdf', [BonCommandeController::class, 'generatePDF'])->name('bon-commandes.pdf');
+                Route::get('/{bonCommande}/{bon_object}/pdf', [BonCommandeController::class, 'generatePDF'])->name('bon-commandes.pdf');
                 Route::get('/{bonCommande}/excel', [BonCommandeController::class, 'generateExcel'])->name('bon-commandes.excel');
 
                 // Recherche et filtres

@@ -126,6 +126,19 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="bg-light shadow-sm roundered show_reference" id="show_object" hidden>
+                        <!-- <form id="exportForm"> -->
+                        <div class="modal-body">
+                            <input type="hidden" id="bon_id">
+                            <textarea name="" required id="bon_object" class="form-control" placeholder="Tapez l'objet ici ...."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" onclick="closeObject()">Close</button>
+                            <button type="submit" onclick="exportation()" class="btn btn-dark">Exporter maintenant</button>
+                        </div>
+                        <!-- </form> -->
+                    </div>
                 </div>
             </div>
 
@@ -142,7 +155,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a id="exportPdf" class="dropdown-item" target="_blank" >
+                            <a onclick="exportPdf()" class="dropdown-item btn">
                                 <i class="fas fa-file-pdf me-2"></i>Exporter en PDF
                             </a>
                         </li>
