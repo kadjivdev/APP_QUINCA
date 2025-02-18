@@ -138,7 +138,7 @@
                                                     <td></td>
                                                 </tr>
                                                 <tr class="table-light">
-                                                    <td colspan="4" class="text-end fw-bold">Total TTC</td>
+                                                    <td colspan="4" class="text-end fw-bold">Montant TTC</td>
                                                     <td class="text-end fw-bold" id="totalTTC">0,00 FCFA</td>
                                                     <td></td>
                                                 </tr>

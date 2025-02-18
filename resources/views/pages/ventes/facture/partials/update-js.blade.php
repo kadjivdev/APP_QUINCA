@@ -1,6 +1,6 @@
 <script>
     'use strict';
-
+    
     // Configuration pour la mise à jour
     const UpdateConfig = {
         selectors: {
@@ -352,7 +352,6 @@
             console.log('Total HT:', totalHT);
 
 
-
             // Arrondir les totaux
             totalHT = this.roundNumber(totalHT);
             totalTVA = this.roundNumber(totalTVA);
@@ -439,9 +438,6 @@
             this.toggleTaxRows();
             this.updateTotaux();
         }
-
-        
-
 
         updateMontantRestant(totalTTC) {
             console.log('Total TTC:', totalTTC);
