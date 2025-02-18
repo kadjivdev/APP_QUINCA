@@ -501,6 +501,7 @@ class FactureManager {
             // Ne calculer TVA et AIB que si la facture est normalisée
             if (this.isNormalized) {
                 totalTVA += FactureUtils.roundNumber(montantHT * (FactureConfig.TVA.rate / 100));
+                <!-- l'ancienne façon de faire -->
                 <!-- totalAIB += FactureUtils.roundNumber(montantHT * (tauxAib / 100)); -->
                 totalAIB += FactureUtils.roundNumber(montantHT  / 100);
             }
