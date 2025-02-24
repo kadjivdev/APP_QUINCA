@@ -1,6 +1,6 @@
 <div class="modal fade" id="addClientModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content border-0 shadow-lg modal-dialog-scrollable" style="overflow-y: scroll!important;">
             {{-- Header du modal --}}
             <div class="modal-header bg-primary bg-opacity-10 border-bottom-0 py-3">
                 <div class="d-flex align-items-center">
@@ -183,189 +183,193 @@
     </div>
 </div>
 <style>
-    {/* Styles pour le modal d'ajout de client */}
-:root {
-    --kadjiv-orange: #FFA500;
-    --kadjiv-orange-light: rgba(255, 165, 0, 0.1);
-}
-
-/* Modal styles */
-.modal-content {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.modal-header {
-    background: #fff !important;
-}
-
-.modal-header .bg-primary {
-    background-color: var(--kadjiv-orange-light) !important;
-}
-
-.modal-header .text-primary {
-    color: var(--kadjiv-orange) !important;
-}
-
-.modal-header .rounded-circle {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Form controls */
-.form-label {
-    color: #2c3e50;
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-}
-
-.form-label.required:after {
-    content: " *";
-    color: var(--kadjiv-orange);
-}
-
-.form-control, .form-select {
-    border-color: #e9ecef;
-    padding: 0.6rem 0.875rem;
-    font-size: 0.875rem;
-    border-radius: 6px;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: var(--kadjiv-orange);
-    box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
-}
-
-.input-group-text {
-    background-color: #f8f9fa;
-    border-color: #e9ecef;
-    color: #6c757d;
-}
-
-/* Card styles */
-.modal .card {
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.modal .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08);
-}
-
-.modal .card.bg-light {
-    background-color: #f8f9fa !important;
-    border: none;
-}
-
-.card-subtitle {
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-}
-
-.card-subtitle i {
-    color: var(--kadjiv-orange);
-}
-
-/* Buttons */
-.modal .btn {
-    padding: 0.5rem 1.25rem;
-    font-weight: 500;
-    border-radius: 6px;
-}
-
-.modal .btn-primary {
-    background-color: var(--kadjiv-orange);
-    border-color: var(--kadjiv-orange);
-}
-
-.modal .btn-primary:hover {
-    background-color: #e69400;
-    border-color: #e69400;
-}
-
-.modal .btn-light {
-    background-color: #f8f9fa;
-    border-color: #e9ecef;
-}
-
-/* Form switch */
-.form-switch .form-check-input {
-    background-color: #e9ecef;
-    border-color: #dee2e6;
-    cursor: pointer;
-}
-
-.form-switch .form-check-input:checked {
-    background-color: var(--kadjiv-orange);
-    border-color: var(--kadjiv-orange);
-}
-
-.form-switch .form-check-input:focus {
-    box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
-}
-
-/* Input validation styles */
-.was-validated .form-control:valid, .form-control.is-valid {
-    border-color: #198754;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-}
-
-.was-validated .form-control:invalid, .form-control.is-invalid {
-    border-color: #dc3545;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-}
-
-/* Textarea styles */
-textarea.form-control {
-    min-height: 60px;
-    resize: vertical;
-}
-
-/* Number input styles */
-input[type="number"].form-control {
-    text-align: right;
-}
-
-/* Modal footer */
-.modal-footer {
-    border-top: 1px solid #e9ecef;
-    background-color: #f8f9fa;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .modal-dialog {
-        margin: 0.5rem;
+    :root {
+        --kadjiv-orange: #FFA500;
+        --kadjiv-orange-light: rgba(255, 165, 0, 0.1);
     }
 
-    .modal-body {
-        padding: 1rem;
+    /* Modal styles */
+    /* .modal-content {
+        border-radius: 12px;
+        /* overflow: hidden; */
     }
 
-    .row.g-4 {
-        --bs-gutter-y: 1rem;
+    */ .modal-header {
+        background: #fff !important;
     }
-}
 
-/* Animation */
-.modal.show .modal-dialog {
-    animation: modal-slide-down 0.3s ease-out;
-}
+    .modal-header .bg-primary {
+        background-color: var(--kadjiv-orange-light) !important;
+    }
 
-@keyframes modal-slide-down {
-    from {
-        transform: translateY(-100px);
-        opacity: 0;
+    .modal-header .text-primary {
+        color: var(--kadjiv-orange) !important;
     }
-    to {
-        transform: translateY(0);
-        opacity: 1;
+
+    .modal-header .rounded-circle {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-}
+
+    /* Form controls */
+    .form-label {
+        color: #2c3e50;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-label.required:after {
+        content: " *";
+        color: var(--kadjiv-orange);
+    }
+
+    .form-control,
+    .form-select {
+        border-color: #e9ecef;
+        padding: 0.6rem 0.875rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--kadjiv-orange);
+        box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+        color: #6c757d;
+    }
+
+    /* Card styles */
+    .modal .card {
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .modal .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+    }
+
+    .modal .card.bg-light {
+        background-color: #f8f9fa !important;
+        border: none;
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-subtitle i {
+        color: var(--kadjiv-orange);
+    }
+
+    /* Buttons */
+    .modal .btn {
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+    .modal .btn-primary {
+        background-color: var(--kadjiv-orange);
+        border-color: var(--kadjiv-orange);
+    }
+
+    .modal .btn-primary:hover {
+        background-color: #e69400;
+        border-color: #e69400;
+    }
+
+    .modal .btn-light {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+    }
+
+    /* Form switch */
+    .form-switch .form-check-input {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        cursor: pointer;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: var(--kadjiv-orange);
+        border-color: var(--kadjiv-orange);
+    }
+
+    .form-switch .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
+    }
+
+    /* Input validation styles */
+    .was-validated .form-control:valid,
+    .form-control.is-valid {
+        border-color: #198754;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    }
+
+    .was-validated .form-control:invalid,
+    .form-control.is-invalid {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    }
+
+    /* Textarea styles */
+    textarea.form-control {
+        min-height: 60px;
+        resize: vertical;
+    }
+
+    /* Number input styles */
+    input[type="number"].form-control {
+        text-align: right;
+    }
+
+    /* Modal footer */
+    .modal-footer {
+        border-top: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .modal-dialog {
+            margin: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 1rem;
+        }
+
+        .row.g-4 {
+            --bs-gutter-y: 1rem;
+        }
+    }
+
+    /* Animation */
+    .modal.show .modal-dialog {
+        animation: modal-slide-down 0.3s ease-out;
+    }
+
+    @keyframes modal-slide-down {
+        from {
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 </style>

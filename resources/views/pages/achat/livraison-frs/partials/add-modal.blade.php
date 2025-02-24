@@ -1,6 +1,6 @@
 <div class="modal fade" id="addLivraisonFournisseurModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+    <div class="modal-dialog modal-dialog-centered modal-xl " >
+        <div class="modal-content border-0 shadow-lg rounded-4 modal-dialog-scrollable" style="overflow-y: scroll!important;">
             {{-- Header du modal --}}
             <div class="modal-header border-0 bg-gradient-light py-4">
                 <div class="d-flex align-items-center">

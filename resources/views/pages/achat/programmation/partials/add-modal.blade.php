@@ -1,5 +1,5 @@
 <div class="modal fade" id="addProgrammationModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 95%; width: 95%;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg">
             {{-- Header du modal --}}
             <div class="modal-header bg-primary bg-opacity-10 border-bottom-0 py-3">
