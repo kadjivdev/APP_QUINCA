@@ -9,7 +9,8 @@ use Spatie\Permission\Models\Permission;
 
 class RoleAndPermissionSeeder extends Seeder
 {
-    private function createCrudValidatePermissions($name, $permission, $group) {
+    private function createCrudValidatePermissions($name, $permission, $group)
+    {
         return [
             "Voir les $name" => "$permission.view",
             "Créer des $name" => "$permission.create",
@@ -58,7 +59,11 @@ class RoleAndPermissionSeeder extends Seeder
                 $this->createCrudValidatePermissions('sessions de caisse', 'vente.sessions', 'Ventes'),
                 $this->createCrudValidatePermissions('factures client', 'vente.facture', 'Ventes'),
                 $this->createCrudValidatePermissions('règlements client', 'vente.reglement', 'Ventes'),
-                $this->createCrudValidatePermissions('livraisons client', 'vente.livraisons', 'Ventes')
+                $this->createCrudValidatePermissions('livraisons client', 'vente.livraisons', 'Ventes'),
+                $this->createCrudValidatePermissions('factures proforma', 'facture.proformas', 'Ventes'),
+                [
+                    "Voir les détails" => "facture.proformas.details",
+                ]
             ),
 
             'Revendeur' => array_merge(
@@ -105,7 +110,7 @@ class RoleAndPermissionSeeder extends Seeder
             foreach ($permissions as $description => $permission) {
                 $createdPermission = Permission::firstOrCreate(
                     ['name' => $permission, 'guard_name' => 'web'],
-                    ['name' => $permission,'group_name' => $group,'description' => $description]
+                    ['name' => $permission, 'group_name' => $group, 'description' => $description]
                 );
                 $allPermissions[] = $createdPermission;
             }

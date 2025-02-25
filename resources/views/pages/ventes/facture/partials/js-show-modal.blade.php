@@ -61,14 +61,14 @@
 
     // Fonction pour mettre à jour le contenu du modal
     function updateModalContent(data) {
-   const facture = data.facture;
+        const facture = data.facture;
 
-   // En-tête modal
-   $('#numeroFacture').text(facture.numero);
-   $('#dateFacture').text(data.dateFacture);
+        // En-tête modal
+        $('#numeroFacture').text(facture.numero);
+        $('#dateFacture').text(data.dateFacture);
 
-   // Contenu HTML
-   let contenuHtml = `
+        // Contenu HTML
+        let contenuHtml = `
        <div class="row g-4">
            <!-- Section Client -->
            <div class="col-md-6">
@@ -184,9 +184,9 @@
        </div>
    `;
 
-   $('#factureDetails').html(contenuHtml);
-   initTooltips();
-}
+        $('#factureDetails').html(contenuHtml);
+        initTooltips();
+    }
 
     // Fonction pour générer le badge de statut
     function getStatusBadge(statut) {
@@ -227,7 +227,7 @@
 
     // Fonction pour générer les totaux
     function generateTotaux(data) {
-   return `
+        return `
        <tr>
            <td colspan="4" class="text-end fw-bold">Total HT</td>
            <td class="text-end fw-bold">${data.montantHT} FCFA</td>
@@ -264,14 +264,14 @@
            <td class="text-end text-danger fw-bold">${data.montantRestant} FCFA</td>
        </tr>
    `;
-}
+    }
 
 
-function getMoyenneRemise(lignes) {
-   if (!lignes?.length) return '0.00';
-   const total = lignes.reduce((sum, l) => sum + (l.taux_remise || 0), 0);
-   return formatTaux(total / lignes.length);
-}
+    function getMoyenneRemise(lignes) {
+        if (!lignes?.length) return '0.00';
+        const total = lignes.reduce((sum, l) => sum + (l.taux_remise || 0), 0);
+        return formatTaux(total / lignes.length);
+    }
 
 
     // Fonctions utilitaires
@@ -311,4 +311,4 @@ function getMoyenneRemise(lignes) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     }
-    </script>
+</script>

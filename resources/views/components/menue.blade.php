@@ -201,6 +201,15 @@
                         </a></li>
                     @endcan
 
+                    <!-- FACTURE PROFORMA -->
+                    <!-- can('facture.proformas.view') -->
+                    <li>
+                        <a class="dropdown-item" href="{{ route('proforma.create') }}">
+                            <div class="dropdown-item-wrapper">Facture Proforma</div>
+                        </a>
+                    </li>
+                    <!-- endcan -->
+
                     @can('vente.reglement.view')
                     <li><a class="dropdown-item" href="{{ route('vente.reglement.index') }}">
                             <div class="dropdown-item-wrapper">Règlements Clients</div>

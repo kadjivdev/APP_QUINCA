@@ -13,7 +13,7 @@ use App\Http\Controllers\Parametre\ConversionUniteController;
 use App\Http\Controllers\Catalogues\{FamilleArticleController, ArticleController, TarificationController};
 use App\Http\Controllers\Achat\{FournisseurController, ProgrammationAchatController, LigneProgrammationAchatController};
 use App\Http\Controllers\Achat\{BonCommandeController, LigneBonCommandeController, factureFournisseurController, LigneFactureFournisseurController, ReglementFournisseurController,  BonLivraisonFournisseurController, LigneBonLivraisonFournisseurController};
-use App\Http\Controllers\Vente\{AcompteClientController, ClientController, sessioncaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController};
+use App\Http\Controllers\Vente\{AcompteClientController, ClientController, sessioncaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController, ProformaController};
 use App\Http\Controllers\Parametre\ChauffeurController;
 use App\Http\Controllers\Parametre\VehiculeController;
 use App\Http\Controllers\Revendeur\FactureRevendeurController;
@@ -41,6 +41,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
 
     // Routes protégées
     Route::middleware('auth')->group(function () {
+
         Route::get('acompte-clients/get-clients', [AcompteClientController::class, 'getClients'])
             ->name('acompte-clients.get-clients');
 
@@ -628,6 +629,10 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::get('/{facture}/print', [FactureClientController::class, 'print'])->name('vente.facture.print');
 
                 Route::put('/{id}/update', [FactureClientController::class, 'update'])->name('vente.facture.update')->where('id', '[0-9]+');
+
+                // LES PROFORMA
+                Route::resource('proforma', ProformaController::class);
+                Route::get('/generate-proforma/{id}', [ProformaController::class, 'generatePDF'])->name("generate-proforma");
             });
 
             // Routes pour les reglements
@@ -850,7 +855,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
             Route::get('/enregistrement-non-valides', [RapportVenteController::class, '_enregistrementsNonValides'])
                 ->name('rapports._enregistrementsNonValides');
 
-            Route::post('rapports/stock/change-depot', 'RapportController@changeDepot')->name('rapports.stock.changeDepot');
+            // Route::post('rapports/stock/change-depot', 'RapportController@changeDepot')->name('rapports.stock.changeDepot');
             Route::get('/stock-alert', [StockAlertController::class, 'index'])
                 ->name('rapports.alert-stock');
 
@@ -909,7 +914,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::get('/previsions', [StockRotationController::class, 'getPredictions'])
                     ->name('stock.rotation.predictions');
             });
-
 
             Route::prefix('stock/alert')->middleware(['auth'])->group(function () {
                 // Page principale de la rotation des stocks

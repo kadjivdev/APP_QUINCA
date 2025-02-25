@@ -28,6 +28,11 @@ class ClientController extends Controller
 
     public function index(Request $request)
     {
+        if (request()->ajax()) {
+            return response()->json(Client::all());
+        }
+
+        // 
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
 
         // Récupération des données avec pagination
