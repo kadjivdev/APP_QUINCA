@@ -141,6 +141,7 @@
         </div>
     </div>
 </div>
+
 @include("pages.ventes.facture.proforma.partials.add-modal")
 @include("pages.ventes.facture.proforma.partials.show-detail")
 @include("pages.ventes.facture.proforma.partials.update-modal")
@@ -148,7 +149,6 @@
 @endsection
 
 @push("scripts")
-
 <!-- DATATABLE -->
 <script>
     $("#example1").DataTable({

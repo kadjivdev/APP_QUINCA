@@ -1,4 +1,4 @@
-<div class="modal fade" id="addFactureProformaModal" aria-labelledby="addFactureProformaModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="addFactureProformaModal"  tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content border-0 shadow-lg modal-dialog-scrollable" style="overflow-y: scroll!important;">
             {{-- Header du modal avec un nouveau design --}}

@@ -32,7 +32,7 @@
                                         <div class="col-md-6">
                                             <label class="form-label fw-medium required">Client</label>
                                             <div class="input-group">
-                                                <select id="client_idUpdate" class="form-select select2" name="client_id" required>
+                                                <select id="client_idUpdate" class="form-select _select2" name="client_id" required>
                                                     <!-- LES CLIENTS -->
                                                 </select>
                                             </div>
@@ -60,7 +60,7 @@
                                     <div class="row">
                                         <div class="col-4">
                                             <label class="form-label">Choisir l'article</label>
-                                            <select class="form-select form-control test select2" name="article_id"
+                                            <select class="form-select form-control test _select2" name="article_id"
                                                 id="articleSelectUpdate">
                                                 <option value="">Choisir l'article </option>
                                                 @foreach ($articles as $article)
@@ -81,7 +81,7 @@
                                         </div>
                                         <div class="col-4">
                                             <label class="form-label">Unité</label>
-                                            <select class="form-select select2" name="unite_id" id="uniteSelectUpdate">
+                                            <select class="form-select _select2" name="unite_id" id="uniteSelectUpdate">
                                                 @foreach($unites_mesures as $unite)
                                                 <option value="{{$unite->id}}">{{$unite->libelle_unite}}</option>
                                                 @endforeach
@@ -178,7 +178,7 @@
 
 @push("scripts")
 <script>
-    $(".select2").select2({
+    $("._select2").select2({
         theme: 'bootstrap-5',
         width: '100%',
         dropdownParent: updateFactureProformaModal,
