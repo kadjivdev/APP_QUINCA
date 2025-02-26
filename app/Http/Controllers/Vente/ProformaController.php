@@ -24,11 +24,11 @@ class ProformaController extends Controller
      * Display a listing of the resource.
      */
 
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:facture.proformas.view')->only('index');
-    //     $this->middleware('permission:facture.proformas.create')->only(['create', 'store']);
-    // }
+    public function __construct()
+    {
+        // $this->middleware('permission:facture.proformas.create')->only(['create', 'store']);
+        // $this->middleware('permission:facture.proformas.validate')->only(['valider']);
+    }
 
     public function create()
     {
@@ -41,24 +41,6 @@ class ProformaController extends Controller
         $unites_mesures = UniteMesure::all();
         return view('pages.ventes.facture.proforma.index', compact('devis', "clients", "articles", "unites_mesures"));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-
-    // public function create()
-    // {
-    //     $clients = Client::where('seuil', '>', 'credit_total')->get();
-
-    //     $pointVendueId = Auth::user()->point_vente_id;
-    //     $articles = PointVente::find($pointVendueId)
-    //         ->articles()
-    //         ->wherePivot('qte_stock', '>', 0)
-    //         ->select('articles.*', 'qte_stock', 'prix_special')
-    //         ->get();
-    //     $unites = UniteMesure::all();
-    //     return view('pages.ventes-module.devis.create', compact('unites', 'clients', 'articles', 'pointVendueId'));
-    // }
 
     /**
      * Store a newly created resource in storage.

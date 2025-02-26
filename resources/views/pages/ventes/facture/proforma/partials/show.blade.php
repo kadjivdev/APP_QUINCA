@@ -42,6 +42,9 @@
 
     <div class="row">
         <div class="col-md-12">
+            <div class="d-flex text-right" style="justify-content: end;">
+                <a href="{{route('proforma.create')}}" class="btn btn-md btn-primary"><i class="bi bi-arrow-left-circle-fill"></i> Retour</a>
+            </div>
 
             <form action="{{route('proforma.update',$devis->id)}}" method="POST" class="needs-validation" novalidate>
                 @csrf

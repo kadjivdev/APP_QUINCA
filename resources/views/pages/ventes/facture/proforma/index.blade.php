@@ -89,19 +89,22 @@
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                             <li>
-                                                <a target="_blank" href="{{route('proforma.show',$item->id)}}" class="dropdown-item"
+                                                <a  href="{{route('proforma.show',$item->id)}}" class="dropdown-item"
                                                     ata-bs-toggle="tooltip" data-bs-placement="left"
                                                     data-bs-title="Voir détails"> Détails du ProForma </a>
                                             </li>
 
 
                                             @if($item->statut!='Valide')
+                                            @can("facture.proformas.edit")
                                             <li>
-                                                <a target="_blank" href="{{route('proforma.edit',$item->id)}}" class="dropdown-item"
+                                                <a  href="{{route('proforma.edit',$item->id)}}" class="dropdown-item"
                                                     data-bs-toggle="tooltip" data-bs-placement="left"
                                                     data-bs-title="Generer la proforma"> Modifier </a>
                                             </li>
+                                            @endcan
 
+                                            @can("facture.proformas.delete")
                                             <li>
                                                 <form
                                                     class="form-inline" method="POST"
@@ -114,30 +117,26 @@
                                                         data-bs-title="Supprimer">Supprimer la ProForma</button>
                                                 </form>
                                             </li>
-
+                                            @endcan
+                                            @can("facture.proformas.validate")
                                             <li>
-                                                <a target="_blank" href="{{ route('validate-proforma', $item->id) }}" class="dropdown-item"
+                                                <a  href="{{ route('validate-proforma', $item->id) }}" class="dropdown-item"
                                                     data-bs-toggle="tooltip" data-bs-placement="left"
                                                     data-bs-title="Validation">Valider la proforma </a>
                                             </li>
+                                            @endcan
+
                                             @endif
 
                                             <li>
-                                                <a target="_blank" href="{{ route('generate-proforma', $item->id) }}" class="dropdown-item"
+                                                <a  href="{{ route('generate-proforma', $item->id) }}" class="dropdown-item"
                                                     data-bs-toggle="tooltip" data-bs-placement="left"
                                                     data-bs-title="Generer la proforma"> Générer la ProForma </a>
                                             </li>
                                         </ul>
                                     </div>
 
-                                    {{-- <a href="{{ route('devis.show', $item->id) }}" class="btn btn-primary"
-                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                    data-bs-title="Voir détails"> <i class="bi bi-eye"></i> </a> --}}
-
                                     @endcan
-                                    {{-- <a target="_blank" href="{{ url('generate-proforma', $item->id) }}" class="btn btn-primary"
-                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                    data-bs-title="Générer le devis"> <i class="bi bi-download"></i> </a> --}}
                                 </td>
                             </tr>
                             @endforeach

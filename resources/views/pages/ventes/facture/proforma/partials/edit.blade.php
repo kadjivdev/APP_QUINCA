@@ -3,7 +3,9 @@
 <div class="content">
     <div class="page-header mb-4">
         <div class="container-fluid p-0">
-
+            <div class="d-flex text-right" style="justify-content: end;">
+                <a href="{{route('proforma.create')}}" class="btn btn-md btn-primary"><i class="bi bi-arrow-left-circle-fill"></i> Retour</a>
+            </div>
             <!--  -->
             <div class="row">
                 <div class="col-12">
