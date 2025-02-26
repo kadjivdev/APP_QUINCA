@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use App\Models\Stock\StockDepot;
 use App\Models\Parametre\UniteMesure;
+use App\Models\Vente\DevisDetail;
 
 /**
  * Class Article
@@ -90,6 +91,10 @@ class Article extends Model
         'unite_mesure_id' => 'integer'
     ];
 
+    function detail(): BelongsTo
+    {
+        return $this->belongsTo(DevisDetail::class, "article_id");
+    }
 
     /**
      * Obtient la famille de l'article
@@ -163,9 +168,9 @@ class Article extends Model
     {
         return $query->where(function ($query) use ($term) {
             $query->where('designation', 'LIKE', "%{$term}%")
-                  ->orWhere('code_article', 'LIKE', "%{$term}%")
-                  ->orWhere('description', 'LIKE', "%{$term}%")
-                  ->orWhere('code_barre', 'LIKE', "%{$term}%");
+                ->orWhere('code_article', 'LIKE', "%{$term}%")
+                ->orWhere('description', 'LIKE', "%{$term}%")
+                ->orWhere('code_barre', 'LIKE', "%{$term}%");
         });
     }
 

@@ -34,9 +34,9 @@ class Devis extends Model
         'date_devis' => 'datetime',
     ];
 
-    public function detail(): HasOne
+    public function details(): HasMany
     {
-        return $this->hasOne(DevisDetail::class,);
+        return $this->hasMany(DevisDetail::class,);
     }
 
     public function redacteur(): BelongsTo

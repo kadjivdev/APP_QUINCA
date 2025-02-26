@@ -192,17 +192,25 @@
     $(document).ready(function() {
         // Fonction principale pour afficher la facture
 
-        $("#showUpdateFacture").click(function(e) {
+        $(".showUpdateFacture").click(function(e) {
+            $("#factureId").val()
             e.preventDefault()
-            let element = document.getElementById('showUpdateFacture')
-            let elementId = element.getAttribute("data-proformaid")
+            console.log($("#factureId").val())
+            // console.log($(".showUpdateFacture").data("facture"))
+            // console.log($(this).proforma)
+            // let element = document.getElementById('showUpdateFacture')
+            // let proforma = element.getAttribute("data-proforma")
 
+            // console.log(proforma)
             // 
-            showUpdateFacture(elementId)
+            // showUpdateFacture(proforma)
         })
 
-        function showUpdateFacture(id) {
-
+        function showUpdateFacture(facture) {
+            alert("Christ ....")
+            let id = facture.id
+            let factureClient = facture
+            console.log(factureClient)
             // Afficher l'animation de chargement
             Swal.fire({
                 title: 'Chargement...',
@@ -249,15 +257,32 @@
                     Swal.close();
 
                     let clients = response
+
                     let options = `<option value="">Sélectionner un client</option>`
                     clients.forEach(client => {
-                        options += `
+                        let opt = ''
+                        if (client.id == factureClient.id) {
+                            opt = `
                             <option value='${client.id}'
-                                data-taux-aib='${client.taux_aib}'>
+                                data-taux-aib='${client.taux_aib}'
+                                selected
+                                >
                                 ${client.raison_sociale}
                             </option>
                         `
+                        } else {
+                            opt = `
+                            <option value='${client.id}'
+                                data-taux-aib='${client.taux_aib}'
+                                >
+                                ${client.raison_sociale}
+                            </option>
+                        `
+                        }
+                        // 
+                        options += opt
                     });
+                    console.log(options)
                     $("#client_idUpdate").append(options)
                 },
                 error: function(xhr) {
@@ -268,11 +293,11 @@
             });
 
             // initialisation de l'url du formulaire
-            document.getElementById("#updateFactureProformaForm").setAttribute("action", apiUrl + `/vente/factures/proforma/${id}/edit`)
+            // document.getElementById("#updateFactureProformaForm").setAttribute("action", apiUrl + `/vente/factures/proforma/${id}/edit`)
 
             // $("#updateFactureProformaForm").attr("action", apiUrl + `/vente/factures/proforma/${id}/edit`)
 
-            console.log(apiUrl + `/vente/factures/proforma/${id}/edit`)
+            // console.log(apiUrl + `/vente/factures/proforma/${id}/edit`)
         }
 
         // Fonction pour mettre à jour le contenu du modal

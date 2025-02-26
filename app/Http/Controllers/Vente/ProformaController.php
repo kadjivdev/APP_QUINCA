@@ -122,41 +122,39 @@ class ProformaController extends Controller
      */
     public function show(string $id)
     {
-        $devis = Devis::with(["detail.mesureunit", "articles"])->find($id);
-        return response()->json($devis);
+        $devis = Devis::with(["details", "articles"])->find($id);
+        return view('pages.ventes.facture.proforma.partials.show', compact('devis'));
+
+        // return response()->json($devis);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, $id)
     {
-        $devis = Devis::find($id);
-        $client = $devis->client->nom_client;
-        $lignes = DB::table('devis_details')
-            ->join('unite_mesures', 'unite_mesures.id', '=', 'devis_details.unite_mesure_id')
-            ->join('articles', 'articles.id', '=', 'devis_details.article_id')
-            ->join('devis', 'devis.id', '=', 'devis_details.devis_id')
-            ->where('devis_details.devis_id', $id)
-            ->select('devis_details.*', 'unite_mesures.unite', 'articles.nom', 'devis.date_devis')
-            ->get();
-
+        $devis = Devis::with(["details", "articles"])->find($id);
+        $clients = Client::all();
         $articles =  Article::all();
-        $unites = UniteMesure::all();
+        $unites_mesures = UniteMesure::all();
 
-        return view('pages.ventes.facture.partials.edit', compact('devis', 'lignes', 'articles', 'unites', 'client'));
+        return view('pages.ventes.facture.proforma.partials.edit', compact('devis', 'clients', 'articles', 'unites_mesures'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+
+    public function update(Request $request, $id)
     {
         $item = Devis::find($id);
         $itemId = $item->id;
-        // DB::table('devis_details')
-        //     ->where('devis', $itemId)
-        //     ->delete();
+
+        $item->update($request->all());
+
+        // SUPPRESSION DES DETAILS
+        $item->details()->delete();
+
         $count = count($request->qte_cdes);
         for ($i = 0; $i < $count; $i++) {
             DevisDetail::updateOrCreate(
@@ -172,12 +170,13 @@ class ProformaController extends Controller
             );
         }
 
-        return redirect()->route('devis.index')->with('success', 'Proforma modifié avec succès.');
+        return redirect()->route('proforma.create')->with('success', 'Proforma modifié avec succès.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
+
     public function destroy(string $id)
     {
         $item = Devis::find($id);
@@ -192,9 +191,7 @@ class ProformaController extends Controller
         $item->valideur_id = Auth::user()->id;
         $item->validated_at = now();
         $item->save();
-        return response()->json(['redirectUrl' => route('devis.index')]);
-
-        // return redirect()->route('item-commandes.index')->with('success', 'item de commande validé avec succès.');
+        return redirect()->back()->with('success', 'Proforma validé avec succès.');
     }
 
     public function lignesDevis($id)

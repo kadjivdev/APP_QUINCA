@@ -633,6 +633,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 // LES PROFORMA
                 Route::resource('proforma', ProformaController::class);
                 Route::get('/generate-proforma/{id}', [ProformaController::class, 'generatePDF'])->name("generate-proforma");
+                Route::get('/validate-proforma/{id}', [ProformaController::class, 'valider'])->name("validate-proforma");
             });
 
             // Routes pour les reglements

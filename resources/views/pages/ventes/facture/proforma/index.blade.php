@@ -77,7 +77,7 @@
                                 <td>{{ $item->redacteur->name }}</td>
                                 <td>{{ $item->client->raison_sociale }}</td>
                                 <td>
-                                    <span class="badge rounded-pill text-bg-warning">{{ $item->statut }}</span>
+                                    <span class="badge rounded-pill @if($item->statut=='Valide') bg-success @else text-bg-warning @endif">{{ $item->statut }}</span>
                                 </td>
 
                                 <td>
@@ -89,23 +89,17 @@
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                             <li>
-                                                <a href="#" id="showDetail" class="dropdown-item"
-                                                    data-proformaid="{{$item->id}}"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#showFactureProformaModal"> Détails du ProForma </a>
+                                                <a target="_blank" href="{{route('proforma.show',$item->id)}}" class="dropdown-item"
+                                                    ata-bs-toggle="tooltip" data-bs-placement="left"
+                                                    data-bs-title="Voir détails"> Détails du ProForma </a>
                                             </li>
 
-                                            <li>
-                                                <a href="#" id="showUpdateFacture" class="dropdown-item"
-                                                    data-proformaid="{{$item->id}}"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#updateFactureProformaModal"> Modifier </a>
-                                            </li>
 
+                                            @if($item->statut!='Valide')
                                             <li>
-                                                <a target="_blank" href="{{ route('generate-proforma', $item->id) }}" class="dropdown-item"
+                                                <a target="_blank" href="{{route('proforma.edit',$item->id)}}" class="dropdown-item"
                                                     data-bs-toggle="tooltip" data-bs-placement="left"
-                                                    data-bs-title="Generer la proforma"> Générer la ProForma </a>
+                                                    data-bs-title="Generer la proforma"> Modifier </a>
                                             </li>
 
                                             <li>
@@ -119,6 +113,19 @@
                                                         data-bs-toggle="tooltip" data-bs-placement="left"
                                                         data-bs-title="Supprimer">Supprimer la ProForma</button>
                                                 </form>
+                                            </li>
+
+                                            <li>
+                                                <a target="_blank" href="{{ route('validate-proforma', $item->id) }}" class="dropdown-item"
+                                                    data-bs-toggle="tooltip" data-bs-placement="left"
+                                                    data-bs-title="Validation">Valider la proforma </a>
+                                            </li>
+                                            @endif
+
+                                            <li>
+                                                <a target="_blank" href="{{ route('generate-proforma', $item->id) }}" class="dropdown-item"
+                                                    data-bs-toggle="tooltip" data-bs-placement="left"
+                                                    data-bs-title="Generer la proforma"> Générer la ProForma </a>
                                             </li>
                                         </ul>
                                     </div>
@@ -143,12 +150,10 @@
 </div>
 
 @include("pages.ventes.facture.proforma.partials.add-modal")
-@include("pages.ventes.facture.proforma.partials.show-detail")
-@include("pages.ventes.facture.proforma.partials.update-modal")
-
 @endsection
 
 @push("scripts")
+
 <!-- DATATABLE -->
 <script>
     $("#example1").DataTable({
