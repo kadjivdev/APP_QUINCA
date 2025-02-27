@@ -180,16 +180,21 @@ class ReglementClientController extends Controller
 
         try {
             // Validation des données
-            $validated = $request->validate([
-                'facture_id' => 'required|exists:facture_clients,id',
-                'date_reglement' => 'required|date',
-                'type_reglement' => 'required|string',
-                'montant' => 'required|numeric|min:0',
-                'reference_preuve' => 'nullable|string|max:255',
-                'banque' => 'nullable|string|max:255',
-                'date_echeance' => 'nullable|date|after_or_equal:date_reglement',
-                'notes' => 'nullable|string'
-            ]);
+            $validated = $request->validate(
+                [
+                    'facture_id' => 'required|exists:facture_clients,id',
+                    'date_reglement' => 'required|date',
+                    'type_reglement' => 'required|string',
+                    'montant' => 'required|numeric|min:0',
+                    'reference_preuve' => 'nullable|string|max:255|unique:reglement_clients',
+                    'banque' => 'nullable|string|max:255',
+                    'date_echeance' => 'nullable|date|after_or_equal:date_reglement',
+                    'notes' => 'nullable|string'
+                ],
+                [
+                    "reference_preuve.unique" => "Cette reference existe déjà"
+                ]
+            );
 
             DB::beginTransaction();
 
