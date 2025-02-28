@@ -1,5 +1,5 @@
-<div class="modal fade" id="addReglementModal" tabindex="-1" aria-hidden="true" >
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" >
+<div class="modal fade" id="addReglementModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content border-0 shadow-lg" style="overflow-y: scroll!important;">
             <div class="modal-header bg-primary bg-opacity-10 border-bottom-0 py-3">
                 <div class="d-flex align-items-center">
@@ -23,11 +23,11 @@
                             <div class="card border border-light-subtle">
                                 <div class="card-header bg-light">
                                     <h6 class="card-title mb-0">
-                                        <i class="fas fa-file-invoice me-2"></i>Sélection Facture
+                                        <i class="fas fa-file-invoice me-2"></i>Sélectionez 1 ou plusieurs factures
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <select class="form-select select2" name="facture_fournisseur_id" id="_factureSelect"
+                                    <select class="form-select select2" multiple name="facture_fournisseur_id[]"  id="_factureSelect"
                                         required>
                                         <option value="">Sélectionner une facture</option>
                                         @foreach ($factures as $facture)
@@ -37,7 +37,7 @@
                                             data-montant="{{ $facture->montant_ttc }}"
                                             data-solde="{{ $facture->montant_ttc - $facture->reglements->sum('montant_reglement') }}">
                                             {{ $facture->code }} - {{ $facture->fournisseur->raison_sociale }}
-                                            (Reste: {{ number_format($facture->montant_ttc - $facture->reglements->sum('montant_reglement'), 2) }} FCFA)
+                                            (Reste: {{ number_format($facture->facture_amont(), 2) }} FCFA)
                                         </option>
                                         @endforeach
                                     </select>
@@ -102,7 +102,7 @@
                                                 <input type="text" class="form-control" name="reference_reglement">
                                                 <div class="invalid-feedback">La référence est requise pour ce mode de paiement</div>
                                             </div>
-                                            <div class="col-12">
+                                            <!-- <div class="col-12">
                                                 <label class="form-label">Montant du Règlement</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" name="montant_reglement"
@@ -113,7 +113,7 @@
                                                     Montant restant à payer: <span id="montantRestant">0.00</span> FCFA
                                                 </div>
                                                 <div class="invalid-feedback">Le montant du règlement est requis</div>
-                                            </div>
+                                            </div> -->
                                             <div class="col-12">
                                                 <label class="form-label">Commentaire</label>
                                                 <textarea class="form-control" name="commentaire" rows="3"

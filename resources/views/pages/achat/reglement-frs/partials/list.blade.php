@@ -34,8 +34,14 @@
                             <td>
                                 <a href="#" class="code-facture"
                                     onclick="showFacture({{ $reglement->facture_id }})">
-                                    {{ $reglement->facture->code }}
+                                    {{ $reglement->facture?->code }}
+                                </a><br>
+                                @foreach($reglement->multiple_factures() as $facture)
+                                <a href="#" class="code-facture"
+                                    onclick="showFacture({{ $facture->id }})">
+                                     <span class="badge bg-dark">{{ $facture->code }} ({{number_format($facture->facture_amont(),2)}}) </span>
                                 </a>
+                                @endforeach
                             </td>
                             <td>
                                 <span class="badge bg-soft-info text-info">
@@ -46,11 +52,11 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-fournisseur me-2">
-                                        {{ substr($reglement->facture->fournisseur->raison_sociale, 0, 2) }}
+                                        {{ substr($reglement->facture?->fournisseur->raison_sociale, 0, 2) }}
                                     </div>
                                     <div>
                                         <div class="fw-medium">
-                                            {{ $reglement->facture->fournisseur->raison_sociale }}
+                                            {{ $reglement->facture?->fournisseur->raison_sociale }}
                                         </div>
                                     </div>
                                 </div>

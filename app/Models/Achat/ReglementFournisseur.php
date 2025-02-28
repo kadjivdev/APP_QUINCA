@@ -32,16 +32,17 @@ class ReglementFournisseur extends Model
         'commentaire',
         'created_by',
         'updated_by',
-        'validated_by'
+        'validated_by',
+        'factures'
     ];
 
     public static $rules = [
         'code' => 'required|unique:reglement_fournisseurs,code',
         'date_reglement' => 'required|date',
-        'facture_fournisseur_id' => 'required|exists:facture_fournisseurs,id',
+        'facture_fournisseur_id*' => 'required|exists:facture_fournisseurs,id',
         'mode_reglement' => 'required|in:ESPECE,CHEQUE,VIREMENT,DECHARGE,AUTRES',
         'reference_reglement' => 'required_if:mode_reglement,CHEQUE,VIREMENT',
-        'montant_reglement' => 'required|numeric|min:0',
+        // 'montant_reglement' => 'required|numeric|min:0',
         'commentaire' => 'nullable|string',
         'reference_document' => 'nullable|string',
     ];
@@ -73,18 +74,27 @@ class ReglementFournisseur extends Model
         'deleted_at'
     ];
 
+
     public function scopeSearch(Builder $query, string $term): Builder
     {
         return $query->where(function ($query) use ($term) {
             $query->where('code', 'LIKE', "%{$term}%")
-                  ->orWhere('reference_reglement', 'LIKE', "%{$term}%")
-                  ->orWhere('commentaire', 'LIKE', "%{$term}%");
+                ->orWhere('reference_reglement', 'LIKE', "%{$term}%")
+                ->orWhere('commentaire', 'LIKE', "%{$term}%");
         });
     }
 
     public function facture()
     {
         return $this->belongsTo(FactureFournisseur::class, 'facture_fournisseur_id');
+    }
+
+    // EN CAS DE REGLEMENTS A PLUSIEURES FACTURES COMBINES
+    public function multiple_factures()
+    {
+        $factureIds = explode(",", $this->factures);
+        // return $factureIds;
+        return FactureFournisseur::whereIn("id", $factureIds)->get();
     }
 
     public function creator()
@@ -170,7 +180,6 @@ class ReglementFournisseur extends Model
             if (auth()->check()) {
                 $model->updated_by = auth()->id();
             }
-
         });
 
         static::deleting(function ($model) {

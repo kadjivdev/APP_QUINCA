@@ -94,14 +94,39 @@ class ReglementFournisseurController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->get("facture_fournisseur_id"));
         try {
             DB::beginTransaction();
 
             $validated = $request->validate(ReglementFournisseur::$rules);
 
-            $reglement = new ReglementFournisseur($validated);
+            $facturefournisseurs = FactureFournisseur::whereIn("id", $request->get("facture_fournisseur_id"))->get();
+
+            // en cas d'une seule facture
+            if (count($facturefournisseurs) == 1) {
+                $facture = $facturefournisseurs[0];
+                $data = array_merge($validated, ["facture_fournisseur_id" => $facture->id, "montant_reglement" => $facture->facture_amont()]);
+            }
+            // dd(count($facturefournisseurs));
+
+            // en cas de pluisieures factures
+            if (count($facturefournisseurs) > 1) {
+                $totalRegle = $facturefournisseurs->sum(function ($query) {
+                    return $query->facture_amont();
+                });
+                // dd($request->get("facture_fournisseur_id"));
+                $facturesId = null;
+                foreach ($request->get("facture_fournisseur_id") as $factureId) {
+                    $facturesId = $facturesId . ',' . $factureId;
+                }
+                // dd($facturesId);
+                $data = array_merge($validated, ["facture_fournisseur_id" =>  null, "factures" =>  $facturesId, "montant_reglement" => $totalRegle]);
+            }
+
+            $reglement = new ReglementFournisseur($data);
             $reglement->save();
 
+            // 
             if ($request->has('validate') && $request->validate) {
                 $reglement->validate();
             }
@@ -126,7 +151,7 @@ class ReglementFournisseurController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Une erreur est survenue lors de la création du règlement'
+                'message' => 'Une erreur est survenue lors de la création du règlement ' . $e->getMessage()
             ], 500);
         }
     }

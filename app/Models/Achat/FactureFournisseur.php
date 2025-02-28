@@ -113,6 +113,11 @@ class FactureFournisseur extends Model
         'deleted_at'
     ];
 
+    public function facture_amont() {
+        return $this->montant_ttc - $this->reglements->sum('montant_reglement');
+    }
+
+
     /**
      * Recherche de factures
      */
