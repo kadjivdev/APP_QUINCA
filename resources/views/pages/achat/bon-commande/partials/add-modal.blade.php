@@ -1,5 +1,5 @@
 <div class="modal fade" id="addBonCommandeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg " >
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
         <div class="modal-content border-0 shadow-lg modal-dialog-scrollable" style="overflow-y: scroll!important;">
             {{-- Header du modal --}}
             <div class="modal-header bg-primary bg-opacity-10 border-bottom-0 py-3">
@@ -15,7 +15,6 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
             <form action="{{ route('bon-commandes.store') }}" method="POST" id="addBonCommandeForm"
                 class="needs-validation" novalidate>
                 @csrf
@@ -34,15 +33,15 @@
                                         required>
                                         <option value="">Sélectionner une programmation validée</option>
                                         @foreach ($programmationsValidees as $prog)
-                                            <option value="{{ $prog->id }}" data-code="{{ $prog->code }}"
-                                                data-point-vente="{{ $prog->pointVente->nom_pv }}"
-                                                data-point-vente-id="{{ $prog->point_de_vente_id }}"
-                                                data-fournisseur="{{ $prog->fournisseur->raison_sociale }}"
-                                                data-fournisseur-id="{{ $prog->fournisseur_id }}"
-                                                data-validation="{{ $prog->validated_at->format('d/m/Y') }}">
-                                                {{ $prog->code }} - {{ $prog->fournisseur->raison_sociale }}
-                                                (Validée le {{ $prog->validated_at->format('d/m/Y') }})
-                                            </option>
+                                        <option value="{{ $prog->id }}" data-code="{{ $prog->code }}"
+                                            data-point-vente="{{ $prog->pointVente->nom_pv }}"
+                                            data-point-vente-id="{{ $prog->point_de_vente_id }}"
+                                            data-fournisseur="{{ $prog->fournisseur->raison_sociale }}"
+                                            data-fournisseur-id="{{ $prog->fournisseur_id }}"
+                                            data-validation="{{ $prog->validated_at->format('d/m/Y') }}">
+                                            {{ $prog->code }} - {{ $prog->fournisseur->raison_sociale }}
+                                            (Validée le {{ $prog->validated_at->format('d/m/Y') }})
+                                        </option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">Veuillez sélectionner une programmation</div>
@@ -118,7 +117,7 @@
                                             <i class="fas fa-box me-2"></i>Articles
                                         </h6>
                                     </div>
-                                    
+
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table class="table table-bordered">
@@ -244,53 +243,52 @@
         </div>
     </div>
 </div>
-
 @push('styles')
-    <style>
-        .modal-dialog {
-            /* max-width: 95%; */
-            margin: 1.75rem auto;
-        }
+<style>
+    .modal-dialog {
+        /* max-width: 95%; */
+        margin: 1.75rem auto;
+    }
 
-        .invalid-feedback {
-            font-size: 80%;
-        }
+    .invalid-feedback {
+        font-size: 80%;
+    }
 
-        .prix-unitaire {
-            min-width: 100px;
-        }
+    .prix-unitaire {
+        min-width: 100px;
+    }
 
-        .select2-container--bootstrap-5 .select2-selection {
-            min-height: calc(1.5em + 0.75rem + 2px);
-        }
+    .select2-container--bootstrap-5 .select2-selection {
+        min-height: calc(1.5em + 0.75rem + 2px);
+    }
 
-        .table> :not(caption)>*>* {
-            padding: 0.5rem;
-        }
+    .table> :not(caption)>*>* {
+        padding: 0.5rem;
+    }
 
-        .form-control-sm {
-            min-height: calc(1.5em + 0.5rem + 2px);
-        }
+    .form-control-sm {
+        min-height: calc(1.5em + 0.5rem + 2px);
+    }
 
-        .card {
-            margin-bottom: 0;
-        }
+    .card {
+        margin-bottom: 0;
+    }
 
-        .modal-content {
-            border-radius: 0.5rem;
-        }
+    .modal-content {
+        border-radius: 0.5rem;
+    }
 
-        .modal-header {
-            border-radius: 0.5rem 0.5rem 0 0;
-        }
+    .modal-header {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
 
-        .btn-icon {
-            padding: 0.25rem 0.5rem;
-        }
+    .btn-icon {
+        padding: 0.25rem 0.5rem;
+    }
 
-        .table th {
-            font-weight: 600;
-            background-color: #f8f9fa;
-        }
-    </style>
+    .table th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+    }
+</style>
 @endpush
