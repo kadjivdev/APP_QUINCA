@@ -66,7 +66,10 @@ class ReglementFournisseurController extends Controller
         // Récupération des factures non ou partiellement payées
         $factures = FactureFournisseur::whereIn('statut_paiement', ['NON_PAYE', 'PARTIELLEMENT_PAYE'])
             ->with('fournisseur', 'reglements')
-            ->get();
+            ->get()
+            ->filter(function ($query) {
+                return $query->facture_amont() > 0;
+            });
 
         if ($request->ajax()) {
             return view('pages.achat.reglement-frs.index', [

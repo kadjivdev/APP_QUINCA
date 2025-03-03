@@ -113,10 +113,17 @@ class FactureFournisseur extends Model
         'deleted_at'
     ];
 
-    public function facture_amont() {
-        return $this->montant_ttc - $this->reglements->sum('montant_reglement');
-    }
+    public function facture_amont()
+    {
+        $regleUnique = $this->reglements; ## reglement par selection unique
+        $regleMultiple = $this->reglements_grouped()->count(); ## reglement par selection multiple
 
+        $montant_reglement_unique = $regleUnique ? $regleUnique->sum('montant_reglement') : 0;
+        $montant_reglement_multiple = $regleMultiple ? $this->montant_ttc : 0;
+        $montant_reglement =  $montant_reglement_unique + $montant_reglement_multiple;
+        
+        return $this->montant_ttc - $montant_reglement;
+    }
 
     /**
      * Recherche de factures
@@ -193,7 +200,7 @@ class FactureFournisseur extends Model
         return $this->belongsTo(User::class, 'validated_by');
     }
 
-       /**
+    /**
      * Relation avec le bon de livraison
      */
     public function bonLivraison()
@@ -202,9 +209,20 @@ class FactureFournisseur extends Model
     }
 
     public function reglements()
-{
-    return $this->hasMany(ReglementFournisseur::class, 'facture_fournisseur_id');
-}
+    {
+        return $this->hasMany(ReglementFournisseur::class, 'facture_fournisseur_id');
+    }
+
+    // en cas de reglements multiple
+    public function reglements_grouped()
+    {
+        $allRegleManyFactures =  ReglementFournisseur::whereNotNull("factures")->get()->filter(function ($query) {
+            $factureIds = explode(",", $query->factures);
+            return in_array($this->id, $factureIds);
+        });
+
+        return $allRegleManyFactures;
+    }
 
     /**
      * Méthode pour mettre à jour les montants
