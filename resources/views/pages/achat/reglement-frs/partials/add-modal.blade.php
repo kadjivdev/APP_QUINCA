@@ -27,7 +27,7 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <select class="form-select select2" multiple name="facture_fournisseur_id[]"  id="_factureSelect"
+                                    <select class="form-select select2" multiple name="facture_fournisseur_id[]" id="_factureSelect"
                                         required>
                                         <option value="">Sélectionner une facture</option>
                                         @foreach ($factures as $facture)
@@ -102,18 +102,25 @@
                                                 <input type="text" class="form-control" name="reference_reglement">
                                                 <div class="invalid-feedback">La référence est requise pour ce mode de paiement</div>
                                             </div>
-                                            <!-- <div class="col-12">
+
+                                            <div class="form-check d-block">
+                                                <input class="form-check-input" type="checkbox" value="" id="checkAmont">
+                                                <label class="form-check-label btn btn-dark btn-sm" for="checkAmont">
+                                                    Faire un reglement partiel
+                                                </label>
+                                            </div>
+
+
+                                            <div class="col-12 montant_reglement_block d-none">
                                                 <label class="form-label">Montant du Règlement</label>
                                                 <div class="input-group">
                                                     <input type="number" class="form-control" name="montant_reglement"
-                                                        id="montantReglement" step="0.01" min="0" required>
+                                                        id="_montantReglement" step="0.01" min="0">
                                                     <span class="input-group-text">FCFA</span>
                                                 </div>
-                                                <div class="form-text mt-1">
-                                                    Montant restant à payer: <span id="montantRestant">0.00</span> FCFA
-                                                </div>
                                                 <div class="invalid-feedback">Le montant du règlement est requis</div>
-                                            </div> -->
+                                            </div>
+
                                             <div class="col-12">
                                                 <label class="form-label">Commentaire</label>
                                                 <textarea class="form-control" name="commentaire" rows="3"
@@ -143,6 +150,17 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+
+        $("#checkAmont").on("click", function() {
+            if (this.checked) {
+                $(".montant_reglement_block").removeClass("d-none")
+            } else {
+                $(".montant_reglement_block").addClass("d-none")
+            }
+
+            console.log(this.checked)
+        })
+
         // Configuration initiale Select2
         try {
             $('.select2').select2({

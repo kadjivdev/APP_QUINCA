@@ -97,7 +97,6 @@ class ReglementFournisseurController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->get("facture_fournisseur_id"));
         try {
             DB::beginTransaction();
 
@@ -108,21 +107,30 @@ class ReglementFournisseurController extends Controller
             // en cas d'une seule facture
             if (count($facturefournisseurs) == 1) {
                 $facture = $facturefournisseurs[0];
-                $data = array_merge($validated, ["facture_fournisseur_id" => $facture->id, "montant_reglement" => $facture->facture_amont()]);
+                $montant_facture = $request->montant_reglement ? $request->montant_reglement : $facture->facture_amont();
+                $data = array_merge($validated, ["facture_fournisseur_id" => $facture->id, "montant_reglement" => $montant_facture]);
             }
             // dd(count($facturefournisseurs));
 
-            // en cas de pluisieures factures
+            // en cas de plusieures factures
             if (count($facturefournisseurs) > 1) {
+                if ($request->montant_reglement) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Pour plusieurs règlements, il ne vous est pas permis de préciser le montant du règlement',
+                    ]);
+                }
+
+                // 
                 $totalRegle = $facturefournisseurs->sum(function ($query) {
                     return $query->facture_amont();
                 });
-                // dd($request->get("facture_fournisseur_id"));
+
                 $facturesId = null;
                 foreach ($request->get("facture_fournisseur_id") as $factureId) {
                     $facturesId = $facturesId . ',' . $factureId;
                 }
-                // dd($facturesId);
+
                 $data = array_merge($validated, ["facture_fournisseur_id" =>  null, "factures" =>  $facturesId, "montant_reglement" => $totalRegle]);
             }
 
