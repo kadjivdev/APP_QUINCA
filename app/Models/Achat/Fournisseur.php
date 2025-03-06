@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -106,8 +107,8 @@ class Fournisseur extends Model
     {
         return $query->where(function ($query) use ($term) {
             $query->where('nom', 'LIKE', "%{$term}%")
-                  ->orWhere('code', 'LIKE', "%{$term}%")
-                  ->orWhere('email', 'LIKE', "%{$term}%");
+                ->orWhere('code', 'LIKE', "%{$term}%")
+                ->orWhere('email', 'LIKE', "%{$term}%");
         });
     }
 
@@ -135,6 +136,15 @@ class Fournisseur extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function approvisionnements(): HasMany
+    {
+        return $this->hasMany(FournisseurApprovisionnement::class, "fournisseur_id");
+    }
+
+    function rest_amont() {
+        // return $this->approvisionnements()->sum("montant")-
+    }
+
     /**
      * Boot du modèle
      */
@@ -159,13 +169,13 @@ class Fournisseur extends Model
 
     // Dans le modèle Fournisseur
 
-public function factures()
-{
-    return $this->hasMany(FactureFournisseur::class, 'fournisseur_id');
-}
+    public function factures()
+    {
+        return $this->hasMany(FactureFournisseur::class, 'fournisseur_id');
+    }
 
-public function soldeInitial()
-{
-    return $this->hasOne(SoldeInitialFournisseur::class, 'fournisseur_id');
-}
+    public function soldeInitial()
+    {
+        return $this->hasOne(SoldeInitialFournisseur::class, 'fournisseur_id');
+    }
 }

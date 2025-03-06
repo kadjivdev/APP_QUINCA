@@ -19,7 +19,7 @@ class FournisseurController extends Controller
     public function index()
     {
         // Récupération des fournisseurs avec tri par date de création décroissante
-        $fournisseurs = Fournisseur::orderBy('created_at', 'desc')->get();
+        $fournisseurs = Fournisseur::with("approvisionnements")->orderBy('created_at', 'desc')->get();
 
         // Statistiques globales
         $stats = [
@@ -73,18 +73,16 @@ class FournisseurController extends Controller
                 'message' => 'Fournisseur créé avec succès',
                 'data' => $fournisseur
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Une erreur est survenue lors de la création du fournisseur'.$e->getMessage()
+                'message' => 'Une erreur est survenue lors de la création du fournisseur' . $e->getMessage()
             ], 500);
         }
     }
@@ -98,7 +96,6 @@ class FournisseurController extends Controller
                 'success' => true,
                 'data' => $fournisseur
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -142,18 +139,16 @@ class FournisseurController extends Controller
                 'message' => 'Fournisseur mis à jour avec succès',
                 'data' => $fournisseur
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Une erreur est survenue lors de la mise à jour '.$e->getMessage()
+                'message' => 'Une erreur est survenue lors de la mise à jour ' . $e->getMessage()
             ], 500);
         }
     }
@@ -178,7 +173,6 @@ class FournisseurController extends Controller
                 'success' => true,
                 'message' => 'Fournisseur supprimé avec succès'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -291,7 +285,6 @@ class FournisseurController extends Controller
             return response()->download($tempFile, 'modele_import_fournisseurs.xlsx', [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             ])->deleteFileAfterSend(true);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -369,7 +362,6 @@ class FournisseurController extends Controller
                     ]);
 
                     $imported++;
-
                 } catch (\Exception $e) {
                     $errors[] = "Ligne $rowNumber : Une erreur est survenue lors de l'import de cette ligne";
                     $skipped++;
@@ -403,14 +395,12 @@ class FournisseurController extends Controller
                 'message' => 'Aucun fournisseur n\'a été importé.',
                 'errors' => $errors
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Le fichier fourni est invalide.',
                 'errors' => $e->errors()
             ], 422);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

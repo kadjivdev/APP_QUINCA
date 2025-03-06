@@ -11,7 +11,7 @@ use App\Http\Controllers\Parametre\UniteMesureController;
 use App\Http\Controllers\Parametre\ConversionUniteController;
 
 use App\Http\Controllers\Catalogues\{FamilleArticleController, ArticleController, TarificationController};
-use App\Http\Controllers\Achat\{FournisseurController, ProgrammationAchatController, LigneProgrammationAchatController};
+use App\Http\Controllers\Achat\{FournisseurApprovisionnementController, FournisseurController, ProgrammationAchatController, LigneProgrammationAchatController};
 use App\Http\Controllers\Achat\{BonCommandeController, LigneBonCommandeController, factureFournisseurController, LigneFactureFournisseurController, ReglementFournisseurController,  BonLivraisonFournisseurController, LigneBonLivraisonFournisseurController};
 use App\Http\Controllers\Vente\{AcompteClientController, ClientController, sessioncaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController, ProformaController};
 use App\Http\Controllers\Parametre\ChauffeurController;
@@ -20,6 +20,7 @@ use App\Http\Controllers\Revendeur\FactureRevendeurController;
 
 use App\Http\Controllers\Rapport\{RapportVenteController, SoldeInitialClientController, SoldeInitialFournisseurController, RapportAchatController, RapportStockController, RapportValorisationController, StockRotationController, StockAlertController, RapportCreanceController};
 use App\Http\Controllers\Revendeur\SpecialController;
+use App\Models\Achat\FournisseurApprovisionnement;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
 |
 */
 
-// Route::prefix("quinkadjiv_refont/public")->group(function () {
+Route::prefix("quinkadjiv_refont/public")->group(function () {
     // Routes publiques
     Route::middleware('guest')->group(function () {
         Route::get('/', [UserController::class, 'showLogin'])->name('login-portail');
@@ -228,6 +229,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
         });
 
         Route::prefix('achat')->middleware(['auth'])->group(function () {
+
             Route::prefix('fournisseurs')->group(function () {
                 Route::get('/', [FournisseurController::class, 'index'])->name('fournisseur.index');
                 Route::post('/', [FournisseurController::class, 'store'])->name('fournisseur.store');
@@ -479,6 +481,11 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 Route::get('/factures-impayes', [FactureFournisseurController::class, 'facturesImpayes'])->name('factures.impayes');
                 Route::get('/analyse-paiements', [FactureFournisseurController::class, 'analysePaiements'])->name('factures.analyse-paiements');
             });
+
+            // APPROVISIONNEMENTS
+            Route::resource("/approvisionnements", FournisseurApprovisionnementController::class);
+            Route::get("/approvisionnements/{id}/rejeter", [FournisseurApprovisionnementController::class, "rejeter"])->name("approvisionnements.rejeter");
+            Route::get("/approvisionnements/{id}/validate", [FournisseurApprovisionnementController::class, "valider"])->name("approvisionnements.valider");
         });
 
         Route::prefix('vente')->group(function () {
@@ -922,7 +929,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                     ->name('stock.alerte.index');
             });
 
-
             Route::get('/dashboard-vente', [RapportVenteController::class, 'index'])->name('rapports.dashboard-vente');
             // Route::post('/{id}/validate', [FactureRevendeurController::class, 'validateFacture'])->name('revendeur.facture.validate');
             // Route::delete('/{id}/delete', [FactureRevendeurController::class, 'destroy'])->name('revendeur.facture.delete');
@@ -950,7 +956,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
             Route::get('/statistiques', [RapportCreanceController::class, 'getStats'])
                 ->name('rapports.creances.stats');
         });
-
 
         Route::prefix('rapports/stock')->name('rapports.stock.')->group(function () {
             Route::get('/mouvements', [RapportStockController::class, 'mouvementReport'])->name('mouvements');
@@ -990,4 +995,4 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 ->name('api.reglements.details');
         });
     });
-// });
+});

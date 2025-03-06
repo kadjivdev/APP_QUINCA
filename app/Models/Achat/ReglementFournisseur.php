@@ -33,7 +33,8 @@ class ReglementFournisseur extends Model
         'created_by',
         'updated_by',
         'validated_by',
-        'factures'
+        'factures',
+        "fournisseur_id"
     ];
 
     public static $rules = [

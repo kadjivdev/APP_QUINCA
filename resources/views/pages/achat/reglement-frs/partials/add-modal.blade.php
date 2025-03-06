@@ -27,7 +27,7 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <select class="form-select select2" multiple name="facture_fournisseur_id[]" id="_factureSelect"
+                                    <!-- <select class="form-select select2" multiple name="facture_fournisseur_id[]" id="_factureSelect"
                                         required>
                                         <option value="">Sélectionner une facture</option>
                                         @foreach ($factures as $facture)
@@ -37,6 +37,15 @@
                                             data-montant="{{ $facture->montant_ttc }}"
                                             data-solde="{{ $facture->montant_ttc - $facture->reglements->sum('montant_reglement') }}">
                                             {{ $facture->code }} - {{ $facture->fournisseur->raison_sociale }}
+                                            (Reste: {{ number_format($facture->facture_amont(), 2) }} FCFA)
+                                        </option>
+                                        @endforeach
+                                    </select> -->
+                                    <select class="form-select select2" name="fournisseur_id[]" id="_factureSelect"
+                                        required>
+                                        <option value="">Sélectionner un fournisseur</option>
+                                        @foreach ($fournisseurs as $fournisseur)
+                                        <option value="{{ $fournisseur->id }}" {{ $fournisseur->fournisseur()->sum("montant") raison_sociale }}
                                             (Reste: {{ number_format($facture->facture_amont(), 2) }} FCFA)
                                         </option>
                                         @endforeach

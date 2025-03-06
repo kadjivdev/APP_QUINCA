@@ -125,6 +125,10 @@ class FactureFournisseur extends Model
         return $this->montant_ttc - $montant_reglement;
     }
 
+    function rest_amont() {
+        
+    }
+
     /**
      * Recherche de factures
      */

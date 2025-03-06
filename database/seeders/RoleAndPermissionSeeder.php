@@ -51,7 +51,8 @@ class RoleAndPermissionSeeder extends Seeder
                 $this->createCrudValidatePermissions('bons de commande', 'bon-commandes', 'Achat'),
                 $this->createCrudValidatePermissions('factures fournisseur', 'factures', 'Achat'),
                 $this->createCrudValidatePermissions('règlements fournisseur', 'reglements', 'Achat'),
-                $this->createCrudValidatePermissions('livraisons fournisseur', 'livraisons', 'Achat')
+                $this->createCrudValidatePermissions('livraisons fournisseur', 'livraisons', 'Achat'),
+                $this->createCrudValidatePermissions('approvisionnement fournisseur', 'approvisionnements', 'Achat'),
             ),
 
             'Ventes' => array_merge(

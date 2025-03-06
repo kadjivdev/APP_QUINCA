@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Achat;
 use App\Models\Achat\ReglementFournisseur;
 use App\Models\Achat\FactureFournisseur;
 use App\Http\Controllers\Controller;
+use App\Models\Achat\Fournisseur;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,8 @@ class ReglementFournisseurController extends Controller
                 return $query->facture_amont() > 0;
             });
 
+        $fournisseurs = Fournisseur::all();
+
         if ($request->ajax()) {
             return view('pages.achat.reglement-frs.index', [
                 'date' => $date,
@@ -90,7 +93,8 @@ class ReglementFournisseurController extends Controller
             'nombreReglements' => $stats['nombreReglements'],
             'montantTotal' => $stats['montantTotal'],
             'facturesPayees' => $stats['facturesPayees'],
-            'factures' => $factures
+            'factures' => $factures,
+            'fournisseurs' => $fournisseurs,
         ]);
         // return view('pages.achat.reglement-frs.index', compact('date','reglements', 'stats', 'factures'));
     }
