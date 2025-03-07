@@ -31,7 +31,7 @@
                             <td>{{ Carbon\Carbon::parse($appro->date)->format('d/m/Y H:i:s') }}</td>
                             <td>{{ $appro->actor->name }}</td>
                             <td>{{ $appro->source }}</td>
-                            <td> <a target="_blank" href="{{ $appro->document }}" class="btn btn-sm btn-light">Voir <i class="bi bi-x-circle"></i></a></td>
+                            <td> <a target="_blank" href="{{ $appro->document }}" class="btn btn-ms btn-success"> <i class="bi bi-file-pdf"></i></a></td>
 
                             <td class="text-center">
                                 @if ($appro->rejected_by)
@@ -53,16 +53,19 @@
                                     </button> -->
                                     @if(!$appro->rejected_by)
 
+                                    @can('approvisionnements.validate')
                                     <a href="{{route('approvisionnements.valider',$appro->id)}}" class="btn btn-sm btn-light-success btn-icon ms-1"
                                         data-bs-toggle="tooltip" title="Valider">
                                         <i class="fas fa-check"></i>
                                     </a>
+                                    @endcan
                                     <a href="{{route('approvisionnements.rejeter',$appro->id)}}" class="btn btn-sm btn-light-success btn-icon ms-1"
                                         data-bs-toggle="tooltip" title="Rejeter">
                                         <i class="fas fa-ban"></i>
                                     </a>
                                     @endif
 
+                                    @can('approvisionnements.delete')
                                     <form action="{{route('approvisionnements.destroy',$appro->id)}}" method="post">
                                         @csrf
                                         @method("DELETE")
@@ -72,6 +75,7 @@
                                         </button>
                                     </form>
                                     @endif
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

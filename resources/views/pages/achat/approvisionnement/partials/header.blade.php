@@ -16,7 +16,7 @@
                             <h6 class="header-title mb-0">Approvisionnements</h6>
                             <span class="badge bg-soft-warning text-warning rounded-pill">
                                 <i class="fas fa-file-invoice fs-xs me-1"></i>
-                                {{ $approvisionnements->count() }} bon(s) de commande
+                                {{ $approvisionnements->whereNotNull("validated_by")->count() }} bon(s) de commande
                             </span>
                         </div>
                     </div>
@@ -26,11 +26,13 @@
             {{-- Section droite avec les boutons d'action --}}
             <div class="col-auto d-flex gap-2">
                 {{-- Bouton Nouveau bon de commande --}}
+                @can('approvisionnements.create')
                 <button type="button" class="btn btn-warning btn-sm d-flex align-items-center" data-bs-toggle="modal"
                     data-bs-target="#addApprovisionnementModal">
                     <i class="fas fa-plus me-2"></i>
                     Nouvel approvisionnement
                 </button>
+                @endcan
                 {{-- Bouton de synchronisation --}}
                 <button type="button" class="btn btn-light-secondary btn-sm d-flex align-items-center"
                     onclick="window.reload()">
@@ -94,7 +96,7 @@
                         </div>
                         <div class="ms-3">
                             <div class="stat-label">Total Commandes</div>
-                            <div class="stat-value">{{ $approvisionnements->count() }}</div>
+                            <div class="stat-value">{{ $approvisionnements->whereNotNull("validated_by")->count() }}</div>
                             <div class="stat-trend text-success">
                                 <i class="fas fa-calendar"></i> Ce mois
                             </div>
@@ -111,7 +113,7 @@
                         </div>
                         <div class="ms-3">
                             <div class="stat-label">Montant Total</div>
-                            <div class="stat-value">{{ number_format($approvisionnements->sum("montant"), 2) }} F CFA</div>
+                            <div class="stat-value">{{ number_format($approvisionnements->whereNotNull("validated_by")->sum("montant"), 2) }} F CFA</div>
                             <div class="stat-trend text-success">
                                 <i class="fas fa-chart-line"></i> Cumulé
                             </div>

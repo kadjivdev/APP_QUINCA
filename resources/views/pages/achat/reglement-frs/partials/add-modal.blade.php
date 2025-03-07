@@ -27,7 +27,13 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <!-- <select class="form-select select2" multiple name="facture_fournisseur_id[]" id="_factureSelect"
+                                    <p class="bg-warning p-1 rounded">
+                                        Les factures ayant des reglements en attentes de validations sont désactivées . <br>
+                                        En cas de réglement multiple, le total des factures ne doit pas dépasser le solde actuel du fournisseur . <br>
+                                        En cas de réglement multiple, vous ne devez pas entrer le montant du règlement . <br>
+                                        C'est après validation d'un règement que le solde du fournisseur est defalqué
+                                    </p>
+                                    <select class="form-select select2" multiple name="facture_fournisseur_id[]" id="_factureSelect"
                                         required>
                                         <option value="">Sélectionner une facture</option>
                                         @foreach ($factures as $facture)
@@ -35,18 +41,12 @@
                                             data-code="{{ $facture->code }}"
                                             data-fournisseur="{{ $facture->fournisseur->raison_sociale }}"
                                             data-montant="{{ $facture->montant_ttc }}"
-                                            data-solde="{{ $facture->montant_ttc - $facture->reglements->sum('montant_reglement') }}">
-                                            {{ $facture->code }} - {{ $facture->fournisseur->raison_sociale }}
-                                            (Reste: {{ number_format($facture->facture_amont(), 2) }} FCFA)
-                                        </option>
-                                        @endforeach
-                                    </select> -->
-                                    <select class="form-select select2" name="fournisseur_id[]" id="_factureSelect"
-                                        required>
-                                        <option value="">Sélectionner un fournisseur</option>
-                                        @foreach ($fournisseurs as $fournisseur)
-                                        <option value="{{ $fournisseur->id }}" {{ $fournisseur->fournisseur()->sum("montant") raison_sociale }}
-                                            (Reste: {{ number_format($facture->facture_amont(), 2) }} FCFA)
+                                            data-solde="{{ $facture->montant_ttc - $facture->reglements->sum('montant_reglement') }}"
+                                            @if(count($facture->reglements->whereNull("validated_by"))>0 || count($facture->reglements_grouped()->whereNull("validated_by"))>0) disabled @endif
+                                            >
+                                            <!-- {{count($facture->reglements->whereNull("validated_by"))}} - {{count($facture->reglements_grouped()->whereNull("validated_by"))}} -->
+                                            {{ $facture->code }} [ Montant: {{ number_format($facture->montant_ttc, 2) }}; Reste: {{ number_format($facture->facture_amont(), 2) }} FCFA] <br>
+                                            - {{ $facture->fournisseur->raison_sociale }} [ Solde: {{ number_format($facture->fournisseur->approvisionnements()->sum("montant"),2) }}; Reste: {{ number_format( $facture->fournisseur->reste_solde(),2) }} ]
                                         </option>
                                         @endforeach
                                     </select>
@@ -165,6 +165,7 @@
                 $(".montant_reglement_block").removeClass("d-none")
             } else {
                 $(".montant_reglement_block").addClass("d-none")
+                $("#_montantReglement").val(null)
             }
 
             console.log(this.checked)

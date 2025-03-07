@@ -11,13 +11,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReglementFournisseurController extends Controller
 {
     public function index(Request $request)
     {
-
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
 
         // Query de base avec relations
@@ -69,6 +67,7 @@ class ReglementFournisseurController extends Controller
             ->with('fournisseur', 'reglements')
             ->get()
             ->filter(function ($query) {
+                // seuls les factures ayant des soldes
                 return $query->facture_amont() > 0;
             });
 
@@ -111,10 +110,27 @@ class ReglementFournisseurController extends Controller
             // en cas d'une seule facture
             if (count($facturefournisseurs) == 1) {
                 $facture = $facturefournisseurs[0];
+
+
+                if ($request->montant_reglement > $facture->facture_amont()) {
+                    // # quand le montant saisi est supérieur au reste de la facture
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le montant saisi dépasse le reste de montant sur la facture'
+                    ], 500);
+                }
+
+                if ($facture->facture_amont() > $facture->fournisseur->reste_solde()) {
+                    // # quand le montant restant de la facture est supérieur au reste du solde du fournisseur
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le reste de la facture dépasse le solde actuel du fournisseur'
+                    ], 500);
+                }
+
                 $montant_facture = $request->montant_reglement ? $request->montant_reglement : $facture->facture_amont();
                 $data = array_merge($validated, ["facture_fournisseur_id" => $facture->id, "montant_reglement" => $montant_facture]);
             }
-            // dd(count($facturefournisseurs));
 
             // en cas de plusieures factures
             if (count($facturefournisseurs) > 1) {
@@ -129,6 +145,14 @@ class ReglementFournisseurController extends Controller
                 $totalRegle = $facturefournisseurs->sum(function ($query) {
                     return $query->facture_amont();
                 });
+
+                // Quand le total des reglements depasse le solde actuel du fournisseur
+                if ($totalRegle > $facturefournisseurs[0]->fournisseur->reste_solde()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le total des factures dépasse le solde actuel du fournisseur (' . $totalRegle . '>' . $facturefournisseurs[0]->fournisseur->reste_solde(),
+                    ]);
+                }
 
                 $facturesId = null;
                 foreach ($request->get("facture_fournisseur_id") as $factureId) {
@@ -250,6 +274,31 @@ class ReglementFournisseurController extends Controller
 
     public function validateReglement(ReglementFournisseur $reglement)
     {
+        if ($reglement->facture) {
+            if ($reglement->facture->fournisseur->reste_solde() < $reglement->facture->facture_amont()) {
+                Log::info("Le solde du fournisseur est insuffisant");
+
+                return response()->json([
+                    'success' => false,
+                    'message' => "Le solde du fournisseur est insuffisant"
+                ], 500);
+            }
+        } else {
+            $forunisseur = $reglement->multiple_factures()[0]->fournisseur;
+            $totalRegle = $reglement->multiple_factures()->sum(function ($query) {
+                return $query->facture_amont();
+            });
+
+            if ($forunisseur->reste_solde() <  $totalRegle) {
+                Log::info("Le solde du fournisseur est insuffisant pour regler toutes les factures");
+
+                return response()->json([
+                    'success' => false,
+                    'message' => "Le solde du fournisseur est insuffisant pour regler toutes les factures"
+                ], 500);
+            }
+        }
+
         try {
             DB::beginTransaction();
 

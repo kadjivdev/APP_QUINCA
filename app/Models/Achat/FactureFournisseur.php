@@ -115,23 +115,33 @@ class FactureFournisseur extends Model
 
     public function facture_amont()
     {
-        $regleUnique = $this->reglements; ## reglement par selection unique
-        $regleMultiple = $this->reglements_grouped()->count(); ## reglement par selection multiple
+        $regleUnique = $this->reglements->whereNotNull("validated_by"); ## reglement par selection unique
+        $regleMultiple = $this->reglements_grouped()->whereNotNull("validated_by")->count(); ## reglement par selection multiple
 
         $montant_reglement_unique = $regleUnique ? $regleUnique->sum('montant_reglement') : 0;
         $montant_reglement_multiple = $regleMultiple ? $this->montant_ttc : 0;
         $montant_reglement =  $montant_reglement_unique + $montant_reglement_multiple;
-        
+
         return $this->montant_ttc - $montant_reglement;
     }
 
-    function rest_amont() {
-        
+    function facture_reglements_amount()
+    {
+        $regleUnique = $this->reglements->whereNotNull("validated_by"); ## reglement par selection unique
+        $regleMultiple = $this->reglements_grouped()->whereNotNull("validated_by")->count(); ## reglement par selection multiple
+
+        $montant_reglement_unique = $regleUnique ? $regleUnique->sum('montant_reglement') : 0;
+        $montant_reglement_multiple = $regleMultiple ? $this->montant_ttc : 0;
+        $montant_reglement =  $montant_reglement_unique + $montant_reglement_multiple;
+
+        return $montant_reglement;
     }
 
     /**
+     * 
      * Recherche de factures
      */
+
     public function scopeSearch(Builder $query, string $term): Builder
     {
         return $query->where(function ($query) use ($term) {

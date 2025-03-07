@@ -25,8 +25,8 @@
                                 {{ $fournisseur->created_at->locale('fr')->isoFormat('D MMMM YYYY') }}
                             </span>
                             <strong class="badge bg-success border-white text-white ms-2">
-                                <i class="far fa-clock me-1"></i>
-                               Solde :  {{ number_format($fournisseur->approvisionnements()->sum("montant"),2)  }} FCFA
+                               Solde :  {{ number_format($fournisseur->approvisionnements()->sum("montant"),2)  }} FCFA <hr>
+                               Reste :  {{ number_format($fournisseur->reste_solde(),2)  }} FCFA
                             </strong>
                         </div>
                     </div>

@@ -136,13 +136,23 @@ class Fournisseur extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function approvisionnements(): HasMany
+    function facture_fournisseurs()
     {
-        return $this->hasMany(FournisseurApprovisionnement::class, "fournisseur_id");
+        return $this->hasMany(FactureFournisseur::class, "fournisseur_id");
     }
 
-    function rest_amont() {
-        // return $this->approvisionnements()->sum("montant")-
+    public function approvisionnements(): HasMany
+    {
+        return $this->hasMany(FournisseurApprovisionnement::class, "fournisseur_id")->whereNotNull("validated_by");
+    }
+
+    function reste_solde()
+    {
+        $appro_solde = $this->approvisionnements()->sum("montant");
+        $reglements_amount = $this->facture_fournisseurs->sum(function ($query) {
+            return $query->facture_reglements_amount();
+        });
+        return $appro_solde - $reglements_amount;
     }
 
     /**
