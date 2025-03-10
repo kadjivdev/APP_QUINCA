@@ -1,7 +1,7 @@
 {{-- add-modal.blade.php --}}
 <div class="modal fade" id="addFactureModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg"  style="overflow-y: scroll!important">
+        <div class="modal-content border-0 shadow-lg" style="overflow-y: scroll!important">
             {{-- Header du modal --}}
             <div class="modal-header bg-primary bg-opacity-10 border-bottom-0 py-3">
                 <div class="d-flex align-items-center">
@@ -141,7 +141,6 @@
                                                         <th>Unité</th>
                                                         <th class="text-end">Quantité</th>
                                                         <th class="text-end">Prix Unitaire</th>
-
                                                         <th class="text-end">Montant HT</th>
                                                     </tr>
                                                 </thead>
@@ -323,13 +322,14 @@
 
         // Fonction pour afficher les articles
         function displayArticles(articles) {
+            console.log(articles)
             const tbody = $('#articlesTableBody');
             tbody.empty();
 
             articles.forEach(article => {
                 tbody.append(`
             <tr>
-                <td>${article.code_article}</td>
+                <td>${article.reference}</td>
                 <td>${article.designation}</td>
                 <td>${article.unite_mesure}</td>
                 <td class="text-end">
