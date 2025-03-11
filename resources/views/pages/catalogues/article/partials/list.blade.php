@@ -129,5 +129,4 @@
         HandleSearch(e.target.value)
     })
 </script>
-
 @endpush

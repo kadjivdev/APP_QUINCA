@@ -23,6 +23,10 @@
                     Importer
                 </button>
 
+                <div class="">
+                    <input type="search" placeholder="Recherche de fournisseur ..." name="" class="form-control" id="searchFournisseur">
+                </div>
+
                 <button
                     type="button"
                     class="btn btn-primary btn-sm d-flex align-items-center"

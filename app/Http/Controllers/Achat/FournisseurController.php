@@ -20,6 +20,16 @@ class FournisseurController extends Controller
     {
         // Récupération des fournisseurs avec tri par date de création décroissante
         $fournisseurs = Fournisseur::with("approvisionnements")->orderBy('created_at', 'desc')->get();
+        $fournisseurs->map(function ($fournisseur) {
+            $fournisseur->totalAppro = $fournisseur->approvisionnements()->sum("montant");
+            $fournisseur->reste_solde = $fournisseur->reste_solde();
+            $fournisseur->factureAchatAmount = $fournisseur->facture_fournisseurs->sum(function ($query) {
+                return $query->facture_amont();
+            });
+            $fournisseur->reglementsAmount = $fournisseur->facture_fournisseurs->sum(function ($query) {
+                return $query->facture_reglements_amount();
+            });
+        });
 
         // Statistiques globales
         $stats = [
