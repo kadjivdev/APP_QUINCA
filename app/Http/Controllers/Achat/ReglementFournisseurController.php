@@ -118,16 +118,23 @@ class ReglementFournisseurController extends Controller
                             'message' => 'Le montant saisi dépasse le reste de montant sur la facture à regler'
                         ], 500);
                     }
-                }
 
-                if ($facture->facture_amont() > $facture->fournisseur->reste_solde()) {
-                    // # quand le montant restant de la facture est supérieur au reste du solde du fournisseur
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Le reste de la facture dépasse le solde actuel du fournisseur'
-                    ], 500);
+                    // # quand le montant saisi est supérieur au reste du solde du fournisseur
+                    if ($request->montant_reglement > $facture->fournisseur->reste_solde()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Le montant saisi dépasse le reste du solde du fournisseur'
+                        ], 500);
+                    }
+                } else {
+                    if ($facture->facture_amont() > $facture->fournisseur->reste_solde()) {
+                        // # quand le montant restant de la facture est supérieur au reste du solde du fournisseur
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Le reste de la facture dépasse le solde actuel du fournisseur'
+                        ], 500);
+                    }
                 }
-
 
                 $montant_facture = $request->montant_reglement ? $request->montant_reglement : $facture->facture_amont();
                 $data = array_merge($validated, ["facture_fournisseur_id" => $facture->id, "montant_reglement" => $montant_facture]);
