@@ -282,30 +282,30 @@ class ReglementFournisseurController extends Controller
 
     public function validateReglement(ReglementFournisseur $reglement)
     {
-        if ($reglement->facture) {
-            if ($reglement->facture->fournisseur->reste_solde() < $reglement->facture->facture_amont()) {
-                Log::info("Le solde du fournisseur est insuffisant");
+        // if ($reglement->facture) {
+        //     if ($reglement->facture->fournisseur->reste_solde() < $reglement->facture->facture_amont()) {
+        //         Log::info("Le solde du fournisseur est insuffisant");
 
-                return response()->json([
-                    'success' => false,
-                    'message' => "Le solde du fournisseur est insuffisant"
-                ], 500);
-            }
-        } else {
-            $forunisseur = $reglement->multiple_factures()[0]->fournisseur;
-            $totalRegle = $reglement->multiple_factures()->sum(function ($query) {
-                return $query->facture_amont();
-            });
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => "Le solde du fournisseur est insuffisant"
+        //         ], 500);
+        //     }
+        // } else {
+        //     $forunisseur = $reglement->multiple_factures()[0]->fournisseur;
+        //     $totalRegle = $reglement->multiple_factures()->sum(function ($query) {
+        //         return $query->facture_amont();
+        //     });
 
-            if ($forunisseur->reste_solde() <  $totalRegle) {
-                Log::info("Le solde du fournisseur est insuffisant pour regler toutes les factures");
+        //     if ($forunisseur->reste_solde() <  $totalRegle) {
+        //         Log::info("Le solde du fournisseur est insuffisant pour regler toutes les factures");
 
-                return response()->json([
-                    'success' => false,
-                    'message' => "Le solde du fournisseur est insuffisant pour regler toutes les factures"
-                ], 500);
-            }
-        }
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => "Le solde du fournisseur est insuffisant pour regler toutes les factures"
+        //         ], 500);
+        //     }
+        // }
 
         try {
             DB::beginTransaction();
