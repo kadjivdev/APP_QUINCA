@@ -11,7 +11,8 @@
                             <i class="fas fa-user-tie fa-lg text-primary"></i>
                         </div>
                         <div>
-                            <h5 class="mb-1 fw-bold text-dark">{{ $fournisseur->raison_sociale }}</h5>
+                            <h5 class="text-center mb-1 fw-bold text-dark">{{ $fournisseur->raison_sociale }}</h5>
+                            <br>
                             <div class="d-flex align-items-center">
                                 <span class="badge bg-soft-primary text-primary rounded-pill">
                                     <i class="fas fa-hashtag fs-xs me-1"></i>
@@ -25,11 +26,18 @@
                                     <i class="far fa-clock me-1"></i>
                                     {{ $fournisseur->created_at->locale('fr')->isoFormat('D MMMM YYYY') }}
                                 </span>
-                                <strong class="badge bg-success border-white text-white ms-2">
-                                    Solde Appro : {{ number_format($fournisseur->reste_solde(),2)  }} FCFA
-                                    <hr>
-                                    Solde Achat : {{ number_format($fournisseur->factureAchatAmount-$fournisseur->reglementsAmount,2)  }} FCFA
-                                </strong>
+                                <span class="text-muted ms-2 small">
+                                    <i class="fas fa-phone text-muted me-2"></i>
+                                    <span>{{ $fournisseur->telephone }}</span>
+                                </span>
+                                <span class="text-muted ms-2 small">
+                                    <i class="fas fa-envelope text-muted me-2"></i>
+                                    <span>{{ $fournisseur->email }}</span>
+                                </span>
+                                <span class="text-muted ms-2 small">
+                                    <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
+                                    <p class="mb-0 text-muted">{{ $fournisseur->adresse }}</p>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -59,42 +67,30 @@
 
                 {{-- Contenu de la carte --}}
                 <div class="card-content mb-4">
-                    @if($fournisseur->adresse)
-                    <div class="d-flex align-items-start mb-2">
-                        <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
-                        <p class="mb-0 text-muted">{{ $fournisseur->adresse }}</p>
+                    <!-- SOLDES -->
+                    <div class="d-block shadow p-1 border text-left badge ms-2">
+                        <h6 class="text-center">Approvisionnement</h6>
+                        <span class="badge bg-success text-white">Solde : {{ number_format($fournisseur->totalAppro,2)  }} FCFA</span>
+                        <span class="badge bg-success text-white">Reste: {{ number_format($fournisseur->reste_solde(),2)  }} FCFA</span>
+                        <hr>
+                        <h6 class="text-center">Achats</h6>
+                        <span class="badge bg-success text-white">Solde : {{ number_format($fournisseur->factureAchatAmount,2)  }} FCFA</span>
+                        <span class="badge bg-success text-white">Reste: {{ number_format($fournisseur->factureAchatAmount-$fournisseur->reglementsAmount,2)  }} FCFA</span>
                     </div>
-                    @endif
 
-                    <div class="d-flex flex-wrap gap-4 mt-3">
-                        @if($fournisseur->telephone)
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-phone text-muted me-2"></i>
-                            <span>{{ $fournisseur->telephone }}</span>
+                    {{-- Statistiques futures --}}
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <div class="stat-item">
+                                <span class="stat-label text-muted small">Commandes</span>
+                                <h6 class="mb-0 mt-1">{{count($fournisseur->facture_fournisseurs)}}</h6>
+                            </div>
                         </div>
-                        @endif
-
-                        @if($fournisseur->email)
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-envelope text-muted me-2"></i>
-                            <span>{{ $fournisseur->email }}</span>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Statistiques futures --}}
-                <div class="row g-3">
-                    <div class="col-auto">
-                        <div class="stat-item">
-                            <span class="stat-label text-muted small">Commandes</span>
-                            <h6 class="mb-0 mt-1">0</h6>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <div class="stat-item">
-                            <span class="stat-label text-muted small">Articles</span>
-                            <h6 class="mb-0 mt-1">0</h6>
+                        <div class="col-auto">
+                            <div class="stat-item">
+                                <span class="stat-label text-muted small">Articles</span>
+                                <h6 class="mb-0 mt-1">{{count($fournisseur->articles)}}</h6>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -134,7 +130,7 @@
     var fournisseursInitiales = <?php echo json_encode($fournisseurs); ?>;
 
     const filtrage = (data) => {
-        let newContent;
+        let newContent = '';
         data.forEach(fournisseur => {
             newContent += `
             <div class="col-12 col-xl-6 mb-4">
@@ -161,11 +157,18 @@
                                             <i class="far fa-clock me-1"></i>
                                             ${fournisseur.created_at}
                                         </span>
-                                        <strong class="badge bg-success border-white text-white ms-2">
-                                            Solde Appro : ${ formatter.format(fournisseur.reste_solde) } FCFA
-                                            <hr>
-                                            Solde Achat : ${ formatter.format(fournisseur.factureAchatAmount - fournisseur.reglementsAmount) } FCFA
-                                        </strong>
+                                        <span class="text-muted ms-2 small">
+                                            <i class="fas fa-phone text-muted me-2"></i>
+                                            <span>${fournisseur.telephone}</span>
+                                        </span>
+                                        <span class="text-muted ms-2 small">
+                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                            <span>${fournisseur.email}</span>
+                                        </span>
+                                        <span class="text-muted ms-2 small">
+                                            <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
+                                            <p class="mb-0 text-muted">${fournisseur.adresse}</p>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -195,24 +198,15 @@
             
                         {{-- Contenu de la carte --}}
                         <div class="card-content mb-4">
-                            @if($fournisseur->adresse)
-                            <div class="d-flex align-items-start mb-2">
-                                <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
-                                <p class="mb-0 text-muted">${fournisseur.adresse}</p>
-                            </div>
-                            @endif
-            
-                            <div class="d-flex flex-wrap gap-4 mt-3">
-                            
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-phone text-muted me-2"></i>
-                                    <span>${fournisseur.telephone && fournisseur.telephone}</span>
-                                </div>
-            
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-envelope text-muted me-2"></i>
-                                    <span>${fournisseur.email && fournisseur.email}</span>
-                                </div>
+                            <!-- SOLDES -->
+                            <div class="d-block shadow p-1 border text-left badge ms-2">
+                                <h6 class="text-center">Approvisionnement</h6>
+                                <span class="badge bg-success text-white">Solde : ${ formatter.format(fournisseur.totalAppro) } FCFA</span>
+                                <span class="badge bg-success text-white">Reste: ${ formatter.format(fournisseur.reste_solde) } FCFA</span>
+                                <hr>
+                                <h6 class="text-center">Achats</h6>
+                                <span class="badge bg-success text-white">Solde : ${ formatter.format(fournisseur.factureAchatAmount) } FCFA</span>
+                                <span class="badge bg-success text-white">Reste: ${ formatter.format(fournisseur.factureAchatAmount - fournisseur.reglementsAmount) } FCFA</span>
                             </div>
                         </div>
             
@@ -221,13 +215,13 @@
                             <div class="col-auto">
                                 <div class="stat-item">
                                     <span class="stat-label text-muted small">Commandes</span>
-                                    <h6 class="mb-0 mt-1">0</h6>
+                                    <h6 class="mb-0 mt-1">${fournisseur.facture_fournisseurs.length}</h6>
                                 </div>
                             </div>
                             <div class="col-auto">
                                 <div class="stat-item">
                                     <span class="stat-label text-muted small">Articles</span>
-                                    <h6 class="mb-0 mt-1">0</h6>
+                                    <h6 class="mb-0 mt-1">${fournisseur.articles.length}</h6>
                                 </div>
                             </div>
                         </div>
@@ -244,7 +238,8 @@
         $("#fournisseursBlock").empty()
         if (text.trim()) {
             const results = fournisseursInitiales.filter((item) => Object.values(item.raison_sociale).join('').toLocaleLowerCase().includes(text.toLocaleLowerCase()))
-            console.log(results)
+            // console.log(results[0].facture_fournisseurs.length)
+            // console.log(results[0].articles.length)
             filtrage(results)
         } else {
             filtrage(fournisseursInitiales)

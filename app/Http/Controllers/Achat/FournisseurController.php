@@ -29,8 +29,14 @@ class FournisseurController extends Controller
             $fournisseur->reglementsAmount = $fournisseur->facture_fournisseurs->sum(function ($query) {
                 return $query->facture_reglements_amount();
             });
+            $fournisseur->articles = collect( $fournisseur->facture_fournisseurs->map(function ($factureFournisseur) {
+                foreach ($factureFournisseur->lignes as $ligne) {
+                    return $ligne->article;
+                }
+            }));
         });
 
+        // dd($fournisseurs->where('id',1));
         // Statistiques globales
         $stats = [
             'total_fournisseurs' => $fournisseurs->count(),
