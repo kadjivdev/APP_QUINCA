@@ -158,7 +158,7 @@ class UserController extends Controller
             return redirect()->intended(config('app.url') . '/portail');
         }
 
-        return view('pages.securite.login');
+        return view('pages.securite.Login');
     }
 
     /**
