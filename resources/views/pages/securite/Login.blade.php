@@ -35,7 +35,7 @@
                                 <p class="text-muted">Accédez à votre compte</p>
                             </div>
 
-                            <form id="loginForm" class="needs-validation animated fadeInUp" novalidate>
+                            <form id="loginForm" method="POST" class="needs-validation animated fadeInUp" novalidate>
                                 @csrf
 
                                 <!-- Champ username avec animation -->
