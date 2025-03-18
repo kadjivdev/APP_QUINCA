@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const formData = new FormData(loginForm);
 
+        alert(apiUrl + '/login')
         fetch(apiUrl + '/login', {
             method: 'POST',
             headers: {
