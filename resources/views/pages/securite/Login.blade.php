@@ -9,7 +9,7 @@
                 <div class="position-relative login-card-wrapper">
                     <!-- Fond décoratif incliné avec animation -->
                     <div class="position-absolute top-0 start-0 w-100 h-100 bg-warning decorative-bg"
-                         style="transform: rotate(-3deg); z-index: 0; border-radius: 15px;"></div>
+                        style="transform: rotate(-3deg); z-index: 0; border-radius: 15px;"></div>
 
                     <!-- Carte principale -->
                     <div class="card shadow-lg border-0 position-relative main-card" style="z-index: 1;">
@@ -17,17 +17,17 @@
                             <!-- Logo ADJIV -->
                             <div class="text-center mb-4 logo-container">
                                 <img src="{{ asset('assets/img/logos/kadjiv.png') }}"
-                                alt="ADJIV Logo"
-                                class="img-fluid mb-3 logo-image"
-                                style="max-width: 150px; height: auto;">
+                                    alt="ADJIV Logo"
+                                    class="img-fluid mb-3 logo-image"
+                                    style="max-width: 150px; height: auto;">
                             </div>
 
                             <!-- Messages de succès -->
                             @if (session('success'))
-                                <div class="alert alert-success alert-dismissible fade show animated fadeIn" role="alert">
-                                    {{ session('success') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
+                            <div class="alert alert-success alert-dismissible fade show animated fadeIn" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                             @endif
 
                             <div class="text-center mb-4 animated fadeIn">
@@ -37,33 +37,33 @@
 
                             <form id="loginForm" method="POST" class="needs-validation animated fadeInUp" novalidate>
                                 @csrf
-
+                                @method("POST")
                                 <!-- Champ username avec animation -->
                                 <div class="form-floating mb-4 input-group-hover">
                                     <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                           id="username" name="username" placeholder="email@example.com"
-                                           value="{{ old('username') }}" required autofocus>
+                                        id="username" name="username" placeholder="email@example.com"
+                                        value="{{ old('username') }}" required autofocus>
                                     <label for="username">
                                         <i class="fas fa-user me-2"></i>Email ou téléphone
                                     </label>
                                     @error('username')
-                                        <div class="invalid-feedback animated fadeIn">{{ $message }}</div>
+                                    <div class="invalid-feedback animated fadeIn">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <!-- Champ mot de passe avec animation -->
                                 <div class="form-floating mb-4 position-relative input-group-hover">
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                           id="password" name="password" placeholder="Mot de passe" required>
+                                        id="password" name="password" placeholder="Mot de passe" required>
                                     <label for="password">
                                         <i class="fas fa-key me-2"></i>Mot de passe
                                     </label>
                                     <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y me-2 password-toggle"
-                                            data-password-toggle>
+                                        data-password-toggle>
                                         <i class="far fa-eye"></i>
                                     </button>
                                     @error('password')
-                                        <div class="invalid-feedback animated fadeIn">{{ $message }}</div>
+                                    <div class="invalid-feedback animated fadeIn">{{ $message }}</div>
                                     @enderror
                                 </div>
 
@@ -84,8 +84,13 @@
 <style>
     /* Animations */
     @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 
     @keyframes fadeInUp {
@@ -93,6 +98,7 @@
             opacity: 0;
             transform: translateY(20px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -100,15 +106,31 @@
     }
 
     @keyframes floating {
-        0% { transform: translateY(0px) rotate(-3deg); }
-        50% { transform: translateY(-10px) rotate(-3deg); }
-        100% { transform: translateY(0px) rotate(-3deg); }
+        0% {
+            transform: translateY(0px) rotate(-3deg);
+        }
+
+        50% {
+            transform: translateY(-10px) rotate(-3deg);
+        }
+
+        100% {
+            transform: translateY(0px) rotate(-3deg);
+        }
     }
 
     @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
 
     /* Classes d'animation */
@@ -199,7 +221,7 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, transparent, rgba(255,255,255,0.3), transparent);
+        background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         transition: 0.5s;
     }
 
@@ -221,29 +243,46 @@
 
     /* Shake Animation pour la validation */
     @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+            transform: translateX(-5px);
+        }
+
+        20%,
+        40%,
+        60%,
+        80% {
+            transform: translateX(5px);
+        }
     }
 
     .shake {
-        animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        animation: shake 0.6s cubic-bezier(.36, .07, .19, .97) both;
     }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Animation d'entrée des éléments
-    const elements = document.querySelectorAll('.card, .form-floating, .btn');
-    elements.forEach((element, index) => {
-        element.style.opacity = '0';
-        element.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation d'entrée des éléments
+        const elements = document.querySelectorAll('.card, .form-floating, .btn');
+        elements.forEach((element, index) => {
+            element.style.opacity = '0';
+            element.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.1}s`;
+        });
 
-    // Gestion des erreurs avec SweetAlert amélioré
-    @if ($errors->any())
+        // Gestion des erreurs avec SweetAlert amélioré
+        @if($errors - > any())
         Swal.fire({
             icon: 'error',
             title: 'Erreur de connexion',
@@ -257,10 +296,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 popup: 'animated fadeOutUp faster'
             }
         });
-    @endif
+        @endif
 
-    // Gestion des messages de succès
-    @if (session('success'))
+        // Gestion des messages de succès
+        @if(session('success'))
         Swal.fire({
             icon: 'success',
             title: 'Succès',
@@ -274,57 +313,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 popup: 'animated fadeOutUp faster'
             }
         });
-    @endif
+        @endif
 
-    // Toggle du mot de passe avec animation
-    const togglePassword = document.querySelector('[data-password-toggle]');
-    const passwordInput = document.querySelector('#password');
+        // Toggle du mot de passe avec animation
+        const togglePassword = document.querySelector('[data-password-toggle]');
+        const passwordInput = document.querySelector('#password');
 
-    if (togglePassword && passwordInput) {
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
 
-            const icon = this.querySelector('i');
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
 
-            // Animation de l'icône
-            icon.style.transform = 'scale(1.2)';
-            setTimeout(() => icon.style.transform = 'scale(1)', 200);
-        });
-    }
+                // Animation de l'icône
+                icon.style.transform = 'scale(1.2)';
+                setTimeout(() => icon.style.transform = 'scale(1)', 200);
+            });
+        }
 
-    // Validation du formulaire améliorée
-    const form = document.querySelector('form.needs-validation');
-    if (form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
+        // Validation du formulaire améliorée
+        const form = document.querySelector('form.needs-validation');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-                // Animation de secousse pour les champs invalides
-                const invalidInputs = form.querySelectorAll(':invalid');
-                invalidInputs.forEach(input => {
-                    input.classList.add('shake');
-                    setTimeout(() => input.classList.remove('shake'), 600);
-                });
-            }
-            form.classList.add('was-validated');
-        });
-    }
+                    // Animation de secousse pour les champs invalides
+                    const invalidInputs = form.querySelectorAll(':invalid');
+                    invalidInputs.forEach(input => {
+                        input.classList.add('shake');
+                        setTimeout(() => input.classList.remove('shake'), 600);
+                    });
+                }
+                form.classList.add('was-validated');
+            });
+        }
 
-    // Ajout d'effets de survol sur les champs
-    const inputs = document.querySelectorAll('.form-control');
-    inputs.forEach(input => {
-        input.addEventListener('focus', () => {
-            input.closest('.form-floating').style.transform = 'scale(1.02)';
-        });
-        input.addEventListener('blur', () => {
-            input.closest('.form-floating').style.transform = 'scale(1)';
+        // Ajout d'effets de survol sur les champs
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.form-floating').style.transform = 'scale(1.02)';
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.form-floating').style.transform = 'scale(1)';
+            });
         });
     });
-});
 </script>
 @endpush
 @endsection
