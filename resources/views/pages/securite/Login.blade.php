@@ -1,4 +1,4 @@
-@extends('layouts.securite.login')
+@extends('layouts.securite.Login')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
