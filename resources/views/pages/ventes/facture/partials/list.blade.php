@@ -15,6 +15,8 @@
                             <th class="border-bottom-0 text-end">Montant HT</th>
                             <th class="border-bottom-0 text-end">Montant TTC</th>
                             <th class="border-bottom-0 text-end">Reste à payer</th>
+                            <th class="border-bottom-0 text-center">Type</th>
+                            <th class="border-bottom-0">Date validation</th>
                             <th class="border-bottom-0 text-center">Statut</th>
                             <th class="border-bottom-0 text-end" style="min-width: 150px;">Actions</th>
                         </tr>
@@ -58,6 +60,12 @@
                                 @else
                                 <span class="badge bg-success bg-opacity-10 text-success">Soldée</span>
                                 @endif
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-dark  px-3">{{$facture->type_facture}}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-primary  px-3">{{$facture->date_validation}}</span>
                             </td>
                             <td class="text-center">
                                 @switch($facture->statut_reel)

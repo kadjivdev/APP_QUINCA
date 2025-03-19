@@ -41,6 +41,8 @@ class FactureClientController extends Controller
                     'date_echeance',
                     'client_id',
                     'statut',
+                    'type_facture',
+                    'date_validation',
                     'montant_ht',
                     'montant_ttc',
                     'montant_regle',
@@ -50,10 +52,9 @@ class FactureClientController extends Controller
                     'encaissed_at'
                 ])
                 ->orderBy('date_facture', 'desc')
-                // ->paginate(10);
                 ->get();
 
-            // dd($factures->getCollection());
+            // dd($factures->last());
 
             // Ajouter des attributs calculés pour chaque facture
             $factures->transform(function ($facture) {
@@ -781,7 +782,7 @@ class FactureClientController extends Controller
      * @param FactureClient $facture
      * @return JsonResponse
      */
-    
+
     public function getDetailsFacture(FactureClient $facture): JsonResponse
     {
         // Changement dans le chargement des relations
