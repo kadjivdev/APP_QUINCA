@@ -58,8 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json().then(data => ({ status: response.status, data })))
             .then(({ status, data }) => {
                 hideLoader();
-                console.log(data);
-                return data;
                 if (data.status === 'success') {
                     // Succès de la connexion
                     Swal.fire({

@@ -170,24 +170,18 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-
         try {
-
             $validator = Validator::make($request->all(), [
                 'username' => 'required',
                 'password' => 'required|string'
             ]);
 
             if ($validator->fails()) {
-                if ($request->ajax()) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Données invalides',
-                        'errors' => $validator->errors()
-                    ], 422);
-                }
-
-                return redirect()->back()->withInput();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Données invalides',
+                    'errors' => $validator->errors()
+                ], 422);
             }
 
             $credentials = [
@@ -198,38 +192,23 @@ class UserController extends Controller
             $redirectUrl = session()->pull('url.intended', '/portail');
 
             if ($this->authService->attemptLogin($credentials)) {
-                if ($request->ajax()) {
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'Connexion réussie',
-                        'redirect' => $redirectUrl
-                    ]);
-                }
-                alert()->success('Succès','Connexion effectuée avec succès!');
-                return redirect()->route("portail");
-            }
-
-            if ($request->ajax()) {
                 return response()->json([
-                    'status' => 'error',
-                    'message' => 'Identifiants incorrects'
-                ], 401);
+                    'status' => 'success',
+                    'message' => 'Connexion réussie',
+                    'redirect' => $redirectUrl
+                ]);
             }
 
-            alert()->error('Erreure','Identifiants incorrects!');
-            return back();
-
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Identifiants incorrects'
+            ], 401);
         } catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Une erreur est survenue lors de la connexion',
-                    'debug' => $e->getMessage() // À retirer en production
-                ], 500);
-            }
-
-            alert()->error('Erreure','Un erreure est survenue!');
-            return back();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur est survenue lors de la connexion',
+                'debug' => $e->getMessage() // À retirer en production
+            ], 500);
         }
     }
 
@@ -327,7 +306,7 @@ class UserController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    
+
     public function updateProfile(Request $request): JsonResponse
     {
         try {
