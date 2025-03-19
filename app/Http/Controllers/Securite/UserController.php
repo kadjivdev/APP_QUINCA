@@ -170,6 +170,8 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+        return response()->json($request->all());
+        
         try {
 
             $validator = Validator::make($request->all(), [

@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const formData = new FormData(loginForm);
 
-        console.log(formData)
-        
+        // console.log(formData);
+
         fetch(apiUrl + "/login", {
             method: "POST",
             headers: {
@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json().then(data => ({ status: response.status, data })))
             .then(({ status, data }) => {
                 hideLoader();
-
+                console.log(data);
+                return data;
                 if (data.status === 'success') {
                     // Succès de la connexion
                     Swal.fire({
