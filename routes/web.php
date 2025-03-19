@@ -37,7 +37,8 @@ Route::prefix("quinkadjiv_refont/public")->group(function () {
     // Routes publiques
     Route::middleware('guest')->group(function () {
         Route::get('/', [UserController::class, 'showLogin'])->name('login-portail');
-        Route::post('/login', [UserController::class, 'login'])->name('login');
+        // Route::post('/login', [UserController::class, 'login'])->name('login');
+        Route::post('/connexion', [UserController::class, 'login'])->name('connexion');
     });
 
     // Routes protégées
