@@ -428,16 +428,16 @@
                     <div class="card-body p-0">
                         <div class="text-center pt-4 pb-3">
                             <div class="avatar avatar-xl">
-                                <img class="rounded-circle" src="../assets/img/profil.jpeg" alt="" />
+                                <img class="rounded-circle" src="{{asset('kadjiv.jpeg')}}" alt="" />
                             </div>
-                            <h6 class="mt-2 text-body-emphasis">{{ Auth::user()->email }}</h6>
+                            <h6 class="mt-2 text-body-emphasis">{{ Auth::user()->name }}</h6>
                         </div>
                     </div>
                     <div class="px-3 py-2">
-                        <a href="{{ config('app.url_ajax') }}/storage/MANUEL_D_UTILISATION_QUINCAKADJIV.pdf" target="_blank" class="btn btn-link d-flex align-items-center w-100 mb-2">
+                        <a href="{{ config('app.url_ajax') }}/storage/MANUEL_D_UTILISATION_QUINCAKADJIV.pdf" target="_blank" class="btn btn-sm bg-light d-flex align-items-center w-100 mb-2">
                             <i class="fas fa-book me-2"></i> Manuel d'utilisation
                         </a>
-                        <a href="{{ route('profil.index') }}" class="btn btn-link d-flex align-items-center w-100 mb-2">
+                        <a href="{{ route('profil.index') }}" class="btn btn-sm bg-light d-flex align-items-center w-100 mb-2">
                             <i class="fas fa-user me-2"></i> Profil
                         </a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">

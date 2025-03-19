@@ -70,7 +70,8 @@
   <!--    Main Content-->
   <!-- ===============================================-->
   <main class="main" id="top">
-
+    @include('sweetalert::alert')
+    
     @include('components.menue')
 
     @yield('content-portail')

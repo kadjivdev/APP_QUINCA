@@ -35,7 +35,7 @@
                                 <p class="text-muted">Accédez à votre compte</p>
                             </div>
 
-                            <form id="loginForm" method="POST" class="needs-validation animated fadeInUp" novalidate>
+                            <form id="_loginForm" action="{{route('login')}}" method="POST" class="needs-validation animated fadeInUp" novalidate>
                                 @csrf
                                 @method("POST")
                                 <!-- Champ username avec animation -->
