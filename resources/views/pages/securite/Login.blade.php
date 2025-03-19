@@ -37,7 +37,6 @@
 
                             <form action="{{route('connexion')}}" method="POST" class="needs-validation animated fadeInUp"  novalidate id="_loginForm">
                                 @csrf
-                                @method("POST")
                                 <!-- Champ username avec animation -->
                                 <div class="form-floating mb-4 input-group-hover">
                                     <input type="text" class="form-control @error('username') is-invalid @enderror"
