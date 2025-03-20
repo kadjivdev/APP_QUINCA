@@ -13,7 +13,7 @@ use App\Http\Controllers\Parametre\ConversionUniteController;
 use App\Http\Controllers\Catalogues\{FamilleArticleController, ArticleController, TarificationController};
 use App\Http\Controllers\Achat\{FournisseurApprovisionnementController, FournisseurController, ProgrammationAchatController, LigneProgrammationAchatController};
 use App\Http\Controllers\Achat\{BonCommandeController, LigneBonCommandeController, FactureFournisseurController, LigneFactureFournisseurController, ReglementFournisseurController,  BonLivraisonFournisseurController, LigneBonLivraisonFournisseurController};
-use App\Http\Controllers\Vente\{AcompteClientController, ClientController, sessioncaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController, ProformaController};
+use App\Http\Controllers\Vente\{AcompteClientController, ClientController, SessioncaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController, ProformaController};
 use App\Http\Controllers\Parametre\ChauffeurController;
 use App\Http\Controllers\Parametre\VehiculeController;
 use App\Http\Controllers\Revendeur\FactureRevendeurController;
@@ -603,7 +603,7 @@ use App\Models\Achat\FournisseurApprovisionnement;
                 Route::get('/{sessionId}/ventes', [SessionCaisseController::class, 'ventesBySession'])->name('ventes.sessions.list-ventes');
 
                 // Encaisser une vente
-                Route::put('vente/{facture}/encaisser', [sessioncaisseController::class, 'encaisser'])->name('vente.sessions.encaisser');
+                Route::put('vente/{facture}/encaisser', [SessioncaisseController::class, 'encaisser'])->name('vente.sessions.encaisser');
             });
 
             // Routes pour les factures
