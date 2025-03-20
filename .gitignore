@@ -9,7 +9,6 @@
 /vendor
 /.history
 .env
-.env-Copie.example
 .env.example
 .env.backup
 .env.production
