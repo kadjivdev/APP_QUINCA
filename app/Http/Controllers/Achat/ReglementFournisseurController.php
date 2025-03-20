@@ -331,15 +331,15 @@ class ReglementFournisseurController extends Controller
         }
     }
 
+    public function print(ReglementFournisseur $reglement)
+    {
+        $reglement->load(['facture.fournisseur', 'creator', 'validator']);
 
+        // $pdf = PDF::loadView('achat.reglements.print', compact('reglement'));
 
+        return "En cours de traitement ....";
+        // return view("achat.reglements.print",compact('reglement'));
 
-    // public function print(ReglementFournisseur $reglement)
-    // {
-    //     $reglement->load(['facture.fournisseur', 'creator', 'validator']);
-
-    //     $pdf = PDF::loadView('achat.reglements.print', compact('reglement'));
-
-    //     return $pdf->download("REGLEMENT_{$reglement->code}.pdf");
-    // }
+        // return $pdf->download("REGLEMENT_{$reglement->code}.pdf");
+    }
 }

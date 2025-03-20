@@ -154,17 +154,17 @@
 
     // Function to print payment
     function printReglement(id) {
-        window.open(`/quinkadjiv_refont/public/achat/reglements/${id}/print`, '_blank');
+        window.open(`${apiUrl}/achat/reglements/${id}/print`, '_blank');
     }
 
     // Function to filter by date
     function filterByDate(period) {
-        window.location.href = `/quinkadjiv_refont/public/achat/reglements?period=${period}`;
+        window.location.href = `${apiUrl}/achat/reglements?period=${period}`;
     }
 
     // Function to filter by payment mode
     function filterByMode(mode) {
-        window.location.href = `/quinkadjiv_refont/public/achat/reglements?mode=${mode}`;
+        window.location.href = `${apiUrl}/achat/reglements?mode=${mode}`;
     }
 
     // Function to refresh page

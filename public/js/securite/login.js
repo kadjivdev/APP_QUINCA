@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+    console.log(apiUrl);
+
     const loginForm = document.getElementById('loginForm');
     const submitButton = loginForm.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.innerHTML;
@@ -45,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const formData = new FormData(loginForm);
 
-        // console.log(formData);
 
         fetch(apiUrl + "/login", {
             method: "POST",

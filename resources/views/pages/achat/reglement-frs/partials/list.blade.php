@@ -85,7 +85,7 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
 
-                                    @if (!$reglement->validated_at)
+                                    @if ($reglement->validated_at)
                                     <button class="btn btn-sm btn-light-warning btn-icon ms-1"
                                         onclick="editReglement({{ $reglement->id }})" data-bs-toggle="tooltip"
                                         title="Modifier">
