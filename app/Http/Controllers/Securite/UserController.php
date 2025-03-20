@@ -204,6 +204,7 @@ class UserController extends Controller
                 'message' => 'Identifiants incorrects'
             ], 401);
         } catch (\Exception $e) {
+            dd($e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Une erreur est survenue lors de la connexion',
