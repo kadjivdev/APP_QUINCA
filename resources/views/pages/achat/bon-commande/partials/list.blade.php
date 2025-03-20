@@ -319,7 +319,7 @@
         });
 
         $.ajax({
-            url: `/quinkadjiv_refont/public/achat/bon-commandes/${id}`,
+            url: `${apiUrl}/achat/bon-commandes/${id}`,
             method: 'GET',
             success: function(response) {
                 Swal.close();
@@ -350,7 +350,7 @@
         let bon_id = $("#bon_id").val()
         let bon_object = $("#bon_object").val()
         if (bon_object) {
-            window.open(`/quinkadjiv_refont/public/achat/bon-commandes/${bon_id}/${bon_object}/pdf`)
+            window.open(`${apiUrl}/achat/bon-commandes/${bon_id}/${bon_object}/pdf`)
             // window.location.href = `/quinkadjiv_refont/public/achat/bon-commandes/${bon_id}/${bon_object}/pdf`
         }
         alert("Saisissez un object dans le champ ...")
