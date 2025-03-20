@@ -33,7 +33,7 @@ use App\Models\Achat\FournisseurApprovisionnement;
 |
 */
 
-// Route::prefix("quinkadjiv_refont/public")->group(function () {
+Route::prefix("quinkadjiv_refont/public")->group(function () {
     // Routes publiques
     Route::middleware('guest')->group(function () {
         Route::get('/', [UserController::class, 'showLogin'])->name('login-portail');
@@ -995,4 +995,4 @@ use App\Models\Achat\FournisseurApprovisionnement;
                 ->name('api.reglements.details');
         });
     });
-// });
+});
