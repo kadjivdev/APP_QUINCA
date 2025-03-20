@@ -537,13 +537,13 @@ class BonCommandeController extends Controller
         $tot_ht = 0;
         foreach ($ligne_commandes  as $ligne_commande) {
             $art = Article::find($ligne_commande->article_id);
-            // dd($art);
-            $pdf->Row(array($art->designation . " ($art->code_article)", $ligne_commande->quantite, number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
+            
+            $pdf->Row(array($art->designation, $ligne_commande->quantite, number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
             $tot_ht += $ligne_commande->quantite * $ligne_commande->prix_unitaire;
         }
 
         $pdf->SetWidths(array(150, 40));
-        $pdf->SetAligns(array('C', 'R'));
+        $pdf->SetAligns(array('C','R'));
         $pdf->Row(array('TOTAL', number_format($tot_ht, 2, ',', ' ')));
 
         $lettre = new ChiffreEnLettre;
