@@ -13,14 +13,13 @@ use App\Http\Controllers\Parametre\ConversionUniteController;
 use App\Http\Controllers\Catalogues\{FamilleArticleController, ArticleController, TarificationController};
 use App\Http\Controllers\Achat\{FournisseurApprovisionnementController, FournisseurController, ProgrammationAchatController, LigneProgrammationAchatController};
 use App\Http\Controllers\Achat\{BonCommandeController, LigneBonCommandeController, FactureFournisseurController, LigneFactureFournisseurController, ReglementFournisseurController,  BonLivraisonFournisseurController, LigneBonLivraisonFournisseurController};
-use App\Http\Controllers\Vente\{AcompteClientController, ClientController, SessioncaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController, ProformaController};
+use App\Http\Controllers\Vente\{AcompteClientController, ClientController, SessionCaisseController, FactureClientController, ReglementClientController, LivraisonClientController, LivraisonPvClientController, LigneLivraisonClientController, ProformaController};
 use App\Http\Controllers\Parametre\ChauffeurController;
 use App\Http\Controllers\Parametre\VehiculeController;
 use App\Http\Controllers\Revendeur\FactureRevendeurController;
 
 use App\Http\Controllers\Rapport\{RapportVenteController, SoldeInitialClientController, SoldeInitialFournisseurController, RapportAchatController, RapportStockController, RapportValorisationController, StockRotationController, StockAlertController, RapportCreanceController};
 use App\Http\Controllers\Revendeur\SpecialController;
-use App\Models\Achat\FournisseurApprovisionnement;
 
 /*
 |--------------------------------------------------------------------------
@@ -603,7 +602,7 @@ use App\Models\Achat\FournisseurApprovisionnement;
                 Route::get('/{sessionId}/ventes', [SessionCaisseController::class, 'ventesBySession'])->name('ventes.sessions.list-ventes');
 
                 // Encaisser une vente
-                Route::put('vente/{facture}/encaisser', [SessioncaisseController::class, 'encaisser'])->name('vente.sessions.encaisser');
+                Route::put('vente/{facture}/encaisser', [SessionCaisseController::class, 'encaisser'])->name('vente.sessions.encaisser');
             });
 
             // Routes pour les factures
