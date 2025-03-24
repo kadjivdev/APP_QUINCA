@@ -1,4 +1,4 @@
-@extends('layouts.securite.role')
+@extends('layouts.securite.Role')
 
 @section('content')
     <div class="content">
