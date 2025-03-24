@@ -538,7 +538,7 @@ class BonCommandeController extends Controller
         foreach ($ligne_commandes  as $ligne_commande) {
             $art = Article::find($ligne_commande->article_id);
             
-            $pdf->Row(array($art->designation, $ligne_commande->quantite, number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
+            $pdf->Row(array($art->designation, number_format($ligne_commande->quantite,2,',',' ') , number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
             $tot_ht += $ligne_commande->quantite * $ligne_commande->prix_unitaire;
         }
 

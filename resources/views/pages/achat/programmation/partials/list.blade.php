@@ -135,11 +135,6 @@
                     </tbody>
                 </table>
             </div>
-            @if ($programmations->hasPages())
-            <div class="card-footer bg-white border-0 pt-0">
-                {{ $programmations->links() }}
-            </div>
-            @endif
         </div>
     </div>
 </div>
@@ -489,7 +484,7 @@
         "autoWidth": false,
         "buttons": ["pdf", "print", "csv", "excel"],
         "order": [
-            [0, 'asc']
+            [5, 'asc']
         ],
         "pageLength": 15,
         language: {
