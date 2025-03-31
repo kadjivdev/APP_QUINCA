@@ -30,6 +30,7 @@ class AddPermissionSeeder extends Seeder
                 // 'Associer Proforma' => 'associer.proforma',
                 'Account Client' => 'accompte.client',
             ],
+            
             'Revendeur' => array_merge(
                 $this->createCrudValidatePermissions('clients dans panel revendeur', 'revendeur.clients', 'Ventes'),
             ),
