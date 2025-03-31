@@ -3,7 +3,6 @@ namespace App\Http\Controllers\Rapport;
 
 use App\Http\Controllers\Controller;
 use App\Models\Stock\{StockMouvement, StockDepot};
-use App\Models\Catalogue\Article;
 use App\Models\Parametre\{Depot, UniteMesure};
 use App\Services\{ServiceStockEntree, ServiceStockSortie};
 use Illuminate\Http\Request;

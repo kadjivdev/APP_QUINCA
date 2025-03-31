@@ -8,7 +8,7 @@ use App\Models\Catalogue\{Tarification, Article};
 use App\Models\Parametre\ConversionUnite;
 use App\Models\Parametre\Depot;
 use App\Models\Parametre\PointDeVente;
-use App\Models\Vente\{FactureClient, LigneFacture, SessionCaisse, ReglementClient};
+use App\Models\Vente\{FactureClient, LigneFacture, PointVente, SessionCaisse, ReglementClient};
 use App\Models\Parametre\Societe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,16 +24,18 @@ class FactureClientController extends Controller
      * Affiche la liste des factures
      */
 
-    public function index()
+
+    public function index(Request $request)
     {
         try {
+            $pointsVentes = PointVente::all();
+
             Log::info('Début du chargement de la liste des factures');
             $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
             $configuration = Societe::first();
             $tauxTva = $configuration ? $configuration->taux_tva : 18;
 
-            // Chargement des factures avec les relations nécessaires
-            $factures = FactureClient::with(['client'])
+            $query = FactureClient::with(['client'])
                 ->select([
                     'id',
                     'numero',
@@ -51,10 +53,18 @@ class FactureClientController extends Controller
                     'validated_by',
                     'encaissed_at'
                 ])
-                ->orderBy('date_facture', 'desc')
-                ->get();
+                ->orderBy('date_facture', 'desc');
 
-            // dd($factures->last());
+            // Chargement des factures avec les relations nécessaires
+            if ($request->pointVente) {
+                // dd($request->pointVente);
+                $factures = $query->get()
+                    ->filter(function ($facture) use ($request) {
+                        return $facture->createdBy->pointDeVente->id == $request->pointVente;
+                    });
+            } else {
+                $factures = $query->get();
+            }
 
             // Ajouter des attributs calculés pour chaque facture
             $factures->transform(function ($facture) {
@@ -129,8 +139,9 @@ class FactureClientController extends Controller
             // Charger la liste des clients pour le filtre
             $clients = Client::where('point_de_vente_id', Auth()->user()->point_de_vente_id)->orderBy('raison_sociale')->get(['id', 'raison_sociale', 'taux_aib']);
 
-            return view('pages.ventes.facture.index', compact('factures', 'clients', 'date', 'tauxTva', 'statsFactures'));
+            return view('pages.ventes.facture.index', compact('factures', 'clients', 'date', 'tauxTva', 'statsFactures', 'pointsVentes'));
         } catch (Exception $e) {
+            dd($e->getMessage());
             Log::error('Erreur lors du chargement de la liste des factures', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -792,29 +803,31 @@ class FactureClientController extends Controller
             'lignes.article'
         ]);
 
-        return response()->json([
-            'numero' => $facture->numero,
-            'date_facture' => $facture->date_facture->format('d/m/Y'),
-            'client' => [
-                'raison_sociale' => $facture->client->raison_sociale
-            ],
-            'point_vente' => $facture->sessionCaisse ? [
-                'libelle' => $facture->sessionCaisse->point_de_vente_id ?
-                    PointDeVente::find($facture->sessionCaisse->point_de_vente_id)->nom_pv : '-'
-            ] : null,
-            'montant_ht' => number_format($facture->montant_ht, 0, ',', ' '),
-            'montant_tva' => number_format($facture->montant_tva, 0, ',', ' '),
-            'montant_ttc' => number_format($facture->montant_ttc, 0, ',', ' '),
-            'lignes' => $facture->lignes->map(function ($ligne) {
-                return [
-                    'article' => [
-                        'designation' => $ligne->article->designation
-                    ],
-                    'quantite' => number_format($ligne->quantite, 0, ',', ' '),
-                    'prix_unitaire' => number_format($ligne->prix_unitaire_ht, 0, ',', ' '),
-                    'montant_total' => number_format($ligne->montant_ttc, 0, ',', ' ')
-                ];
-            })
-        ]);
+        return response()->json(
+            [
+                'numero' => $facture->numero,
+                'date_facture' => $facture->date_facture->format('d/m/Y'),
+                'client' => [
+                    'raison_sociale' => $facture->client->raison_sociale
+                ],
+                'point_vente' => $facture->sessionCaisse ? [
+                    'libelle' => $facture->sessionCaisse->point_de_vente_id ?
+                        PointDeVente::find($facture->sessionCaisse->point_de_vente_id)->nom_pv : '-'
+                ] : null,
+                'montant_ht' => number_format($facture->montant_ht, 0, ',', ' '),
+                'montant_tva' => number_format($facture->montant_tva, 0, ',', ' '),
+                'montant_ttc' => number_format($facture->montant_ttc, 0, ',', ' '),
+                'lignes' => $facture->lignes->map(function ($ligne) {
+                    return [
+                        'article' => [
+                            'designation' => $ligne->article->designation
+                        ],
+                        'quantite' => number_format($ligne->quantite, 0, ',', ' '),
+                        'prix_unitaire' => number_format($ligne->prix_unitaire_ht, 0, ',', ' '),
+                        'montant_total' => number_format($ligne->montant_ttc, 0, ',', ' ')
+                    ];
+                })
+            ]
+        );
     }
 }

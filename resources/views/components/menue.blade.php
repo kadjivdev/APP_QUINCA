@@ -192,9 +192,11 @@
                         </a></li>
                     @endcan
 
+                    @can("accompte.client")
                     <li><a class="dropdown-item" href="{{ route('vente.acomptes.index') }}">
                             <div class="dropdown-item-wrapper">Accomptes Clients</div>
                         </a></li>
+                    @endcan
 
                     @can('vente.sessions.view')
                     <li><a class="dropdown-item" href="{{ route('vente.sessions.index') }}">
@@ -209,13 +211,13 @@
                     @endcan
 
                     <!-- FACTURE PROFORMA -->
-                    <!-- can('facture.proformas.view') -->
+                    @can('facture.proformas.view')
                     <li>
                         <a class="dropdown-item" href="{{ route('proforma.create') }}">
                             <div class="dropdown-item-wrapper">Facture Proforma</div>
                         </a>
                     </li>
-                    <!-- endcan -->
+                    @endcan
 
                     @can('vente.reglement.view')
                     <li><a class="dropdown-item" href="{{ route('vente.reglement.index') }}">
@@ -240,8 +242,8 @@
                     <span class="uil fs-8 me-2 uil-dollar-sign"></span>Revendeur
                 </a>
                 <ul class="dropdown-menu navbar-dropdown-caret">
-                    @can('vente.clients.view')
-                    <li><a class="dropdown-item" href="{{ route('vente.clients.index') }}">
+                    @cannot('revendeur.clients.view')
+                    <li><a class="dropdown-item" href="{{ route('vente.clients.clientRevendeur') }}">
                             <div class="dropdown-item-wrapper">Liste des Clients</div>
                         </a></li>
                     @endcan

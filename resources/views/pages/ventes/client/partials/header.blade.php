@@ -26,9 +26,9 @@
 
             <div class="col-auto d-flex gap-2">
                 <button type="button"
-                        class="btn btn-dark px-3 d-inline-flex align-items-center"
-                        data-bs-toggle="modal"
-                        data-bs-target="#importClientModal">
+                    class="btn btn-dark px-3 d-inline-flex align-items-center"
+                    data-bs-toggle="modal"
+                    data-bs-target="#importClientModal">
                     <i class="fas fa-file-import me-2"></i>
                     Importer
                 </button>
@@ -37,14 +37,15 @@
                     <i class="fas fa-sync-alt me-2"></i>
                     Actualiser
                 </button>
-
+                @if(auth()->user()->can("vente.clients.create") || auth()->user()->can("revendeur.clients.create"))
                 <button type="button"
-                        class="btn btn-primary px-3 d-inline-flex align-items-center"
-                        data-bs-toggle="modal"
-                        data-bs-target="#addClientModal">
+                    class="btn btn-primary px-3 d-inline-flex align-items-center"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addClientModal">
                     <i class="fas fa-plus me-2"></i>
                     Nouveau Client
                 </button>
+                @endif
             </div>
         </div>
 
@@ -149,114 +150,114 @@
 </div>
 
 <style>
-:root {
-    --kadjiv-orange: #FFA500;
-    --kadjiv-orange-light: rgba(255, 165, 0, 0.1);
-}
-
-.page-header {
-    margin-bottom: 2rem;
-}
-
-/* Icônes et badges */
-.stats-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.header-icon .icon-wrapper {
-    background-color: var(--kadjiv-orange-light) !important;
-    transition: transform 0.3s ease;
-}
-
-.header-icon .icon-wrapper i {
-    color: var(--kadjiv-orange) !important;
-}
-
-.header-icon:hover .icon-wrapper {
-    transform: scale(1.1);
-}
-
-/* Cartes */
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
-}
-
-/* Stats icons couleurs */
-.stats-icon.bg-primary {
-    background-color: var(--kadjiv-orange-light) !important;
-}
-
-.stats-icon.text-primary {
-    color: var(--kadjiv-orange) !important;
-}
-
-/* Boutons */
-.btn {
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.btn i {
-    transition: transform 0.3s ease;
-}
-
-.btn:active i {
-    transform: scale(0.9);
-}
-
-.btn-primary {
-    background-color: var(--kadjiv-orange) !important;
-    border-color: var(--kadjiv-orange) !important;
-}
-
-.btn-primary:hover {
-    background-color: #e69400 !important;
-    border-color: #e69400 !important;
-}
-
-/* Animation de rafraîchissement */
-@keyframes spin {
-    100% {
-        transform: rotate(360deg);
+    :root {
+        --kadjiv-orange: #FFA500;
+        --kadjiv-orange-light: rgba(255, 165, 0, 0.1);
     }
-}
 
-.refresh-spinner {
-    animation: spin 1s linear infinite;
-}
+    .page-header {
+        margin-bottom: 2rem;
+    }
 
-/* Badges */
-.badge {
-    padding: 0.5rem 0.75rem;
-}
+    /* Icônes et badges */
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-.badge.bg-success {
-    background-color: rgba(25, 135, 84, 0.1) !important;
-    color: #198754 !important;
-}
+    .header-icon .icon-wrapper {
+        background-color: var(--kadjiv-orange-light) !important;
+        transition: transform 0.3s ease;
+    }
+
+    .header-icon .icon-wrapper i {
+        color: var(--kadjiv-orange) !important;
+    }
+
+    .header-icon:hover .icon-wrapper {
+        transform: scale(1.1);
+    }
+
+    /* Cartes */
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Stats icons couleurs */
+    .stats-icon.bg-primary {
+        background-color: var(--kadjiv-orange-light) !important;
+    }
+
+    .stats-icon.text-primary {
+        color: var(--kadjiv-orange) !important;
+    }
+
+    /* Boutons */
+    .btn {
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn:active i {
+        transform: scale(0.9);
+    }
+
+    .btn-primary {
+        background-color: var(--kadjiv-orange) !important;
+        border-color: var(--kadjiv-orange) !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #e69400 !important;
+        border-color: #e69400 !important;
+    }
+
+    /* Animation de rafraîchissement */
+    @keyframes spin {
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .refresh-spinner {
+        animation: spin 1s linear infinite;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .badge.bg-success {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+        color: #198754 !important;
+    }
 </style>
 
 <script>
-function refreshPage() {
-    const icon = document.querySelector('.fa-sync-alt');
-    icon.classList.add('refresh-spinner');
+    function refreshPage() {
+        const icon = document.querySelector('.fa-sync-alt');
+        icon.classList.add('refresh-spinner');
 
-    setTimeout(() => {
-        window.location.reload();
-    }, 500);
-}
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
 </script>

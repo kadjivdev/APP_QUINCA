@@ -49,7 +49,6 @@
     @include('pages.ventes.client.partials.show-modal')
     @include('pages.ventes.client.partials.edit-modal')
     @include('pages.ventes.client.partials.import-modal')
-
 @endsection
 @push('scripts')
 

@@ -45,7 +45,7 @@
                                     <i class="fas fa-shield-alt" style="color: #FFB800;"></i>
                                 </span>
                                 <input type="text" class="form-control border-start-0 ps-0"
-                                       id="edit_name" name="name" placeholder="Entrez le nom du rôle" required>
+                                    id="edit_name" name="name" placeholder="Entrez le nom du rôle" required>
                             </div>
                             <div class="invalid-feedback"></div>
                         </div>
@@ -64,8 +64,8 @@
                                     <i class="fas fa-search" style="color: #FFB800;"></i>
                                 </span>
                                 <input type="text" class="form-control border-start-0 ps-0"
-                                       id="editSearchPermissions"
-                                       placeholder="Rechercher des permissions...">
+                                    id="editSearchPermissions"
+                                    placeholder="Rechercher des permissions...">
                             </div>
                         </div>
 
@@ -106,13 +106,13 @@
                                                             <td>
                                                                 <div class="form-check permission-item">
                                                                     <input type="checkbox"
-                                                                           class="form-check-input edit-permission-checkbox"
-                                                                           name="permissions[]"
-                                                                           value="{{ $permission->name }}"
-                                                                           id="edit_perm_{{ $permission->id }}"
-                                                                           data-group="{{ $groupName }}">
+                                                                        class="form-check-input edit-permission-checkbox"
+                                                                        name="permissions[]"
+                                                                        value="{{ $permission->name }}"
+                                                                        id="edit_perm_{{ $permission->id }}"
+                                                                        data-group="{{ $groupName }}">
                                                                     <label class="form-check-label permission-label"
-                                                                           for="edit_perm_{{ $permission->id }}">
+                                                                        for="edit_perm_{{ $permission->id }}">
                                                                         {{ $permission->description }}
                                                                     </label>
                                                                 </div>
@@ -148,127 +148,130 @@
 </div>
 
 <style>
-.bg-warning-soft {
-    background-color: rgba(255, 184, 0, 0.1);
-}
+    .bg-warning-soft {
+        background-color: rgba(255, 184, 0, 0.1);
+    }
 
-.modal-content {
-    border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
+    .modal-content {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
 
-.form-control, .form-select {
-    padding: 0.6rem 1rem;
-    border-radius: 0.375rem;
-}
+    .form-control,
+    .form-select {
+        padding: 0.6rem 1rem;
+        border-radius: 0.375rem;
+    }
 
-.form-control:focus, .form-select:focus {
-    border-color: #FFB800;
-    box-shadow: 0 0 0 0.25rem rgba(255, 184, 0, 0.25);
-}
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #FFB800;
+        box-shadow: 0 0 0 0.25rem rgba(255, 184, 0, 0.25);
+    }
 
-.input-group-text {
-    padding: 0.6rem 1rem;
-    background-color: #f8f9fa;
-}
+    .input-group-text {
+        padding: 0.6rem 1rem;
+        background-color: #f8f9fa;
+    }
 
-.required:after {
-    content: ' *';
-    color: #dc3545;
-    font-weight: bold;
-}
+    .required:after {
+        content: ' *';
+        color: #dc3545;
+        font-weight: bold;
+    }
 
-.table-sm td, .table-sm th {
-    padding: 0.5rem;
-}
+    .table-sm td,
+    .table-sm th {
+        padding: 0.5rem;
+    }
 
-.permission-item {
-    margin: 0;
-}
+    .permission-item {
+        margin: 0;
+    }
 
-.edit-permission-checkbox:checked + .permission-label {
-    color: #FFB800;
-    font-weight: 500;
-}
+    .edit-permission-checkbox:checked+.permission-label {
+        color: #FFB800;
+        font-weight: 500;
+    }
 
-.form-check.card {
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    border-radius: 0.375rem;
-}
+    .form-check.card {
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        border-radius: 0.375rem;
+    }
 
-.form-check.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
+    .form-check.card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
 
-code {
-    font-size: 0.75rem;
-    color: #6c757d;
-    background-color: #f8f9fa;
-    padding: 0.2rem 0.4rem;
-    border-radius: 0.2rem;
-}
+    code {
+        font-size: 0.75rem;
+        color: #6c757d;
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.2rem;
+    }
 
-.table-light {
-    background-color: rgba(255, 184, 0, 0.05);
-}
+    .table-light {
+        background-color: rgba(255, 184, 0, 0.05);
+    }
 
-.btn {
-    transition: all 0.3s ease;
-}
+    .btn {
+        transition: all 0.3s ease;
+    }
 
-.btn:hover {
-    transform: translateY(-1px);
-    opacity: 0.9;
-}
+    .btn:hover {
+        transform: translateY(-1px);
+        opacity: 0.9;
+    }
 
-.permission-row:hover {
-    background-color: rgba(255, 184, 0, 0.05);
-}
+    .permission-row:hover {
+        background-color: rgba(255, 184, 0, 0.05);
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Recherche instantanée
-    const editSearchInput = document.getElementById('editSearchPermissions');
-    editSearchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        document.querySelectorAll('.permission-row').forEach(row => {
-            const permissionText = row.textContent.toLowerCase();
-            if (permissionText.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Recherche instantanée
+        const editSearchInput = document.getElementById('editSearchPermissions');
+        editSearchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.permission-row').forEach(row => {
+                const permissionText = row.textContent.toLowerCase();
+                if (permissionText.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Masquer/afficher les groupes vides
+            document.querySelectorAll('.edit-permission-group').forEach(group => {
+                const visibleRows = group.querySelectorAll('.permission-row[style=""]').length;
+                if (visibleRows === 0) {
+                    group.style.display = 'none';
+                } else {
+                    group.style.display = '';
+                }
+            });
         });
 
-        // Masquer/afficher les groupes vides
-        document.querySelectorAll('.edit-permission-group').forEach(group => {
-            const visibleRows = group.querySelectorAll('.permission-row[style=""]').length;
-            if (visibleRows === 0) {
-                group.style.display = 'none';
-            } else {
-                group.style.display = '';
-            }
+        // Sélection/Désélection par groupe
+        document.querySelectorAll('.edit-select-all-group').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const group = this.dataset.group;
+                document.querySelectorAll(`input[type="checkbox"][data-group="${group}"]`)
+                    .forEach(cb => cb.checked = true);
+            });
         });
-    });
 
-    // Sélection/Désélection par groupe
-    document.querySelectorAll('.edit-select-all-group').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const group = this.dataset.group;
-            document.querySelectorAll(`input[type="checkbox"][data-group="${group}"]`)
-                .forEach(cb => cb.checked = true);
+        document.querySelectorAll('.edit-deselect-all-group').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const group = this.dataset.group;
+                document.querySelectorAll(`input[type="checkbox"][data-group="${group}"]`)
+                    .forEach(cb => cb.checked = false);
+            });
         });
     });
-
-    document.querySelectorAll('.edit-deselect-all-group').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const group = this.dataset.group;
-            document.querySelectorAll(`input[type="checkbox"][data-group="${group}"]`)
-                .forEach(cb => cb.checked = false);
-        });
-    });
-});
 </script>

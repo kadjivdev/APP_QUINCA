@@ -60,7 +60,7 @@
                                                             @foreach($permissions as $permission)
                                                                 <div class='small mb-1'>
                                                                     <i class='fas fa-check text-success me-1'></i>
-                                                                    {{ explode('.', $permission->name)[1] }}
+                                                                    {{ $permission->name }}
                                                                 </div>
                                                             @endforeach
                                                         </div>

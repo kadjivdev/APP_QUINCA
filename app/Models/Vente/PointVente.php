@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class PointVente extends Model
 {
     use HasFactory;
+    protected $table = "point_de_ventes";
+    
     protected $fillable = [
         'nom',
         'adresse',

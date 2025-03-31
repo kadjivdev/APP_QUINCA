@@ -1,4 +1,23 @@
 {{-- list-factures.blade.php --}}
+
+<div class="row d-flex justify-content-center">
+    <div class="col-md-6 border bg-light rounded p-3">
+        <!-- FILTRAGE PAR DEPOT -->
+        <form action="{{route('vente.facture.index')}}" method="get">
+            <select class="form-select form-control" name="pointVente" id="">
+                <option value="">Sélectionner un point de vente</option>
+                @foreach($pointsVentes as $pointVente)
+                <option value="{{$pointVente->id}}" class="">{{$pointVente->nom_pv}} ({{$pointVente->id}})</option>
+                @endforeach
+            </select>
+            <br>
+
+            <button class="w-100 btn btn-primary px-4">
+                <i class="fas fa-save me-2"></i>Filtrer
+            </button>
+        </form>
+    </div>
+</div>
 <div class="row g-3">
     {{-- Table des factures --}}
     <div class="col-12">
@@ -8,6 +27,7 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="border-bottom-0 text-nowrap py-3">N° Facture</th>
+                            <th class="border-bottom-0">Point de Vente</th>
                             <th class="border-bottom-0 text-nowrap py-3">Date Insertion</th>
                             <th class="border-bottom-0">Date facture</th>
                             <th class="border-bottom-0">Client</th>
@@ -31,6 +51,9 @@
                                     <span class="badge bg-info bg-opacity-10 text-info">Proforma</span>
                                     @endif
                                 </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-dark text-white">{{$facture->createdBy->pointDeVente->nom_pv}}</span>
                             </td>
                             <td>{{ Carbon\Carbon::parse($facture->created_at)->format('d/m/Y H:i:s') }}</td>
                             <td>{{ $facture->date_facture->format('d/m/Y') }}</td>
@@ -163,6 +186,15 @@
         </div>
     </div>
 </div>
+
+@push("scripts")
+<script>
+    $(".__select2").select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+    })
+</script>
+@endpush
 
 <style>
     :root {

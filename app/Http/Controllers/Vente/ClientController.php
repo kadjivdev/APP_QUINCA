@@ -91,6 +91,67 @@ class ClientController extends Controller
         ));
     }
 
+    // clients pour les revendeurs
+    public function clientRevendeur(Request $request)
+    {
+        // 
+        $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
+
+        // Récupération des données avec pagination
+        $clients = Client::with([
+            'facturesClient',
+            'departement',
+            'agent',
+            'facturesClient.reglements' // Chargement des règlements via les factures
+        ])->where('created_by', Auth()->user()->id)->latest();
+
+        // Application des filtres si présents dans la requête
+        if ($request->filled('categorie')) {
+            $clients->where('categorie', $request->categorie);
+        }
+
+        if ($request->filled('ville')) {
+            $clients->where('ville', $request->ville);
+        }
+
+        if ($request->filled('statut')) {
+            $clients->where('statut', $request->statut);
+        }
+
+        if ($request->filled('search')) {
+            $clients->search($request->search);
+        }
+
+        if ($request->has('avec_credit')) {
+            $clients->avecCredit();
+        }
+
+        // $clients = $clients->paginate(10);
+        $clients = $clients->get();
+
+        // Statistiques pour le header
+        $stats = [
+            'total_clients' => $clients->count(),
+            'clients_actifs' => $clients->where('statut', true)->count(),
+            'clients_professionnels' => $clients->where('categorie', 'professionnel')->count(),
+            'clients_avec_credit' => $clients->where('plafond_credit', '>', 0)->count(),
+            'total_reglements' => DB::table('facture_clients')
+                ->join('reglement_clients', 'facture_clients.id', '=', 'reglement_clients.facture_client_id')
+                ->where('reglement_clients.statut', ReglementClient::STATUT_VALIDE)
+                ->sum('reglement_clients.montant')
+        ];
+
+        // Liste des villes pour le filtre
+        $villes = Client::distinct()->pluck('ville')->filter();
+
+        return view('pages.ventes.client.index', compact(
+            'clients',
+            'stats',
+            'villes',
+            'date'
+        ));
+    }
+
     /**
      * Rafraîchit la liste des clients (pour AJAX)
      */

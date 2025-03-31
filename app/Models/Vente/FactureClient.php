@@ -158,6 +158,7 @@ class FactureClient extends Model
     {
         return $this->belongsTo(SessionCaisse::class, 'session_caisse_id');
     }
+    
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -167,7 +168,6 @@ class FactureClient extends Model
     {
         return $this->belongsTo(User::class, 'validated_by');
     }
-
 
     /**
      * Obtient le reste à livrer pour une ligne

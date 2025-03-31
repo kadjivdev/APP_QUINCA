@@ -492,6 +492,7 @@ use App\Http\Controllers\Revendeur\SpecialController;
             // Clients
             Route::prefix('clients')->group(function () {
                 Route::get('/', [ClientController::class, 'index'])->name('vente.clients.index');
+                Route::get('/client-revendeur', [ClientController::class, 'clientRevendeur'])->name('vente.clients.clientRevendeur');
                 Route::post('/', [ClientController::class, 'store'])->name('vente.clients.store');
                 Route::get('/refresh-list', [ClientController::class, 'refreshList'])->name('vente.clients.refresh-list');
                 Route::get('/{client}', [ClientController::class, 'show'])->name('vente.clients.show');
@@ -609,8 +610,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
             Route::prefix('factures')->group(function () {
                 // Liste des factures
                 Route::get('/', [FactureClientController::class, 'index'])->name('vente.facture.index');
-
-                // Route::get('/', [FactureClientController::class, 'index'])->name('vente.facture.index');
 
                 // Créer une nouvelle facture
                 Route::post('/store', [FactureClientController::class, 'store'])->name('vente.facture.store');

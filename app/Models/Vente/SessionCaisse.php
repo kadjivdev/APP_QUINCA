@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Vente\FactureClient;
 use App\Models\Parametre\Caisse;
+use App\Models\Parametre\PointDeVente;
 
 class SessionCaisse extends Model
 {

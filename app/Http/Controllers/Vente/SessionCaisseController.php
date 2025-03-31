@@ -60,6 +60,7 @@ class SessionCaisseController extends Controller
     /**
      * Ouvre une nouvelle session de caisse.
      */
+
     public function store(Request $request)
     {
         try {

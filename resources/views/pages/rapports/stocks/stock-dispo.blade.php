@@ -61,7 +61,8 @@
                                     <td class="text-end">{{ number_format($stock['quantite_reelle'], 2, ',', ' ') }}</td>
                                     <td class="text-end">{{ number_format($stock['quantite_reservee'], 2, ',', ' ') }}</td>
                                     <td class="text-end">{{ number_format($stock['quantite_disponible'], 2, ',', ' ') }}</td>
-                                    <td class="text-end">{{ number_format($stock['prix_moyen'], 0, ',', ' ') }} FCFA</td>
+                                    <!-- <td class="text-end">{{ number_format($stock['prix_moyen'], 0, ',', ' ') }} FCFA</td> -->
+                                    <td class="text-end">---</td>
                                     <td class="text-end">{{ number_format($stock['valeur_stock'], 0, ',', ' ') }} FCFA</td>
                                     <td>
                                         @switch($stock['statut'])

@@ -50,23 +50,23 @@ class PointDeVente extends Model
     }
 
     // Relation avec les utilisateurs
-    public function utilisateurs(){
+    public function utilisateurs()
+    {
         return $this->hasMany(User::class);
     }
 
 
-       // Relation avec les caisses
+    // Relation avec les caisses
 
-       // Obtenir la caisse active du point de vente
-       public function getCaisseActive()
-       {
-           return $this->caisses()
-                       ->where('statut', 'actif')
-                       ->first();
-       }
-       public function acomptes()
-{
-    return $this->hasMany(AcompteClient::class);
-}
-
+    // Obtenir la caisse active du point de vente
+    public function getCaisseActive()
+    {
+        return $this->caisses()
+            ->where('statut', 'actif')
+            ->first();
+    }
+    public function acomptes()
+    {
+        return $this->hasMany(AcompteClient::class);
+    }
 }

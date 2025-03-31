@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(PointDeVenteSeeder::class);
         $this->call(RoleAndPermissionSeeder::class);    // D'abord créer les permissions et rôles
+        $this->call(AddPermissionSeeder::class); //Ajout de nouvelles permissions
         $this->call(AdminUserSeeder::class);         // Ensuite créer l'admin
     }
 }
