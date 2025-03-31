@@ -13,11 +13,7 @@ class PortailController extends Controller
 
     public function index()
     {
-        $permissions = Permission::all();
-        // Attribution de toutes les permissions au super-admin
-        $superAdmin = Role::findByName('Super Administrateur');
-        $superAdmin->syncPermissions($permissions);
-
+        
         // Configuration de la locale en français
         Carbon::setLocale('fr');
 
