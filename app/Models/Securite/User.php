@@ -2,7 +2,7 @@
 
 namespace App\Models\Securite;
 
-use App\Models\parametre\PointDeVente;
+use App\Models\Parametre\PointDeVente;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
