@@ -483,7 +483,6 @@ class ArticleController extends Controller
 
         try {
 
-            // dd($request->depotIds);
             // 
             $inventaire = Inventaire::create([
                 'date_inventaire' => now(),
@@ -491,7 +490,6 @@ class ArticleController extends Controller
                 'depot_ids' => $request->depotIds,
             ]);
 
-            // dd($request->articles);
 
             foreach ($request->articles as $articleId => $depots) {
                 $article = Article::findOrFail($articleId);
@@ -519,7 +517,7 @@ class ArticleController extends Controller
             return redirect()->back()->with('success', 'Inventaire enregistré avec succès.');
         } catch (\Exception $e) {
             DB::rollback();
-            dd($e);
+            // dd($e);
             return redirect()->back()->with('error', 'Erreur enregistrement de inventaire.');
         }
     }

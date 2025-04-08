@@ -58,7 +58,7 @@
                                             onclick="updateStock({{ $article->id }})">
                                             <i class="bi bi-box me-1"></i>Stock
                                         </button> -->
-                                        <a href="{{route('articles.show',$article->id)}}" class="btn btn-outline-primary btn-sm">
+                                        <a target="_blank" href="{{route('articles.show',$article->id)}}" class="btn btn-outline-primary btn-sm">
                                             <i class="bi bi-pencil me-1"></i>Lier à des dépôts
                                         </a>
                                     </div>
