@@ -20,7 +20,10 @@ class DepotController extends Controller
 
     public function index()
     {
-        $depots = Depot::with(['pointsVente', 'typeDepot'])->get();
+        $depots = Depot::with(['pointsVente', 'typeDepot'])->get()->map(function ($depot) {
+            $depot->inventaires = $depot->inventaires();
+            return $depot;
+        });
         $typesDepot = TypeDepot::all();
 
         // Debug des types de magasin
@@ -47,7 +50,7 @@ class DepotController extends Controller
     /**
      * Créer un nouveau magasin
      */
-     public function store(Request $request)
+    public function store(Request $request)
     {
         // Logging des données reçues
         Log::info('Données reçues:', $request->all());
@@ -246,7 +249,6 @@ class DepotController extends Controller
                 'success' => true,
                 'message' => 'Magasin supprimé avec succès'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -289,20 +291,20 @@ class DepotController extends Controller
         }
     }
 
-    public function uniqueCode(Request $request) {
-            // Valider que "code_depot" est présent
-            $request->validate([
-                'code_depot' => 'required|string|max:255',
-            ]);
+    public function uniqueCode(Request $request)
+    {
+        // Valider que "code_depot" est présent
+        $request->validate([
+            'code_depot' => 'required|string|max:255',
+        ]);
 
-            // Récupérer le code depuis la requête
-            $code = $request->input('code_depot');
+        // Récupérer le code depuis la requête
+        $code = $request->input('code_depot');
 
-            // Vérifier si le code existe dans la table "depot"
-            $exists = Depot::where('code_depot', $code)->exists();
+        // Vérifier si le code existe dans la table "depot"
+        $exists = Depot::where('code_depot', $code)->exists();
 
-            // Retourner une réponse JSON
-            return response()->json(['exists' => $exists]);
-        
+        // Retourner une réponse JSON
+        return response()->json(['exists' => $exists]);
     }
 }

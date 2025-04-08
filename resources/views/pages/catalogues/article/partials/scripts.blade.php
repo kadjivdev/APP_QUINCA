@@ -177,6 +177,7 @@
                 }
 
                 this.toggleStockFields(this.selectors.editForm);
+
             },
 
             // Gestion de la modification
@@ -319,4 +320,4 @@
         // Initialisation au chargement
         ArticleManager.init();
     });
-    </script>
+</script>

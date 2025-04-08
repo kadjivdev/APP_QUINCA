@@ -42,7 +42,7 @@
                             <select class="form-select" name="famille_id" required>
                                 <option value="">Sélectionner une famille</option>
                                 @foreach ($familles as $famille)
-                                    <option value="{{ $famille->id }}">{{ $famille->libelle_famille }}</option>
+                                <option value="{{ $famille->id }}">{{ $famille->libelle_famille }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">
@@ -93,9 +93,8 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold required">Unité de mésure</label>
                                     <select class="form-select" name="unite_mesure_id" required>
-                                        <option value="">Sélectionner une unité</option>
                                         @foreach ($unites as $unite)
-                                            <option value="{{ $unite->id }}">{{ $unite->libelle_unite }}</option>
+                                        <option value="{{ $unite->id }}">{{ $unite->libelle_unite }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">
@@ -107,6 +106,13 @@
 
                         {{-- Photo --}}
                         <div class="col-12">
+                            <label for="depots">Choisir des dépôts</label>
+                            <select multiple required id="depots" class="form-control select2" name="depots[]">
+                                @foreach($depots as $depot)
+                                <option value="{{$depot->id}}">{{$depot->libelle_depot}}</option>
+                                @endforeach
+                            </select>
+                            <br>
                             <label class="form-label fw-semibold">Photo</label>
                             <input type="file" class="form-control" name="photo" accept="image/*">
                             <small class="text-muted">Formats acceptés: JPG, PNG. Max: 2MB</small>
@@ -133,6 +139,7 @@
         color: red;
     }
 </style>
+
 
 <script>
     $(document).ready(function() {

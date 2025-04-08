@@ -2,10 +2,14 @@
 
 namespace App\Models\Parametre;
 
+use App\Models\Catalogue\Article;
+use App\Models\Catalogue\Inventaire;
 use App\Models\parametre\PointDeVente;
 use App\Models\parametre\TypeDepot;
 use App\Models\Stock\StockDepot;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Depot extends Model
@@ -51,6 +55,20 @@ class Depot extends Model
     public function stocks()
     {
         return $this->hasMany(StockDepot::class);
+    }
+
+    function articles(): BelongsToMany
+    {
+        return $this->belongsToMany(Article::class, "stock_depots", "depot_id", "article_id");
+    }
+
+    function inventaires()
+    {
+        $inventaires = Inventaire::with(["details","auteur"])->get()->filter(function ($inventaire) {
+            return in_array($this->id,json_decode($inventaire->depot_ids));
+        });
+
+        return $inventaires;
     }
 
     /**
@@ -106,7 +124,7 @@ class Depot extends Model
      */
     public function scopeOfType($query, $type)
     {
-        return $query->whereHas('typeDepot', function($q) use ($type) {
+        return $query->whereHas('typeDepot', function ($q) use ($type) {
             $q->where('code_type_depot', $type);
         });
     }

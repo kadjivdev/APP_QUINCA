@@ -4,16 +4,20 @@ namespace App\Http\Controllers\Catalogues;
 
 use App\Http\Controllers\Controller;
 use App\Models\Catalogue\Article;
+use App\Models\Catalogue\DetailInventaire;
 use App\Models\Catalogue\FamilleArticle;
+use App\Models\Catalogue\Inventaire;
+use App\Models\Parametre\Depot;
 use App\Models\Parametre\UniteMesure;
+use App\Models\Stock\StockDepot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\{Fill, Border, Alignment};
@@ -23,10 +27,26 @@ class ArticleController extends Controller
     /**
      * Afficher la liste des articles
      */
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::orderBy('designation')
-            ->paginate(20);
+        $query = Article::orderBy('designation');
+
+        // filtre par depots
+        if ($request->depot && $request->depot != 'tous') {
+            $articles = $query->get()->filter(function ($article) use ($request) {
+                $depotIds = $article->stocks->pluck("depot_id");
+
+                foreach ($depotIds as $depotId) {
+                    return $request->depot == $depotId;
+                }
+            });
+        } else {
+            $articles = $query->get();
+        }
+
+        $articlesIds = $articles->pluck("id");
+        // les depot liés à ces articles
+        $depotIds = StockDepot::whereIn("article_id", $articlesIds)->distinct()->pluck("depot_id");
 
         $familles = FamilleArticle::where('statut', true)
             ->orderBy('libelle_famille')
@@ -41,6 +61,8 @@ class ArticleController extends Controller
             ->count();
         $articlesActifs = Article::where('statut', Article::STATUT_ACTIF)->count();
 
+        $depots = Depot::get();
+
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
 
         $unites = UniteMesure::all();
@@ -53,16 +75,67 @@ class ArticleController extends Controller
             'articlesCritiques',
             'articlesActifs',
             'date',
-            'unites'
+            'unites',
+            'depots',
+            'depotIds'
         ));
     }
 
     /**
-     * Rechercher des articles
+     * Affiche la page d'affectation d'article aux depots
      */
+
+    public function show(Article $article)
+    {
+        $totalArticles = Article::count();
+        $articlesEnStock = Article::where('stockable', true)
+            ->where('stock_actuel', '>', 0)
+            ->count();
+        $articlesCritiques = Article::where('stockable', true)
+            ->whereRaw('stock_actuel <= stock_minimum')
+            ->count();
+        $articlesActifs = Article::where('statut', Article::STATUT_ACTIF)->count();
+
+        $familles = FamilleArticle::all();
+        $depots = Depot::get();
+        $unites = UniteMesure::all();
+
+
+        return view("pages.catalogues.article.affect-depot", compact([
+            "depots",
+            "article",
+            "articlesEnStock",
+            "totalArticles",
+            "articlesActifs",
+            "articlesCritiques",
+            "familles",
+            "unites"
+        ]));
+    }
+
     /**
      * Recherche d'articles pour le select2
      */
+
+    function articleAffect(Request $request, Article $article)
+    {
+        $request->validate([
+            "depots" => "required",
+            "quantite_reelle" => "required",
+        ], [
+            'depots.required' => "Choisissez un dépôt",
+            'quantite_reelle.required' => "La quantité est réquise!"
+        ]);
+
+        $article->depots()->attach($request->depots, [
+            'quantite_reelle' => $request->quantite_reelle,
+            'user_id' => auth()->user()->id,
+            'unite_mesure_id' => $article->unite_mesure_id,
+        ]);
+
+        return back()->with("success", "Affectation éffectuée avec succès!");
+    }
+
     public function searchArticles(Request $request)
     {
         try {
@@ -170,44 +243,6 @@ class ArticleController extends Controller
         }
     }
 
-    //     public function filter(Request $request)
-    // {
-    //     $query = Article::query();
-
-    //     if ($request->famille) {
-    //         $query->where('famille_id', $request->famille);
-    //     }
-
-    //     if ($request->stock) {
-    //         switch ($request->stock) {
-    //             case 'critique':
-    //                 $query->whereRaw('stock_actuel <= stock_minimum');
-    //                 break;
-    //             case 'alerte':
-    //                 $query->whereRaw('stock_actuel <= stock_securite AND stock_actuel > stock_minimum');
-    //                 break;
-    //             case 'normal':
-    //                 $query->whereRaw('stock_actuel > stock_securite AND stock_actuel < stock_maximum');
-    //                 break;
-    //             case 'surplus':
-    //                 $query->whereRaw('stock_actuel >= stock_maximum');
-    //                 break;
-    //         }
-    //     }
-
-    //     if ($request->search) {
-    //         $query->where(function($q) use ($request) {
-    //             $q->where('designation', 'like', "%{$request->search}%")
-    //               ->orWhere('code_article', 'like', "%{$request->search}%");
-    //         });
-    //     }
-
-    //     $articles = $query->paginate(20);
-
-    //     return view('pages.catalogues.article.partials.list', compact('articles'));
-    // }
-
-
     /**
      * Filtrer les articles
      */
@@ -236,14 +271,19 @@ class ArticleController extends Controller
             }
         }
 
-        $articles = $query->paginate(20);
+        $articles = $query->get();
 
-        return view('pages.catalogues.article.partials.list', compact('articles'));
+        $articlesIds = $articles->pluck("id");
+        // les depot liés à ces articles
+        $depotIds = StockDepot::whereIn("article_id", $articlesIds)->distinct()->pluck("depot_id");
+
+        return view('pages.catalogues.article.partials.list', compact('articles', "depotIds"));
     }
 
     /**
      * Charge les données d'un article pour modification
      */
+
     public function edit($id)
     {
         $article = Article::with(['famille'])->findOrFail($id);
@@ -265,14 +305,18 @@ class ArticleController extends Controller
     /**
      * Créer un nouvel article
      */
+
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
+
             $data = $request->all();
+            // dd($data);
             $data['stockable'] = filter_var($request->input('stockable'), FILTER_VALIDATE_BOOLEAN);
 
             $validator = Validator::make($data, [
-                // 'code_article' => 'required|unique:articles,code_article',
+                'depots*' => 'required',
                 // 'designation' => 'required|string|max:255',
                 // 'famille_id' => 'required|exists:famille_articles,id',
                 // 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -292,11 +336,15 @@ class ArticleController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Veuillez remplir correctement tous les champs obligatoires',
-                    'errors' => $validator->errors()
-                ], 422);
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Veuillez remplir correctement tous les champs obligatoires',
+                        'errors' => $validator->errors()
+                    ], 422);
+                } else {
+                    return redirect()->back()->withErrors($validator)->withInput();
+                }
             }
 
             // Gérer l'upload de l'image
@@ -311,12 +359,32 @@ class ArticleController extends Controller
 
             $article = Article::create($data);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Article créé avec succès',
-                'data' => $article
-            ], 201);
+            // attachement de l'article au dépot
+            foreach ($request->depots as $depotId) {
+                StockDepot::create([
+                    'depot_id' => $depotId,
+                    'article_id' => $article->id,
+                    'quantite_reelle' => $request->stock_actuel,
+                    'stock_minimum' => $request->stock_minimum,
+                    'stock_maximum' => $request->stock_maximum,
+                    'emplacement' => $request->emplacement_stock,
+                    'user_id' => auth()->user()->id,
+                    'unite_mesure_id' => $request->unite_mesure_id,
+                ]);
+            }
+
+            DB::commit();
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Article créé avec succès',
+                    'data' => $article
+                ], 201);
+            } else {
+                return redirect()->back()->with("success", "Article créé avec succès");
+            }
         } catch (\Exception $e) {
+            DB::rollBack();
             \Log::error('Erreur création article: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
@@ -325,9 +393,11 @@ class ArticleController extends Controller
             ], 500);
         }
     }
+
     /**
      * Mettre à jour un article
      */
+
     public function update(Request $request, $id)
     {
         $article = Article::find($id);
@@ -394,8 +464,70 @@ class ArticleController extends Controller
     }
 
     /**
+     * Enregistrer plusieurs inventaires
+     */
+    public function storeMultipleInventaires(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'articles.*' => 'required',
+            'depotIds' => 'required',
+        ], [
+            "depotIds.required" => "Veuillez selectionner le depôt concerné"
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            // dd($request->depotIds);
+            // 
+            $inventaire = Inventaire::create([
+                'date_inventaire' => now(),
+                'user_id' => Auth::user()->id,
+                'depot_ids' => $request->depotIds,
+            ]);
+
+            // dd($request->articles);
+
+            foreach ($request->articles as $articleId => $depots) {
+                $article = Article::findOrFail($articleId);
+
+                foreach ($depots as $depotId => $qteStock) {
+                    // 
+                    $stock_depot = StockDepot::where('depot_id', $depotId)
+                        ->where('article_id', $articleId)
+                        ->first();
+
+
+                    DetailInventaire::updateOrCreate([
+                        'qte_stock' => $article->stock_actuel,
+                        'qte_reel' => $qteStock,
+                        'stock_depot_id' => $stock_depot->id,
+                        'inventaire_id' => $inventaire->id,
+                    ]);
+
+                    // actualisation du stock de l'article dans le dépôt
+                    $stock_depot->update(["quantite_reelle" => $qteStock]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Inventaire enregistré avec succès.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            dd($e);
+            return redirect()->back()->with('error', 'Erreur enregistrement de inventaire.');
+        }
+    }
+
+    /**
      * Supprimer un article
      */
+
     public function destroy($id)
     {
         try {
@@ -440,6 +572,7 @@ class ArticleController extends Controller
     /**
      * Mettre à jour le stock d'un article
      */
+
     public function updateStock(Request $request, $id)
     {
         $article = Article::findOrFail($id);
@@ -480,6 +613,7 @@ class ArticleController extends Controller
     /**
      * Changer le statut d'un article
      */
+
     public function toggleStatus($id)
     {
         try {

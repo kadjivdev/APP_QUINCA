@@ -115,7 +115,7 @@
                 });
         });
     });
-
+    
     // Fonction pour régénérer et vérifier
     function generateAndValidateCode() {
         const newCode = generateDepotCode();

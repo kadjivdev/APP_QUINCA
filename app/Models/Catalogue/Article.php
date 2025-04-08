@@ -2,6 +2,7 @@
 
 namespace App\Models\Catalogue;
 
+use App\Models\Parametre\Depot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ use Illuminate\Support\Carbon;
 use App\Models\Stock\StockDepot;
 use App\Models\Parametre\UniteMesure;
 use App\Models\Vente\DevisDetail;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Article
@@ -112,21 +114,31 @@ class Article extends Model
         return $this->hasMany(Tarification::class);
     }
 
-    // /**
-    //  * Obtient les stocks en magasin
-    //  */
-    // public function stockDepots(): HasMany
-    // {
-    //     return $this->hasMany(StockDepot::class);
-    // }
     public function stocks()
     {
         return $this->hasMany(StockDepot::class, 'article_id', 'id');
     }
 
+    function depots(): BelongsToMany
+    {
+        return $this->belongsToMany(Depot::class, "stock_depots", "article_id", "depot_id");
+    }
+
     public function uniteMesure()
     {
         return $this->belongsTo(UniteMesure::class, 'unite_mesure_id');
+    }
+
+    /**
+     * Calcul du reste de stock de l'article
+     */
+
+    function reste($depotId)
+    {
+        // on recupere le stock de cet article dans ce dépot
+        $stock = $this->stocks->where("depot_id", $depotId)->first();
+        $qteReelle = $stock ? $stock->quantite_reelle : 0;
+        // return $query->;
     }
 
     /**

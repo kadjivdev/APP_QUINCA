@@ -141,7 +141,6 @@ class FactureClientController extends Controller
 
             return view('pages.ventes.facture.index', compact('factures', 'clients', 'date', 'tauxTva', 'statsFactures', 'pointsVentes'));
         } catch (Exception $e) {
-            dd($e->getMessage());
             Log::error('Erreur lors du chargement de la liste des factures', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -196,6 +195,14 @@ class FactureClientController extends Controller
                     'errors' => $validator->errors()
                 ], 422);
             }
+
+            // verifions si le stock restant des articles est suffisant pour effecture cette vente
+
+            // foreach ($request->lignes as $key => $value) {
+            //     # code...
+            // }
+
+            // 
 
             DB::beginTransaction();
 

@@ -27,7 +27,8 @@ class StockDepot extends Model
         'stock_minimum',
         'stock_maximum',
         'emplacement',
-        'user_id'
+        'user_id',
+        'unite_mesure_id'
     ];
 
     protected $casts = [

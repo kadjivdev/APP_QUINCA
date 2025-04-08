@@ -58,7 +58,7 @@
 
                     @can('depot.view')
                     <li><a class="dropdown-item" href="{{ route('depot.index') }}">
-                            <div class="dropdown-item-wrapper">Magasin</div>
+                            <div class="dropdown-item-wrapper">Dépôts</div>
                         </a></li>
                     @endcan
 

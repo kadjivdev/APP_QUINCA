@@ -36,7 +36,7 @@
                             <select class="form-select" name="famille_id" required>
                                 <option value="">Sélectionner une famille</option>
                                 @foreach ($familles as $famille)
-                                    <option value="{{ $famille->id }}">{{ $famille->libelle_famille }}</option>
+                                <option value="{{ $famille->id }}">{{ $famille->libelle_famille }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">
@@ -90,7 +90,7 @@
                                     <select class="form-select" name="unite_mesure_id" required>
                                         <option value="">Sélectionner une unité</option>
                                         @foreach ($unites as $unite)
-                                            <option value="{{ $unite->id }}">{{ $unite->libelle_unite }}</option>
+                                        <option value="{{ $unite->id }}">{{ $unite->libelle_unite }}</option>
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback">

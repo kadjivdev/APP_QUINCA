@@ -14,9 +14,9 @@
 
     <div class="d-flex gap-2">
         <div class="position-relative">
-            <input type="text" class="form-control search-bar" id="searchArticle"
-                placeholder="Rechercher un article..." data-search-url="{{ route('articles.search') }}">
-            <i class="bi bi-search search-icon text-muted"></i>
+            <a href="{{route('articles.index')}}" class="btn btn-dark">
+                <i class="bi bi-plus-lg me-2"></i>Actualiser
+            </a>
         </div>
 
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addArticleModal">
@@ -84,4 +84,17 @@
         <option value="critique">Stock Critique</option>
         <option value="surplus">Surplus</option>
     </select>
+
+    <br><br>
+    <div class="">
+        <form action="{{route('articles.index')}}" method="get" class="btn-group">
+            <select class="form-select select2 d-inline-block w-auto ms-2" name="depot">
+                <option value="tous">Tous les dépots</option>
+                @foreach($depots as $depot)
+                <option value="{{$depot->id}}">{{$depot->libelle_depot}}</option>
+                @endforeach
+            </select>
+            <button class="btn btn-sm btn-primary">Filtrer</button>
+        </form>
+    </div>
 </div>
