@@ -7,6 +7,7 @@ use App\Models\Parametre\UniteMesure;
 use App\Models\Achat\ProgrammationAchat;
 use App\Models\Achat\LigneProgrammationAchat;
 use App\Http\Controllers\Controller;
+use App\Models\Stock\StockDepot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -24,6 +25,15 @@ class ProgrammationAchatController extends Controller
     {
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
 
+        $depots = auth()->user()->pointDeVente->depot->map(function ($depot) {
+            $depot->articles = $depot->articles->transform(function ($article) use ($depot) {
+                $article->reste = $article->reste($depot->id);
+                $article->qteVendue = $article->ventes()->sum("quantite");
+                return $article;
+            });
+            return $depot;
+        });
+
         $data = [
             'date' => $date,
             'programmations' => ProgrammationAchat::with(['pointVente', 'fournisseur', 'lignes.article', 'lignes.uniteMesure'])
@@ -36,12 +46,15 @@ class ProgrammationAchatController extends Controller
             'programmationsValidees' => ProgrammationAchat::whereNotNull('validated_at')->count(),
             'fournisseurs' => \App\Models\Achat\Fournisseur::all(),
             'pointVentes' => \App\Models\Parametre\PointDeVente::all(),
-            'articles' => Article::where('statut', Article::STATUT_ACTIF)
+            'articles' => Article::with(["stocks", "depots"])->where('statut', Article::STATUT_ACTIF)
                 ->orderBy('designation')
                 ->get(),
+
             'unitesMesure' => UniteMesure::where('statut', UniteMesure::STATUT_ACTIF)
                 ->orderBy('libelle_unite')
-                ->get()
+                ->get(),
+
+            "depots" => $depots
         ];
 
         return view('pages.achat.programmation.index', $data);
@@ -49,6 +62,7 @@ class ProgrammationAchatController extends Controller
     /**
      * Enregistre une nouvelle programmation
      */
+
     public function store(Request $request)
     {
         try {
@@ -98,6 +112,26 @@ class ProgrammationAchatController extends Controller
                     'unite_mesure_id' => $request->unites[$index],
                     'quantite' => $request->quantites[$index]
                 ]);
+
+                // On ajoute les quantités saisies au stock des articles
+                $stock = StockDepot::where(["depot_id" => $request->depot, "article_id" => $articleId])->first();
+
+                if ($stock) {
+                    $stock->update(["quantite_reelle" => $stock->quantite_reelle + $request->quantites[$index]]);
+                }
+            }
+
+            // On ajoute les quantités saisies au stock des articles
+            foreach ($request->articles as $index => $articleId) {
+                $article = Article::findOrFail($articleId);
+                $qteReste = $article->reste($request->depot);
+
+                if ($qteReste < $request->quantites[$index]) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Le reste du stock de l'article {{$article->designation}} est insuffisant à la quantité saisie"
+                    ], 500);
+                }
             }
 
             DB::commit();

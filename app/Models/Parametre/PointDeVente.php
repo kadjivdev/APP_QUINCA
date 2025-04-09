@@ -36,7 +36,7 @@ class PointDeVente extends Model
     // Relations
     public function depot()
     {
-        return $this->hasMany(Depot::class);
+        return $this->hasMany(Depot::class)->with("articles");
     }
 
     public function caisses()

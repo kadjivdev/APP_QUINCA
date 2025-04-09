@@ -14,7 +14,7 @@
                                 <th class="border-bottom-0 text-center">Désignation</th>
                                 <th class="border-bottom-0">Famille</th>
                                 <th class="border-bottom-0">Stockable</th>
-                                <th class="border-bottom-0">Dépôts</th>
+                                <th class="border-bottom-0" style="min-width: 150px;">Dépôts</th>
                                 <th class="border-bottom-0 text-end" style="min-width: 150px;">Actions</th>
                             </tr>
                         </thead>
@@ -38,9 +38,11 @@
                                 <td class="border p-0">
                                     <ul class="m-0" style="width:100%;height:100px!important;overflow-y:scroll;">
                                         @forelse($article->stocks as $stock)
-                                        <li class="bg-warning p-2" style="list-style-type: none">
-                                            <span class="badge d-block text-dark"> Dépôt: {{$stock->depot->libelle_depot}}</span>
-                                            <input type="number" name="articles[{{$article->id}}][{{$stock->depot_id}}]" class="form-control" value="{{$stock->quantite_reelle}}">
+                                        <li class="bg-warning rounded p-2" style="list-style-type: none">
+                                            <span class="badge d-block text-dark">Dépôt: {{$stock->depot->libelle_depot}}</span>
+                                            <span class="badge d-block d-flex align-items-center">Qte : <input type="number" name="articles[{{$article->id}}][{{$stock->depot_id}}]" class="form-control" value="{{$stock->quantite_reelle}}"></span>
+                                            <span class="badge d-block text-dark">Qte vendue: {{number_format($article->ventes()->sum('quantite'),2,'.','')}}</span>
+                                            <span class="badge d-block text-dark">Qte restante: {{number_format($article->reste($stock->depot_id),2,'.','')}}</span>
                                         </li>
                                         <hr>
                                         @empty

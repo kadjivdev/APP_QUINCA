@@ -2,6 +2,8 @@
 
 namespace App\Models\Catalogue;
 
+use App\Models\Achat\LigneProgrammationAchat;
+use App\Models\Achat\ProgrammationAchat;
 use App\Models\Parametre\Depot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +15,7 @@ use Illuminate\Support\Carbon;
 use App\Models\Stock\StockDepot;
 use App\Models\Parametre\UniteMesure;
 use App\Models\Vente\DevisDetail;
+use App\Models\Vente\LigneFacture;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -109,6 +112,7 @@ class Article extends Model
     /**
      * Obtient les tarifications de l'article
      */
+
     public function tarifications(): HasMany
     {
         return $this->hasMany(Tarification::class);
@@ -130,20 +134,48 @@ class Article extends Model
     }
 
     /**
+     * Les programmations attachées à cet article
+     */
+
+    function programmations(): HasMany
+    {
+        return $this->hasMany(LigneProgrammationAchat::class, "article_id");
+    }
+
+
+    /**
+     * Les ventes attachées à cet article
+     */
+
+    function ventes(): HasMany
+    {
+        return $this->hasMany(LigneFacture::class, "article_id");
+    }
+
+    /**
      * Calcul du reste de stock de l'article
      */
 
-    function reste($depotId)
+    function reste($depotId = null)
     {
+        // $depotId = $depot;
+        // if ($depot) {
+        // }else {
+        //     $depotId = $this->depots->first()?$this->depots->first()->id:null;
+        // }
+
         // on recupere le stock de cet article dans ce dépot
         $stock = $this->stocks->where("depot_id", $depotId)->first();
         $qteReelle = $stock ? $stock->quantite_reelle : 0;
-        // return $query->;
+        $qteAchats = $this->ventes()->sum("quantite");
+
+        return $qteReelle - $qteAchats;
     }
 
     /**
      * Obtient les stocks en points de vente
      */
+
     // public function stockPointsVente(): HasMany
     // {
     //     return $this->hasMany(StockPointVente::class);

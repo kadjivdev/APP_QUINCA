@@ -51,7 +51,6 @@
                         }
                     })
                     .catch(error => {
-                        console.error('Erreur:', error);
                         loadingAlert.close();
                         Swal.fire({
                             icon: 'error',
@@ -557,7 +556,7 @@
         $('#pointVente').text(programmation.point_vente.nom_pv);
         $('#fournisseur').text(programmation.fournisseur.raison_sociale);
 
-        console.log(programmation)
+        // console.log(programmation)
 
         // Statut
         const statutBadge = programmation.rejected_at
@@ -654,7 +653,7 @@
                         const data = await response.json();
 
                         // Log pour debug
-                        console.log('Response:', data);
+                        // console.log('Response:', data);
 
                         if (!data.success) {
                             throw new Error(data.message || data.error ||

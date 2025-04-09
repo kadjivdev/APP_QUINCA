@@ -196,13 +196,18 @@ class FactureClientController extends Controller
                 ], 422);
             }
 
-            // verifions si le stock restant des articles est suffisant pour effecture cette vente
+            // On verifie si les quantités saisies au niveau des articles ne depasse pas le reste de quantité sur l'article
+            // foreach ($request->articles as $index => $articleId) {
+            //     $article = Article::findOrFail($articleId);
+            //     $qteReste = $article->reste($request->depot);
 
-            // foreach ($request->lignes as $key => $value) {
-            //     # code...
+            //     if ($qteReste < $request->quantites[$index]) {
+            //         return response()->json([
+            //             'success' => false,
+            //             'message' => "Le reste du stock de l'article {{$article->designation}} est insuffisant à la quantité saisie"
+            //         ], 500);
+            //     }
             // }
-
-            // 
 
             DB::beginTransaction();
 

@@ -16,7 +16,6 @@ class PointVenteController extends Controller
         $pointsVente = PointDeVente::with('depot')->get();
         $depots = Depot::where('actif', true)->get();
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
-
         return view('pages.parametre.point_vente.index', compact('pointsVente', 'depots', 'date'));
     }
 
@@ -123,8 +122,8 @@ class PointVenteController extends Controller
     }
 
     /**
- * Supprimer un point de vente (soft delete)
- */
+     * Supprimer un point de vente (soft delete)
+     */
     public function destroy($id)
     {
         try {
@@ -153,7 +152,6 @@ class PointVenteController extends Controller
                 'success' => true,
                 'message' => 'Point de vente supprimé avec succès'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -185,7 +183,8 @@ class PointVenteController extends Controller
         }
     }
 
-    public function uniqueCode(Request $request) {
+    public function uniqueCode(Request $request)
+    {
         // Valider que "code_depot" est présent
         $request->validate([
             'code_depot' => 'required|string|max:255',
@@ -198,6 +197,6 @@ class PointVenteController extends Controller
         $exists = PointDeVente::where('code_pv', $code)->exists();
 
         // Retourner une réponse JSON
-        return response()->json(['exists' => $exists]);    
+        return response()->json(['exists' => $exists]);
     }
 }

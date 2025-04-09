@@ -71,28 +71,35 @@
                                             </div>
                                             <div class="invalid-feedback">Le fournisseur est requis</div>
                                         </div>
-
-                                        <!-- <div class="col-4">
-                                            <div class="input-group">
-                                                <label class="form-label fw-medium required my-1" for="#">Article</label>
-                                                <select class="form-select select2" name="" required>
-                                                    <option value="">Selectionner un article</option>
-                                                    @foreach ($articles as $article)
-                                                    <option value="{{ $article->id }}">
-                                                        {{ $article->code_article }} - {{ $article->designation }}
-                                                    </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div> -->
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Choisir un magasin --}}
+                        <div class="col-md-12">
+                            <div class="card border">
+                                <div class="card-header bg-light border-light-subtle d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-box me-2"></i>Les Dépôts de votre point de vente <span class="text-danger">*</span>
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <select class="form-control form-select select2" required name="depot" id="depot_select" required>
+                                        <option value="">Selectionner un dépôt</option>
+                                        @foreach (auth()->user()->pointDeVente->depot as $depot)
+                                        <option value="{{ $depot }}">
+                                            {{ $depot->libelle_depot }}
+                                        </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
 
                         {{-- Section articles --}}
-                        <div class="col-12">
+                        <div class="col-12 d-none" id="articles-bloc">
                             <div class="card border border-light-subtle">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <h6 class="card-title mb-0">
@@ -156,20 +163,15 @@
     <tr class="ligne-programmation hover:bg-gray-50 transition-colors duration-200">
         <td class="p-2">
             <div class="input-group">
-                <label class="form-label fw-medium required my-1" for="">Article</label>
-                <select class="form-select  select2-articles" name="articles[]" id="" required>
-                    <option value="">Selectionner un article</option>
-                    @foreach ($articles as $article)
-                    <option value="{{ $article->id }}">
-                        {{ $article->code_article }} - {{ $article->designation }}
-                    </option>
-                    @endforeach
+                <!-- <label class="d-block form-label fw-medium required my-1" for="">Article</label> -->
+                <select class="form-select  select2-articles articles_select" name="articles[]" required>
+                    <!-- gerer par du js -->
                 </select>
             </div>
             <div class="invalid-feedback">L'article est requis</div>
         </td>
         <td class="p-2">
-            <input type="number" class="form-control text-end" name="quantites[]" placeholder="0.00" required
+            <input type="number" class="form-control text-end articleQte" name="quantites[]" placeholder="0.00" required
                 min="0.01" step="0.01">
             <div class="invalid-feedback">La quantité est requise</div>
         </td>
@@ -195,6 +197,34 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+        // 
+        $("#depot_select").on('change', function() {
+            if ($(this).val()) {
+                $("#articles-bloc").removeClass("d-none");
+
+                let depot = JSON.parse($(this).val());
+
+                // Stockage du depot dans une session
+                localStorage.setItem("depot", $(this).val())
+
+                $(".articles_select").empty()
+
+                let rows = `<option value="">Selectionner un article</option>`
+                if (depot.articles.length > 0) {
+                    depot.articles.forEach(article => {
+                        rows += `
+                            <option ${(!article.reste || article.reste<0)? "disabled" :''} value="${ article.id }">
+                                ${ article.code_article } ${ article.designation } - Reste : ${article.reste}
+                            </option>
+                            `
+                    });
+                }
+                $(".articles_select").append(rows)
+            } else {
+                $("#articles-bloc").addClass("d-none")
+            }
+        })
+
         // Initialisation de Select2 avec gestion d'erreur
         try {
             $('.select2').select2({
@@ -216,7 +246,23 @@
 
         // Ajouter une nouvelle ligne
         $('#btnAddLigne').on('click', function() {
-            addNewLine();
+            // addNewLine();
+
+            let _depot = localStorage.getItem("depot");
+
+            let depot = JSON.parse(_depot)
+
+            let rows = ``
+            if (depot.articles.length > 0) {
+                depot.articles.forEach(article => {
+                    rows += `
+                            <option ${(!article.reste || article.reste<0)? "disabled" :''} value="${ article.id }">
+                                ${ article.code_article } ${ article.designation } - Reste : ${article.reste}
+                            </option>
+                            `
+                });
+            }
+            $(".articles_select").append(rows)
         });
 
         // Supprimer une ligne
@@ -230,10 +276,11 @@
             if (this.checkValidity()) {
                 saveProgrammation($(this));
             }
+
             $(this).addClass('was-validated');
         });
     });
-    
+
     function loadArticles(fournisseurId) {
         $.ajax({
             url: `${apiUrl}/achat/programmations/fournisseurs/${fournisseurId}/articles`,
