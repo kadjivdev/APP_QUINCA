@@ -66,78 +66,83 @@ class LigneFacture extends Model
         return $this->belongsTo(UniteMesure::class, 'unite_vente_id');
     }
 
+    public function factureClient(): BelongsTo
+    {
+        return $this->belongsTo(FactureClient::class, 'facture_client_id');
+    }
+
 
 
 
     // Convertit la quantité de l'unité de vente vers l'unité de base
-public function convertirEnUniteBase(float $quantite): float
-{
-    try {
-        $article = $this->article->load('uniteMesure');
-        $uniteBaseId = $article->unite_mesure_id;
-        $uniteVenteId = $this->unite_vente_id;
+    public function convertirEnUniteBase(float $quantite): float
+    {
+        try {
+            $article = $this->article->load('uniteMesure');
+            $uniteBaseId = $article->unite_mesure_id;
+            $uniteVenteId = $this->unite_vente_id;
 
-        // Log pour debug
-        Log::info('Vérification des unités', [
-            'unite_vente_id' => $uniteVenteId,
-            'unite_base_id' => $uniteBaseId,
-            'article_id' => $this->article_id
-        ]);
+            // Log pour debug
+            Log::info('Vérification des unités', [
+                'unite_vente_id' => $uniteVenteId,
+                'unite_base_id' => $uniteBaseId,
+                'article_id' => $this->article_id
+            ]);
 
-        // Si l'unité de vente est la même que l'unité de base
-        if ($uniteVenteId == $uniteBaseId) {
-            Log::info('Unités identiques, pas de conversion nécessaire');
-            return $quantite;
+            // Si l'unité de vente est la même que l'unité de base
+            if ($uniteVenteId == $uniteBaseId) {
+                Log::info('Unités identiques, pas de conversion nécessaire');
+                return $quantite;
+            }
+
+            // Si on arrive ici, c'est que les unités sont différentes
+            // On cherche alors une conversion
+            $conversion = ConversionUnite::where(function ($query) use ($uniteBaseId, $uniteVenteId) {
+                $query->where('unite_source_id', $uniteVenteId)
+                    ->where('unite_dest_id', $uniteBaseId)
+                    ->where(function ($q) {
+                        $q->where('article_id', $this->article_id)
+                            ->orWhereNull('article_id');
+                    })
+                    ->where('statut', true);
+            })->orWhere(function ($query) use ($uniteBaseId, $uniteVenteId) {
+                $query->where('unite_source_id', $uniteBaseId)
+                    ->where('unite_dest_id', $uniteVenteId)
+                    ->where(function ($q) {
+                        $q->where('article_id', $this->article_id)
+                            ->orWhereNull('article_id');
+                    })
+                    ->where('statut', true);
+            })->first();
+
+            if (!$conversion) {
+                $uniteVente = UniteMesure::find($uniteVenteId);
+                $uniteBase = UniteMesure::find($uniteBaseId);
+
+                throw new Exception(
+                    "Aucune conversion trouvée entre l'unité de vente (" .
+                        $uniteVente->libelle_unite . ") et l'unité de base (" .
+                        $uniteBase->libelle_unite . ") pour l'article '" .
+                        $article->designation . "'"
+                );
+            }
+
+            // Si la conversion est dans le sens inverse
+            if ($conversion->unite_source_id == $uniteBaseId) {
+                return $conversion->convertirInverse($quantite);
+            }
+
+            return $conversion->convertir($quantite);
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la conversion d\'unité', [
+                'message' => $e->getMessage(),
+                'article_id' => $this->article_id,
+                'unite_vente_id' => $this->unite_vente_id,
+                'quantite' => $quantite
+            ]);
+            throw $e;
         }
-
-        // Si on arrive ici, c'est que les unités sont différentes
-        // On cherche alors une conversion
-        $conversion = ConversionUnite::where(function($query) use ($uniteBaseId, $uniteVenteId) {
-            $query->where('unite_source_id', $uniteVenteId)
-                  ->where('unite_dest_id', $uniteBaseId)
-                  ->where(function($q) {
-                      $q->where('article_id', $this->article_id)
-                        ->orWhereNull('article_id');
-                  })
-                  ->where('statut', true);
-        })->orWhere(function($query) use ($uniteBaseId, $uniteVenteId) {
-            $query->where('unite_source_id', $uniteBaseId)
-                  ->where('unite_dest_id', $uniteVenteId)
-                  ->where(function($q) {
-                      $q->where('article_id', $this->article_id)
-                        ->orWhereNull('article_id');
-                  })
-                  ->where('statut', true);
-        })->first();
-
-        if (!$conversion) {
-            $uniteVente = UniteMesure::find($uniteVenteId);
-            $uniteBase = UniteMesure::find($uniteBaseId);
-
-            throw new Exception(
-                "Aucune conversion trouvée entre l'unité de vente (" .
-                $uniteVente->libelle_unite . ") et l'unité de base (" .
-                $uniteBase->libelle_unite . ") pour l'article '" .
-                $article->designation . "'"
-            );
-        }
-
-        // Si la conversion est dans le sens inverse
-        if ($conversion->unite_source_id == $uniteBaseId) {
-            return $conversion->convertirInverse($quantite);
-        }
-        
-        return $conversion->convertir($quantite);
-    } catch (Exception $e) {
-        Log::error('Erreur lors de la conversion d\'unité', [
-            'message' => $e->getMessage(),
-            'article_id' => $this->article_id,
-            'unite_vente_id' => $this->unite_vente_id,
-            'quantite' => $quantite
-        ]);
-        throw $e;
     }
-}
 
 
 
@@ -180,9 +185,9 @@ public function convertirEnUniteBase(float $quantite): float
         static::saving(function ($ligneFacture) {
             // Convertir la quantité en unité de base
             // $ligneFacture->quantite_base = $ligneFacture->convertirEnUniteBase($ligneFacture->quantite) ?? $ligneFacture->quantite;
-            $ligneFacture->quantite_base = $ligneFacture->convertirEnUniteBase($ligneFacture->quantite) !== null 
-            ? $ligneFacture->convertirEnUniteBase($ligneFacture->quantite) 
-            : $ligneFacture->quantite;
+            $ligneFacture->quantite_base = $ligneFacture->convertirEnUniteBase($ligneFacture->quantite) !== null
+                ? $ligneFacture->convertirEnUniteBase($ligneFacture->quantite)
+                : $ligneFacture->quantite;
 
             // S'assurer que le taux_remise est défini
             if (!isset($ligneFacture->taux_remise)) {
@@ -210,54 +215,53 @@ public function convertirEnUniteBase(float $quantite): float
     // }
 
     /**
- * Relation avec les lignes de livraison
- */
-public function lignesLivraison()
-{
-    return $this->hasMany(LigneLivraisonClient::class, 'ligne_facture_id');
-}
+     * Relation avec les lignes de livraison
+     */
+    public function lignesLivraison()
+    {
+        return $this->hasMany(LigneLivraisonClient::class, 'ligne_facture_id');
+    }
 
-public function uuniteVente(): BelongsTo
-{
-    return $this->belongsTo(UniteMesure::class, 'unite_vente_id');
-}
+    public function uuniteVente(): BelongsTo
+    {
+        return $this->belongsTo(UniteMesure::class, 'unite_vente_id');
+    }
 
-/**
- * Relation avec la facture
- */
-public function facture()
-{
-    return $this->belongsTo(FactureClient::class, 'facture_client_id');
-}
+    /**
+     * Relation avec la facture
+     */
+    public function facture()
+    {
+        return $this->belongsTo(FactureClient::class, 'facture_client_id');
+    }
 
-/**
- * Relation avec l'article
- */
-public function article()
-{
-    return $this->belongsTo(Article::class);
-}
+    /**
+     * Relation avec l'article
+     */
+    public function article()
+    {
+        return $this->belongsTo(Article::class);
+    }
 
-/**
- * Calcule le reste à livrer pour cette ligne
- */
-public function getResteALivrerAttribute(): float
-{
-    $quantiteLivree = $this->lignesLivraison()
-        ->whereHas('livraison', function($query) {
-            $query->where('statut', 'valide');
-        })
-        ->sum('quantite_base');
+    /**
+     * Calcule le reste à livrer pour cette ligne
+     */
+    public function getResteALivrerAttribute(): float
+    {
+        $quantiteLivree = $this->lignesLivraison()
+            ->whereHas('livraison', function ($query) {
+                $query->where('statut', 'valide');
+            })
+            ->sum('quantite_base');
 
-    return max(0, $this->quantite_base - $quantiteLivree);
-}
+        return max(0, $this->quantite_base - $quantiteLivree);
+    }
 
-/**
- * Vérifie si la ligne est totalement livrée
- */
-public function estTotalementLivree(): bool
-{
-    return $this->reste_a_livrer <= 0;
-}
-
+    /**
+     * Vérifie si la ligne est totalement livrée
+     */
+    public function estTotalementLivree(): bool
+    {
+        return $this->reste_a_livrer <= 0;
+    }
 }

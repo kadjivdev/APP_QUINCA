@@ -468,57 +468,62 @@ class ArticleController extends Controller
      */
     public function storeMultipleInventaires(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'articles.*' => 'required',
-            'depotIds' => 'required',
-        ], [
-            "depotIds.required" => "Veuillez selectionner le depôt concerné"
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        DB::beginTransaction();
-
-        try {
-
-            // 
-            $inventaire = Inventaire::create([
-                'date_inventaire' => now(),
-                'user_id' => Auth::user()->id,
-                'depot_ids' => $request->depotIds,
+        if (auth()->user()->can("inventaires.create")) {
+            # code...
+            $validator = Validator::make($request->all(), [
+                'articles.*' => 'required',
+                'depotIds' => 'required',
+            ], [
+                "depotIds.required" => "Veuillez selectionner le depôt concerné"
             ]);
 
-
-            foreach ($request->articles as $articleId => $depots) {
-                $article = Article::findOrFail($articleId);
-
-                foreach ($depots as $depotId => $qteStock) {
-                    // 
-                    $stock_depot = StockDepot::where('depot_id', $depotId)
-                        ->where('article_id', $articleId)
-                        ->first();
-
-
-                    DetailInventaire::updateOrCreate([
-                        'qte_stock' => $article->stock_actuel,
-                        'qte_reel' => $qteStock,
-                        'stock_depot_id' => $stock_depot->id,
-                        'inventaire_id' => $inventaire->id,
-                    ]);
-
-                    // actualisation du stock de l'article dans le dépôt
-                    $stock_depot->update(["quantite_reelle" => $qteStock]);
-                }
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            DB::commit();
-            return redirect()->back()->with('success', 'Inventaire enregistré avec succès.');
-        } catch (\Exception $e) {
-            DB::rollback();
-            // dd($e);
-            return redirect()->back()->with('error', 'Erreur enregistrement de inventaire.');
+            DB::beginTransaction();
+
+            try {
+
+                // 
+                $inventaire = Inventaire::create([
+                    'date_inventaire' => now(),
+                    'user_id' => Auth::user()->id,
+                    'depot_ids' => $request->depotIds,
+                ]);
+
+
+                foreach ($request->articles as $articleId => $depots) {
+                    $article = Article::findOrFail($articleId);
+
+                    foreach ($depots as $depotId => $qteStock) {
+                        // 
+                        $stock_depot = StockDepot::where('depot_id', $depotId)
+                            ->where('article_id', $articleId)
+                            ->first();
+
+
+                        DetailInventaire::updateOrCreate([
+                            'qte_stock' => $article->stock_actuel,
+                            'qte_reel' => $qteStock,
+                            'stock_depot_id' => $stock_depot->id,
+                            'inventaire_id' => $inventaire->id,
+                        ]);
+
+                        // actualisation du stock de l'article dans le dépôt
+                        $stock_depot->update(["quantite_reelle" => $qteStock]);
+                    }
+                }
+
+                DB::commit();
+                return redirect()->back()->with('success', 'Inventaire enregistré avec succès.');
+            } catch (\Exception $e) {
+                DB::rollback();
+                // dd($e);
+                return redirect()->back()->with('error', 'Erreur enregistrement de inventaire.');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé pour enregistrer un inventaire');
         }
     }
 

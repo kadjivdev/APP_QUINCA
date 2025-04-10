@@ -66,6 +66,7 @@
                                             {{ $depot->actif ? 'Désactiver' : 'Activer' }}
                                         </a>
                                     </li>
+                                    <!-- @can("inventaires.view") -->
                                     <li>
                                         <a class="dropdown-item" href="#"
                                             data-bs-toggle="modal" data-bs-target="#inventairesModal"
@@ -75,6 +76,7 @@
                                             Inventaires
                                         </a>
                                     </li>
+                                    <!-- @endcan -->
                                     @if (!$depot->depot_principal)
                                     <li>
                                         <hr class="dropdown-divider">

@@ -276,6 +276,7 @@ function saveBonCommande(form) {
                     window.location.reload();
                 }, 1000);
             } else {
+                alert("Erreur lors de la création")
                 Toast.fire({
                     icon: "error",
                     title: response.message || "Erreur lors de la création",

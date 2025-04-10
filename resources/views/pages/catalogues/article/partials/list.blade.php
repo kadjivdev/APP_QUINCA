@@ -41,7 +41,7 @@
                                         <li class="bg-warning rounded p-2" style="list-style-type: none">
                                             <span class="badge d-block text-dark">Dépôt: {{$stock->depot->libelle_depot}}</span>
                                             <span class="badge d-block d-flex align-items-center">Qte : <input type="number" name="articles[{{$article->id}}][{{$stock->depot_id}}]" class="form-control" value="{{$stock->quantite_reelle}}"></span>
-                                            <span class="badge d-block text-dark">Qte vendue: {{number_format($article->ventes()->sum('quantite'),2,'.','')}}</span>
+                                            <span class="badge d-block text-dark">Qte vendue: {{number_format($article->qteVendu()->sum('quantite'),2,'.','')}}</span>
                                             <span class="badge d-block text-dark">Qte restante: {{number_format($article->reste($stock->depot_id),2,'.','')}}</span>
                                         </li>
                                         <hr>
@@ -61,7 +61,7 @@
                                             <i class="bi bi-box me-1"></i>Stock
                                         </button> -->
                                         <a target="_blank" href="{{route('articles.show',$article->id)}}" class="btn btn-outline-primary btn-sm">
-                                            <i class="bi bi-pencil me-1"></i>Lier à des dépôts
+                                            <i class="bi bi-pencil me-1"></i>Dépôts
                                         </a>
                                     </div>
                                 </td>
@@ -71,6 +71,7 @@
                     </table>
                 </div>
 
+                @can("inventaires.create")
                 <br>
                 <!-- invantaires -->
                 <div class="row d-flex justify-content-center">
@@ -78,6 +79,7 @@
                         <button class="btn btn-sm w-100 btn-dark"><i class="bi bi-plus-lg me-2"></i> Enregistrer un eventaire</button>
                     </div>
                 </div>
+                @endcan
             </form>
         </div>
     </div>

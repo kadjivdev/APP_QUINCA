@@ -2,6 +2,7 @@
 
 namespace App\Models\Achat;
 
+use App\Models\Parametre\Depot;
 use App\Models\Securite\User;
 use App\Models\Parametre\PointDeVente;
 use Illuminate\Database\Eloquent\Model;
@@ -52,7 +53,8 @@ class ProgrammationAchat extends Model
         'validated_by',
         'validated_at',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'depot'
     ];
 
     /**
@@ -137,6 +139,14 @@ class ProgrammationAchat extends Model
     public function pointVente()
     {
         return $this->belongsTo(PointDeVente::class, 'point_de_vente_id');
+    }
+
+     /**
+     * Relation avec le dépôt
+     */
+    public function _depot()
+    {
+        return $this->belongsTo(Depot::class, 'depot');
     }
 
     /**

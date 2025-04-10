@@ -10,6 +10,7 @@
                             <th class="border-bottom-0 text-nowrap py-3">Date Insertion</th>
                             <th class="border-bottom-0">Date Programmation</th>
                             <th class="border-bottom-0">Point de Vente</th>
+                            <th class="border-bottom-0">Dépôt</th>
                             <th class="border-bottom-0">Fournisseur</th>
                             <th class="border-bottom-0 text-center">Statut</th>
                             <th class="border-bottom-0 text-end" style="min-width: 150px;">Actions</th>
@@ -26,25 +27,14 @@
                             <td>{{ Carbon\Carbon::parse($programmation->created_at)->format('d/m/Y H:i:s') }}</td>
                             <td>{{ $programmation->date_programmation->format('d/m/Y') }}</td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-point-vente me-2">
-                                        {{ substr($programmation->pointVente->nom_pv, 0, 2) }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-medium">{{ $programmation->pointVente->nom_pv }}</div>
-                                    </div>
-                                </div>
+                                <span class="badge bg-light text-dark">{{ $programmation->pointVente->nom_pv }}</span>
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-fournisseur me-2">
-                                        {{ substr($programmation->fournisseur->raison_sociale, 0, 2) }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-medium">{{ $programmation->fournisseur->raison_sociale }}
-                                        </div>
-                                    </div>
-                                </div>
+                            <td class="text-center">
+                                <span class="badge bg-warning">{{ $programmation->_depot?$programmation->_depot->libelle_depot:"--" }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark">{{ $programmation->fournisseur->raison_sociale }}
+                                </span>
                             </td>
                             <td class="text-center">
                                 @if ($programmation->rejected_by)

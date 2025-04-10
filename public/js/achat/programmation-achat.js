@@ -154,6 +154,7 @@ class ProgrammationAchat {
         event.preventDefault();
         const form = event.target;
 
+
         if (form.checkValidity()) {
             this.saveProgrammation($(form));
         }

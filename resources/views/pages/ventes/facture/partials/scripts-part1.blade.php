@@ -830,8 +830,6 @@ const styles = `
 // Injection des styles
 $('<style>').text(styles).appendTo('head');
 
-
-
 // Initialisation unique
 $(document).ready(() => {
     if (!window.factureManager) {
@@ -839,7 +837,3 @@ $(document).ready(() => {
         window.factureManager.init();
     }
 });
-
-
-
-

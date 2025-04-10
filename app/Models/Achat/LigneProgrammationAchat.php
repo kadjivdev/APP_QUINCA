@@ -47,7 +47,8 @@ class LigneProgrammationAchat extends Model
         'unite_mesure_id',
         'quantite',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'depot'
     ];
 
     /**

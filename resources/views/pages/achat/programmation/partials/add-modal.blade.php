@@ -76,7 +76,7 @@
                             </div>
                         </div>
 
-                        {{-- Choisir un magasin --}}
+                        {{-- Choisir un depot --}}
                         <div class="col-md-12">
                             <div class="card border">
                                 <div class="card-header bg-light border-light-subtle d-flex justify-content-between align-items-center">
@@ -85,7 +85,9 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <select class="form-control form-select select2" required name="depot" id="depot_select" required>
+                                    <input type="number" id="depot_id" name="depot" class="form-control d-none">
+                                    <!--  -->
+                                    <select class="form-control form-select select2" required id="depot_select" required>
                                         <option value="">Selectionner un dépôt</option>
                                         @foreach (auth()->user()->pointDeVente->depot as $depot)
                                         <option value="{{ $depot }}">
@@ -203,6 +205,8 @@
                 $("#articles-bloc").removeClass("d-none");
 
                 let depot = JSON.parse($(this).val());
+
+                $("#depot_id").val(depot.id)
 
                 // Stockage du depot dans une session
                 localStorage.setItem("depot", $(this).val())

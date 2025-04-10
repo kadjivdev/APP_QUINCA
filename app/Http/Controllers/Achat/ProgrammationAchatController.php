@@ -25,6 +25,7 @@ class ProgrammationAchatController extends Controller
     {
         $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
 
+        // les dépôts de ce user
         $depots = auth()->user()->pointDeVente->depot->map(function ($depot) {
             $depot->articles = $depot->articles->transform(function ($article) use ($depot) {
                 $article->reste = $article->reste($depot->id);
@@ -82,7 +83,8 @@ class ProgrammationAchatController extends Controller
                 'code' => 'required|unique:programmation_achats,code',
                 'date_programmation' => 'required|date',
                 'fournisseur_id' => 'required|exists:fournisseurs,id',
-                'commentaire' => 'nullable|string'
+                'commentaire' => 'nullable|string',
+                'depot' => 'required'
             ]);
 
             // Validation séparée pour les tableaux
@@ -101,7 +103,8 @@ class ProgrammationAchatController extends Controller
                 'date_programmation' => Carbon::parse($validated['date_programmation'])->startOfDay(),
                 'point_de_vente_id' => $user->point_de_vente_id, // Point de vente automatique
                 'fournisseur_id' => $validated['fournisseur_id'],
-                'commentaire' => $validated['commentaire'] ?? null
+                'commentaire' => $validated['commentaire'] ?? null,
+                'depot' => $request->depot,
             ]);
 
             // Création des lignes
@@ -110,28 +113,10 @@ class ProgrammationAchatController extends Controller
                     'programmation_id' => $programmation->id,
                     'article_id' => $articleId,
                     'unite_mesure_id' => $request->unites[$index],
-                    'quantite' => $request->quantites[$index]
+                    'quantite' => $request->quantites[$index],
+                    'depot' => $request->depot,
                 ]);
 
-                // On ajoute les quantités saisies au stock des articles
-                $stock = StockDepot::where(["depot_id" => $request->depot, "article_id" => $articleId])->first();
-
-                if ($stock) {
-                    $stock->update(["quantite_reelle" => $stock->quantite_reelle + $request->quantites[$index]]);
-                }
-            }
-
-            // On ajoute les quantités saisies au stock des articles
-            foreach ($request->articles as $index => $articleId) {
-                $article = Article::findOrFail($articleId);
-                $qteReste = $article->reste($request->depot);
-
-                if ($qteReste < $request->quantites[$index]) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Le reste du stock de l'article {{$article->designation}} est insuffisant à la quantité saisie"
-                    ], 500);
-                }
             }
 
             DB::commit();

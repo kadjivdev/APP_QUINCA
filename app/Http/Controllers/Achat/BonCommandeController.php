@@ -8,6 +8,7 @@ use App\Models\Achat\BonCommande;
 use App\Models\Achat\LigneBonCommande;
 use App\Models\Achat\ProgrammationAchat;
 use App\Http\Controllers\Controller;
+use App\Models\Stock\StockDepot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -49,8 +50,7 @@ class BonCommandeController extends Controller
             'updater'
         ])
             ->where('point_de_vente_id', $user->point_de_vente_id)
-            ->latest()
-            ->paginate(12);
+            ->get();
 
         // Programmations validées du point de vente de l'utilisateur
         $programmationsValidees = ProgrammationAchat::whereNotNull('validated_at')
@@ -148,6 +148,13 @@ class BonCommandeController extends Controller
             // Récupérer la programmation et ses lignes
             $programmation = ProgrammationAchat::with('lignes')->findOrFail($validated['programmation_id']);
 
+            if (!$programmation->depot) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Cette programmation n'appartient à aucun dépôt",
+                ]);
+            }
+
             // Création du bon de commande
             $bonCommande = BonCommande::create([
                 'code' => $validated['code'],
@@ -180,6 +187,14 @@ class BonCommandeController extends Controller
                 $ligneBonCommande->prix_unitaire = $ligne['prix_unitaire'];
                 $ligneBonCommande->bon_commande_id = $bonCommande->id;
                 $ligneBonCommande->save();
+
+
+                // // On ajoute les quantités saisies au stock des articles
+                // $stock = StockDepot::where(["depot_id" => $programmation->depot, "article_id" => $ligne['article_id']])->first();
+
+                // if ($stock) {
+                //     $stock->update(["quantite_reelle" => $stock->quantite_reelle + $ligne['quantite']]);
+                // }
             }
 
             // Mise à jour du montant total
@@ -445,6 +460,16 @@ class BonCommandeController extends Controller
     public function validated(BonCommande $bonCommande)
     {
         try {
+
+            foreach ($bonCommande->lignes as $ligne) {
+                // On ajoute les quantités saisies au stock des articles
+                $stock = StockDepot::where(["depot_id" => $bonCommande->programmation->depot, "article_id" => $ligne->article_id])->first();
+
+                if ($stock) {
+                    $stock->update(["quantite_reelle" => $stock->quantite_reelle + $ligne->quantite]);
+                }
+            }
+
             if ($bonCommande->validate()) {
                 return response()->json([
                     'success' => true,
@@ -537,13 +562,13 @@ class BonCommandeController extends Controller
         $tot_ht = 0;
         foreach ($ligne_commandes  as $ligne_commande) {
             $art = Article::find($ligne_commande->article_id);
-            
-            $pdf->Row(array($art->designation, number_format($ligne_commande->quantite,2,',',' ') , number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
+
+            $pdf->Row(array($art->designation, number_format($ligne_commande->quantite, 2, ',', ' '), number_format($ligne_commande->prix_unitaire, 2, ',', ' '), number_format($ligne_commande->quantite * $ligne_commande->prix_unitaire, 2, ',', ' ')));
             $tot_ht += $ligne_commande->quantite * $ligne_commande->prix_unitaire;
         }
 
         $pdf->SetWidths(array(150, 40));
-        $pdf->SetAligns(array('C','R'));
+        $pdf->SetAligns(array('C', 'R'));
         $pdf->Row(array('TOTAL', number_format($tot_ht, 2, ',', ' ')));
 
         $lettre = new ChiffreEnLettre;

@@ -10,6 +10,7 @@ use App\Models\Parametre\Depot;
 use App\Models\Parametre\PointDeVente;
 use App\Models\Vente\{FactureClient, LigneFacture, PointVente, SessionCaisse, ReglementClient};
 use App\Models\Parametre\Societe;
+use App\Models\Stock\StockDepot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +30,16 @@ class FactureClientController extends Controller
     {
         try {
             $pointsVentes = PointVente::all();
+
+            // les dépôts de ce user
+            $depots = auth()->user()->pointDeVente->depot->map(function ($depot) {
+                $depot->articles = $depot->articles->transform(function ($article) use ($depot) {
+                    $article->reste = $article->reste($depot->id);
+                    $article->qteVendue = $article->ventes()->sum("quantite");
+                    return $article;
+                });
+                return $depot;
+            });
 
             Log::info('Début du chargement de la liste des factures');
             $date = Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY');
@@ -139,7 +150,7 @@ class FactureClientController extends Controller
             // Charger la liste des clients pour le filtre
             $clients = Client::where('point_de_vente_id', Auth()->user()->point_de_vente_id)->orderBy('raison_sociale')->get(['id', 'raison_sociale', 'taux_aib']);
 
-            return view('pages.ventes.facture.index', compact('factures', 'clients', 'date', 'tauxTva', 'statsFactures', 'pointsVentes'));
+            return view('pages.ventes.facture.index', compact('factures', 'clients', 'date', 'tauxTva', 'statsFactures', 'pointsVentes', 'depots'));
         } catch (Exception $e) {
             Log::error('Erreur lors du chargement de la liste des factures', [
                 'error' => $e->getMessage(),
@@ -186,7 +197,8 @@ class FactureClientController extends Controller
                 'moyen_reglement' => 'required|string',
                 'lignes' => 'required|array|min:1',
                 'type_facture' => 'required|in:simple,normaliser',
-                'observations' => 'nullable|string'
+                'observations' => 'nullable|string',
+                'depot' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -197,17 +209,32 @@ class FactureClientController extends Controller
             }
 
             // On verifie si les quantités saisies au niveau des articles ne depasse pas le reste de quantité sur l'article
-            // foreach ($request->articles as $index => $articleId) {
-            //     $article = Article::findOrFail($articleId);
-            //     $qteReste = $article->reste($request->depot);
+            $depot = Depot::find($request->depot);
 
-            //     if ($qteReste < $request->quantites[$index]) {
-            //         return response()->json([
-            //             'success' => false,
-            //             'message' => "Le reste du stock de l'article {{$article->designation}} est insuffisant à la quantité saisie"
-            //         ], 500);
-            //     }
-            // }
+            foreach ($request->lignes as $ligne) {
+                // 
+                $stock_depot = StockDepot::where('depot_id', $request->depot)
+                ->where('article_id', $ligne['article_id'])
+                ->first();
+                
+                // on verifie si l'article existe dans le depot choisi
+                $article = Article::find($ligne['article_id']);
+                if (!$stock_depot) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Le dépôt ($depot->libelle_depot) ne dispose pas de l'article ($article->designation) "
+                    ], 500);
+                }
+
+                // on verifie la quantité restante de l'article dans le depot est suffisante
+                $qteReste = $article->reste($request->depot);
+                if ($qteReste < $ligne['quantite']) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Le reste du stock de l'article ($article->designation) est insuffisant à la quantité saisie"
+                    ], 500);
+                }
+            }
 
             DB::beginTransaction();
 
@@ -479,18 +506,20 @@ class FactureClientController extends Controller
 
         $pv = PointDeVente::find(auth()->user()->point_de_vente_id);
         $depot = Depot::find($pv->id);
+        // $depot = $request->depot;
 
+        // dd("gogo");
         $articles = Article::query()
             ->where(function ($query) use ($search) {
                 $query->where('code_article', 'like', "%{$search}%")
                     ->orWhere('designation', 'like', "%{$search}%");
             })
             ->where('statut', 'actif')
-            ->with(['stocks' => function ($query) use ($depot) {
-                $query->where('depot_id', $depot->id);
-            }])
+            // ->with(['stocks' => function ($query) use ($request) {
+            //     $query->where('depot_id', $request->depot);
+            // }])
             ->select(['id', 'code_article', 'designation'])
-            ->limit(10)
+            // ->limit(10)
             ->get();  // Ceci retourne maintenant une Collection
 
         return response()->json([

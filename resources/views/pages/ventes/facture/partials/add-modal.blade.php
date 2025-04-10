@@ -1,5 +1,5 @@
 <div class="modal fade" id="addFactureModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl" >
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content border-0 shadow-lg modal-dialog-scrollable" style="overflow-y: scroll!important;">
             {{-- Header du modal avec un nouveau design --}}
             <div class="modal-header bg-primary bg-opacity-10 border-bottom-0 py-3">
@@ -93,8 +93,31 @@
                             </div>
                         </div>
 
+                        {{-- Choisir un depot --}}
+                        <div class="col-md-12">
+                            <div class="card border">
+                                <div class="card-header bg-light border-light-subtle d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title mb-0">
+                                        <i class="fas fa-box me-2"></i>Les Dépôts de votre point de vente <span class="text-danger">*</span>
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <input type="number" id="depot_id" name="depot" class="form-control d-none">
+                                    <!--  -->
+                                    <select class="form-control form-select select2" required id="depot_select" required>
+                                        <option value="">Selectionner un dépôt</option>
+                                        @foreach (auth()->user()->pointDeVente->depot as $depot)
+                                        <option value="{{ $depot }}">
+                                            {{ $depot->libelle_depot }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Section articles --}}
-                        <div class="col-12">
+                        <div class="col-12 d-none" id="articles-bloc">
                             <div class="card border border-light-subtle">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <h6 class="card-title mb-0">
@@ -306,8 +329,24 @@
     </tr>
 </template>
 
+
 @push("scripts")
 <script>
+    //  gestion des articles
+    $("#depot_select").on('change', function() {
+        if ($(this).val()) {
+            $("#articles-bloc").removeClass("d-none");
+
+            let depot = JSON.parse($(this).val());
+
+            $("#depot_id").val(depot.id)
+
+        } else {
+            $("#articles-bloc").addClass("d-none")
+        }
+    })
+
+    // gestion des selects
     $(".select2").select2({
         theme: 'bootstrap-5',
         width: '100%',

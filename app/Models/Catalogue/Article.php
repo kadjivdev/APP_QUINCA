@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
 use App\Models\Stock\StockDepot;
 use App\Models\Parametre\UniteMesure;
 use App\Models\Vente\DevisDetail;
+use App\Models\Vente\FactureClient;
 use App\Models\Vente\LigneFacture;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -104,6 +105,7 @@ class Article extends Model
     /**
      * Obtient la famille de l'article
      */
+
     public function famille(): BelongsTo
     {
         return $this->belongsTo(FamilleArticle::class, 'famille_id');
@@ -142,7 +144,6 @@ class Article extends Model
         return $this->hasMany(LigneProgrammationAchat::class, "article_id");
     }
 
-
     /**
      * Les ventes attachées à cet article
      */
@@ -153,23 +154,29 @@ class Article extends Model
     }
 
     /**
+     * Qte vendue
+     */
+    function qteVendu()
+    {
+        return $this->hasMany(LigneFacture::class, "article_id")->get()->filter(function ($vente) {
+            return $vente->factureClient()->whereNotNull("validated_by"); // facture validées
+        });
+    }
+
+    /**
      * Calcul du reste de stock de l'article
      */
 
     function reste($depotId = null)
     {
-        // $depotId = $depot;
-        // if ($depot) {
-        // }else {
-        //     $depotId = $this->depots->first()?$this->depots->first()->id:null;
-        // }
-
         // on recupere le stock de cet article dans ce dépot
         $stock = $this->stocks->where("depot_id", $depotId)->first();
         $qteReelle = $stock ? $stock->quantite_reelle : 0;
-        $qteAchats = $this->ventes()->sum("quantite");
 
-        return $qteReelle - $qteAchats;
+        // $ligneFactureIds = $this->ventes()->pluck("id");
+        // $qteAchats = LigneFacture::whereIn("id", $ligneFactureIds)->whereNotNull("validated_by")->sum("quantite");
+        $qteAchats = $this->qteVendu();
+        return $qteReelle - $qteAchats->sum("quantite");
     }
 
     /**
