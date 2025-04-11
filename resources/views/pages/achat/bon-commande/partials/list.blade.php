@@ -79,17 +79,21 @@
                                     </button>
 
                                     @if (!$bonCommande->validated_at && !$bonCommande->rejected_at)
+                                    @can("bon-commandes.edit")
                                     <button class="btn btn-sm btn-light-warning btn-icon ms-1"
                                         onclick="editBonCommande({{ $bonCommande->id }})" data-bs-toggle="tooltip"
                                         title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </button>
+                                    @endcan
 
+                                    @can("bon-commandes.validate")
                                     <button class="btn btn-sm btn-light-success btn-icon ms-1"
                                         onclick="validateBonCommande({{ $bonCommande->id }})"
                                         data-bs-toggle="tooltip" title="Valider">
                                         <i class="fas fa-check"></i>
                                     </button>
+                                    @endcan
 
                                     <button class="btn btn-sm btn-light-success btn-icon ms-1"
                                         onclick="initRejetBonCommande({{ $bonCommande->id }})"
@@ -97,11 +101,13 @@
                                         <i class="fas fa-ban"></i>
                                     </button>
 
+                                    @can("bon-commandes.delete")
                                     <button class="btn btn-sm btn-light-danger btn-icon ms-1"
                                         onclick="deleteBonCommande({{ $bonCommande->id }})"
                                         data-bs-toggle="tooltip" title="Supprimer">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    @endcan
                                     @endif
 
                                     <div class="btn-group ms-1">
