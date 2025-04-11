@@ -201,6 +201,7 @@ class ReglementClient extends Model
      *
      * @return bool
      */
+    
     public function peutEtreValide(): bool
     {
         return $this->statut === self::STATUT_BROUILLON
@@ -258,6 +259,7 @@ class ReglementClient extends Model
      * @throws \Exception
      * @return bool
      */
+
     public function annuler(): bool
     {
         if ($this->statut !== self::STATUT_VALIDE) {

@@ -111,12 +111,15 @@
                             <td class="text-end">
                                 <div class="btn-group">
                                     {{-- Voir détails --}}
+                                    @can("vente.facture.view")
                                     <button class="btn btn-sm btn-light-primary btn-icon"
                                         onclick="showFacture({{ $facture->id }})"
                                         data-bs-toggle="tooltip" title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </button>
+                                    @endcan
 
+                                    @can("vente.facture.edit")
                                     @if($facture->statut === 'brouillon')
                                     {{-- Modifier --}}
                                     <button class="btn btn-sm btn-light-warning btn-icon ms-1"
@@ -124,14 +127,18 @@
                                         data-bs-toggle="tooltip" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </button>
+                                    @endcan
 
+                                    @can("vente.facture.validate")
                                     {{-- Valider --}}
                                     <button class="btn btn-sm btn-light-success btn-icon ms-1"
                                         onclick="validateFacture({{ $facture->id }})"
                                         data-bs-toggle="tooltip" title="Valider">
                                         <i class="fas fa-check"></i>
                                     </button>
+                                    @endcan
 
+                                    @can("vente.facture.delete")
                                     {{-- Supprimer --}}
                                     <button class="btn btn-sm btn-light-danger btn-icon ms-1"
                                         onclick="deleteFacture({{ $facture->id }})"
@@ -139,7 +146,8 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     @endif
-
+                                    @endcan
+                                    
                                     {{-- Imprimer --}}
                                     <div class="btn-group ms-1">
                                         <button class="btn btn-sm btn-light-secondary btn-icon"
