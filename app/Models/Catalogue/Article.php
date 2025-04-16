@@ -127,7 +127,7 @@ class Article extends Model
 
     function depots(): BelongsToMany
     {
-        return $this->belongsToMany(Depot::class, "stock_depots", "article_id", "depot_id");
+        return $this->belongsToMany(Depot::class, "stock_depots", "article_id", "depot_id")->withPivot(["quantite_reelle"]);
     }
 
     public function uniteMesure()
@@ -154,17 +154,19 @@ class Article extends Model
     }
 
     /**
-     * Qte vendue
+     * Qte vendue dans un depot
      */
-    function qteVendu()
+    function qteVendu($depotId=null)
     {
-        return $this->hasMany(LigneFacture::class, "article_id")->get()->filter(function ($vente) {
-            return $vente->factureClient()->whereNotNull("validated_by"); // facture validées
+        return $this->hasMany(LigneFacture::class, "article_id")->where("depot",$depotId)->get()->filter(function ($vente) {
+            if ($vente->factureClient->validated_by) {
+                return $vente; // facture validées
+            }
         });
     }
 
     /**
-     * Calcul du reste de stock de l'article
+     * Calcul du reste de stock de l'article dans un depot
      */
 
     function reste($depotId = null)
@@ -173,10 +175,8 @@ class Article extends Model
         $stock = $this->stocks->where("depot_id", $depotId)->first();
         $qteReelle = $stock ? $stock->quantite_reelle : 0;
 
-        // $ligneFactureIds = $this->ventes()->pluck("id");
-        // $qteAchats = LigneFacture::whereIn("id", $ligneFactureIds)->whereNotNull("validated_by")->sum("quantite");
-        $qteAchats = $this->qteVendu();
-        return $qteReelle - $qteAchats->sum("quantite");
+        $qteVendu = $this->qteVendu($depotId);
+        return $qteReelle - $qteVendu->sum("quantite");
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models\Vente;
 
+use App\Models\Parametre\Depot;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,7 +61,8 @@ class FactureClient extends Model
         'montant_aib' => 'decimal:3',
         'taux_aib' => 'decimal:2',
         'montant_ttc' => 'decimal:3',
-        'montant_regle' => 'decimal:3'
+        'montant_regle' => 'decimal:3',
+        'depot'
     ];
 
     /**
@@ -123,7 +125,6 @@ class FactureClient extends Model
         });
     }
 
-
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
@@ -131,7 +132,7 @@ class FactureClient extends Model
 
     public function lignes(): HasMany
     {
-        return $this->hasMany(LigneFacture::class);
+        return $this->hasMany(LigneFacture::class)->with("article");
     }
 
     public function livraisons(): HasMany
@@ -158,7 +159,7 @@ class FactureClient extends Model
     {
         return $this->belongsTo(SessionCaisse::class, 'session_caisse_id');
     }
-    
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

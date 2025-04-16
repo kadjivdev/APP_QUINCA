@@ -31,9 +31,13 @@
                             <td>{{ Carbon\Carbon::parse($reglement->created_at)->format('d/m/Y H:i:s') }}</td>
                             <td>{{ $reglement->date_reglement->format('d/m/Y') }}</td>
                             <td>
-                                <a href="#" class="text-decoration-none">
-                                    {{ $reglement->facture->numero }}
-                                </a>
+                                <span class="badge bg-light" onclick="showFactures({{$reglement}})">
+                                    <a href="#" class="text-decoration-none"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#reglementFactureModal">
+                                        {{ $reglement->facture->numero }}
+                                    </a>
+                                </span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
@@ -184,7 +188,76 @@
 </div>
 
 @push("scripts")
-<script>
+
+<script type="text/javascript">
+    // 
+    function getDateString(d) {
+        const date = new Date(d);
+        const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        };
+        const formattedDate = date.toLocaleDateString("fr", options);
+
+        return formattedDate;
+    }
+
+    function showFactures(reglement) {
+        console.log(reglement)
+
+        $(".reglement-title").html(reglement.numero)
+        $(".date_facture").val(getDateString(reglement.facture.date_facture))
+        $(".facture-client").val(reglement.facture.client.raison_sociale)
+        $(".date-echeance").val(getDateString(reglement.facture.date_echeance))
+        $(".type-facture").val(reglement.facture.type_facture)
+        $(".facture-number").val(reglement.facture.numero)
+
+        // alert(reglement.facture.client.raison_sociale)
+        // gestion des articles
+        $(".factures-articles").empty()
+        let content = ''
+
+        if (reglement.facture.lignes.length > 0) {
+            let rows = ''
+            reglement.facture.lignes.forEach(ligne => {
+                let depot_content = ``
+                if (ligne.article.depots.length > 0) {
+                    let depot_rows = ''
+                    ligne.article.depots.forEach(depot => {
+                        depot_rows += `
+                                <li><span class="badge bg-warning text-dark">${depot.libelle_depot}- stock : ${depot.pivot.quantite_reelle} </span></li>
+                            `
+                    });
+
+                    depot_content = `<ul>
+                                        ${depot_rows}
+                                    </ul>`
+                } else {
+                    depot_content = `Aucun stock`
+                }
+
+                content += `
+                <tr>
+                    <td><span class="badge bg-warning text-dark"> ${ligne.article.designation} (${ligne.article.code_article})</span></td>
+                    <td style="overflow-y: scroll;width:100px;">
+                       ${depot_content}
+                    </td>
+                    <td>${ligne.quantite}</td>
+                    <td>${ligne.montant_ttc}</td>
+                    <td>${ligne.montant_remise}</td>
+                    <td>${ligne.montant_ht}</td>
+                </tr>
+                `
+            });
+        } else {
+            content = 'Aucun détail'
+        }
+        $(".factures-articles").append(content)
+
+    }
+
+    // 
     $("#example1").DataTable({
         "responsive": true,
         "lengthChange": false,

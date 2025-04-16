@@ -28,6 +28,7 @@
                         <tr>
                             <th class="border-bottom-0 text-nowrap py-3">N° Facture</th>
                             <th class="border-bottom-0">Point de Vente</th>
+                            <th class="border-bottom-0">Dépôt</th>
                             <th class="border-bottom-0 text-nowrap py-3">Date Insertion</th>
                             <th class="border-bottom-0">Date facture</th>
                             <th class="border-bottom-0">Client</th>
@@ -54,6 +55,18 @@
                             </td>
                             <td>
                                 <span class="badge bg-dark text-white">{{$facture->createdBy->pointDeVente->nom_pv}}</span>
+                            </td>
+                            <td class="border p-0">
+                                <ul class="m-0" style="width:100%;height:100px!important;overflow-y:scroll;">
+                                    @forelse($facture->lignes as $ligne)
+                                    <li class="bg-light text-dark rounded p-2" style="list-style-type: none">
+                                        <span class="badge d-block text-dark">{{$ligne->facturedepot->libelle_depot}}</span>
+                                    </li>
+                                    <hr>
+                                    @empty
+                                    <li class="text-center">Aucun dépôt!</li>
+                                    @endforelse
+                                </ul>
                             </td>
                             <td>{{ Carbon\Carbon::parse($facture->created_at)->format('d/m/Y H:i:s') }}</td>
                             <td>{{ $facture->date_facture->format('d/m/Y') }}</td>
@@ -129,13 +142,15 @@
                                     </button>
                                     @endcan
 
-                                    @can("vente.facture.validate")
                                     {{-- Valider --}}
+                                    @can("vente.facture.validate")
+                                    @if(!$facture->validated_by)
                                     <button class="btn btn-sm btn-light-success btn-icon ms-1"
                                         onclick="validateFacture({{ $facture->id }})"
                                         data-bs-toggle="tooltip" title="Valider">
                                         <i class="fas fa-check"></i>
                                     </button>
+                                    @endif
                                     @endcan
 
                                     @can("vente.facture.delete")
@@ -147,7 +162,7 @@
                                     </button>
                                     @endif
                                     @endcan
-                                    
+
                                     {{-- Imprimer --}}
                                     <div class="btn-group ms-1">
                                         <button class="btn btn-sm btn-light-secondary btn-icon"

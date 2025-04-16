@@ -58,6 +58,9 @@
 @include('pages.ventes.reglement.partials.add-modal')
 @include('pages.ventes.reglement.partials.show-modal')
 @include('pages.ventes.reglement.partials.edit-modal')
+
+@include('pages.ventes.reglement.partials.factures')
+
 @endsection
 @push('scripts')
 

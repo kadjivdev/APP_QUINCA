@@ -164,6 +164,7 @@
                                <thead class="bg-light">
                                    <tr>
                                        <th>Article</th>
+                                       <th>Dépôt</th>
                                        <th class="text-end">Prix Unit. HT</th>
                                        <th class="text-center">Quantité</th>
                                        <th class="text-end">Remise</th>
@@ -217,6 +218,7 @@
         return lignes.map(ligne => `
             <tr>
                 <td>${ligne.article.designation}</td>
+                <td>${ligne.facturedepot.libelle_depot}</td>
                 <td class="text-end">${formatMontant(ligne.prix_unitaire_ht)} FCFA</td>
                 <td class="text-center">${formatQuantite(ligne.quantite)} ${ligne.unite_vente.libelle_unite}</td>
                 <td class="text-end">${formatTaux(ligne.taux_remise)}%</td>
@@ -229,38 +231,38 @@
     function generateTotaux(data) {
         return `
        <tr>
-           <td colspan="4" class="text-end fw-bold">Total HT</td>
+           <td colspan="5" class="text-end fw-bold">Total HT</td>
            <td class="text-end fw-bold">${data.montantHT} FCFA</td>
        </tr>
        <tr>
-           <td colspan="4" class="text-end fw-bold">Remise Globale</td>
+           <td colspan="5" class="text-end fw-bold">Remise Globale</td>
            <td class="text-end text-danger fw-bold">-${formatMontant(data.facture.montant_remise)} FCFA</td>
        </tr>
        <tr>
-           <td colspan="4" class="text-end fw-bold">Total HT après remise</td>
+           <td colspan="5" class="text-end fw-bold">Total HT après remise</td>
            <td class="text-end fw-bold">${formatMontant(data.facture.montant_ht_apres_remise)} FCFA</td>
        </tr>
        <tr>
-           <td colspan="4" class="text-end fw-bold">TVA (${data.tauxTVA}%)</td>
+           <td colspan="5" class="text-end fw-bold">TVA (${data.tauxTVA}%)</td>
            <td class="text-end fw-bold">${data.montantTVA} FCFA</td>
        </tr>
        <tr>
-           <td colspan="4" class="text-end fw-bold">
+           <td colspan="5" class="text-end fw-bold">
                AIB (${data.tauxAIB}%)
                <i class="fas fa-info-circle ms-2" data-bs-toggle="tooltip" title="Acompte sur Impôt sur les Bénéfices"></i>
            </td>
            <td class="text-end fw-bold">${formatMontant(data.facture.montant_aib)} FCFA</td>
        </tr>
        <tr class="table-active">
-           <td colspan="4" class="text-end fw-bold">Total TTC</td>
+           <td colspan="5" class="text-end fw-bold">Total TTC</td>
            <td class="text-end fw-bold">${data.montantTTC} FCFA</td>
        </tr>
        <tr>
-           <td colspan="4" class="text-end fw-bold">Montant Réglé</td>
+           <td colspan="5" class="text-end fw-bold">Montant Réglé</td>
            <td class="text-end text-success fw-bold">${data.montantRegle} FCFA</td>
        </tr>
        <tr>
-           <td colspan="4" class="text-end fw-bold">Reste à Payer</td>
+           <td colspan="5" class="text-end fw-bold">Reste à Payer</td>
            <td class="text-end text-danger fw-bold">${data.montantRestant} FCFA</td>
        </tr>
    `;

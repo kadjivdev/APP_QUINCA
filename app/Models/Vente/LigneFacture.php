@@ -9,6 +9,7 @@ use App\Models\Catalogue\Article;
 use App\Models\Catalogue\Tarification;
 use App\Models\Parametre\UniteMesure;
 use App\Models\Parametre\ConversionUnite;
+use App\Models\Parametre\Depot;
 use App\Models\Vente\{FactureClient, LigneLivraisonClient};
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -35,7 +36,8 @@ class LigneFacture extends Model
         'montant_tva',
         'taux_aib',
         'montant_aib',
-        'montant_ttc'
+        'montant_ttc',
+        'depot'
     ];
 
     protected $casts = [
@@ -54,8 +56,6 @@ class LigneFacture extends Model
         'montant_ttc' => 'decimal:3'
     ];
 
-
-
     public function tarification(): BelongsTo
     {
         return $this->belongsTo(Tarification::class);
@@ -71,6 +71,14 @@ class LigneFacture extends Model
         return $this->belongsTo(FactureClient::class, 'facture_client_id');
     }
 
+    /**
+     * Le depot (magasin de la facture)
+     */
+
+    function facturedepot(): BelongsTo
+    {
+        return $this->belongsTo(Depot::class, "depot");
+    }
 
 
 
@@ -240,7 +248,7 @@ class LigneFacture extends Model
      */
     public function article()
     {
-        return $this->belongsTo(Article::class);
+        return $this->belongsTo(Article::class)->with("depots");
     }
 
     /**

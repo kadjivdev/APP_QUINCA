@@ -98,7 +98,7 @@ class ReglementClient extends Model
      */
     public function facture(): BelongsTo
     {
-        return $this->belongsTo(FactureClient::class, 'facture_client_id');
+        return $this->belongsTo(FactureClient::class, 'facture_client_id')->with("lignes");
     }
 
     /**

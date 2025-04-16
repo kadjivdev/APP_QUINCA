@@ -170,7 +170,7 @@ class FactureClientController extends Controller
 
     public function store(Request $request)
     {
-       
+
         try {
             Log::info('Début création facture', ['request' => $request->all()]);
 
@@ -209,15 +209,17 @@ class FactureClientController extends Controller
                 ], 422);
             }
 
+            // dd($request->lignes);
+
             // On verifie si les quantités saisies au niveau des articles ne depasse pas le reste de quantité sur l'article
             $depot = Depot::find($request->depot);
 
             foreach ($request->lignes as $ligne) {
                 // 
                 $stock_depot = StockDepot::where('depot_id', $request->depot)
-                ->where('article_id', $ligne['article_id'])
-                ->first();
-                
+                    ->where('article_id', $ligne['article_id'])
+                    ->first();
+
                 // on verifie si l'article existe dans le depot choisi
                 $article = Article::find($ligne['article_id']);
                 if (!$stock_depot) {
@@ -275,7 +277,8 @@ class FactureClientController extends Controller
                         'prix_unitaire_ht' => $ligne['tarification_id'],
                         'taux_remise' => $ligne['taux_remise'] ?? 0,
                         'taux_tva' => $request->type_facture === 'simple' ? 0 : $configuration->taux_tva,
-                        'taux_aib' => $request->type_facture === 'simple' ? 0 : $client->taux_aib
+                        'taux_aib' => $request->type_facture === 'simple' ? 0 : $client->taux_aib,
+                        'depot' => $request->depot,
                     ]);
 
                     $facture->lignes()->save($ligneFacture);
@@ -653,6 +656,7 @@ class FactureClientController extends Controller
             $facture = FactureClient::with([
                 'client',
                 'lignes.article',
+                'lignes.facturedepot',
                 'lignes.uniteVente',
                 'lignes.tarification.typeTarif',
                 'sessionCaisse',

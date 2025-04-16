@@ -1,6 +1,6 @@
 <!-- Modal des détails du règlement -->
 <div class="modal fade" id="showReglementModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-0 bg-light">
                 <h5 class="modal-title d-flex align-items-center">
