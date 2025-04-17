@@ -543,29 +543,6 @@ class FactureClientController extends Controller
         ]);
     }
 
-    public function searchDepots(Request $request)
-    {
-        $search = $request->get('q');
-
-        $depots = Depot::query()
-            ->where(function ($query) use ($search) {
-                $query->where('code_depot', 'like', "%{$search}%")
-                    ->orWhere('libelle_depot', 'like', "%{$search}%");
-            })
-            ->where('statut', 'actif')
-            ->get();
-
-
-        return response()->json([
-            'results' => $depots->map(function ($depot) {
-                return [
-                    'id' => $depot->id,
-                    'text' => $depot->libelle_depot,
-                ];
-            })
-        ]);
-    }
-
     public function getTarifs(Request $request, $articleId)
     {
         try {

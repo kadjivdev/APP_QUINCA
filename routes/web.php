@@ -628,7 +628,6 @@ use App\Http\Controllers\Revendeur\SpecialController;
                 // Routes pour la recherche d'articles et récupération des données
                 Route::prefix('api')->group(function () {
                     Route::get('/articles/search', [FactureClientController::class, 'searchArticles']);
-                    Route::get('/articles/depots/search', [FactureClientController::class, 'searchDepots']);
                 });
 
                 Route::prefix('articles')->group(function () {
