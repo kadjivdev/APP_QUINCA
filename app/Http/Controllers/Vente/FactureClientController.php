@@ -170,7 +170,6 @@ class FactureClientController extends Controller
 
     public function store(Request $request)
     {
-
         try {
             Log::info('Début création facture', ['request' => $request->all()]);
 
@@ -199,7 +198,7 @@ class FactureClientController extends Controller
                 'lignes' => 'required|array|min:1',
                 'type_facture' => 'required|in:simple,normaliser',
                 'observations' => 'nullable|string',
-                'depot' => 'required',
+                // 'depot' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -209,14 +208,29 @@ class FactureClientController extends Controller
                 ], 422);
             }
 
-            // dd($request->lignes);
+            $userPv = auth()->user()->pointDeVente;
+            $userPv_depotIds = $userPv->depot->pluck("id")->toArray(); //les depots du users
+
+            // $depotIds = collect($request->lignes)->pluck("depot_id");
+
+            // on verifie si les articles selectionnés sont tous dans son depôts
+            foreach ($request->lignes as $ligne) {
+                $depot = Depot::find($ligne["depot_id"]);
+                $article = Article::find($ligne['article_id']);
+
+                if (!in_array($ligne["depot_id"], $userPv_depotIds)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Le dépôt ($depot->libelle_depot) ne vous appartient pas! Vous ne pouvez pas y passer une ecriture "
+                    ], 500);
+                }
+            }
 
             // On verifie si les quantités saisies au niveau des articles ne depasse pas le reste de quantité sur l'article
-            $depot = Depot::find($request->depot);
-
             foreach ($request->lignes as $ligne) {
+                $depot = Depot::find($ligne["depot_id"]);
                 // 
-                $stock_depot = StockDepot::where('depot_id', $request->depot)
+                $stock_depot = StockDepot::where('depot_id', $ligne["depot_id"])
                     ->where('article_id', $ligne['article_id'])
                     ->first();
 
@@ -230,7 +244,7 @@ class FactureClientController extends Controller
                 }
 
                 // on verifie la quantité restante de l'article dans le depot est suffisante
-                $qteReste = $article->reste($request->depot);
+                $qteReste = $article->reste($ligne["depot_id"]);
                 if ($qteReste < $ligne['quantite']) {
                     return response()->json([
                         'status' => false,
@@ -278,7 +292,7 @@ class FactureClientController extends Controller
                         'taux_remise' => $ligne['taux_remise'] ?? 0,
                         'taux_tva' => $request->type_facture === 'simple' ? 0 : $configuration->taux_tva,
                         'taux_aib' => $request->type_facture === 'simple' ? 0 : $client->taux_aib,
-                        'depot' => $request->depot,
+                        'depot' => $ligne["depot_id"],
                     ]);
 
                     $facture->lignes()->save($ligneFacture);
@@ -508,31 +522,45 @@ class FactureClientController extends Controller
     {
         $search = $request->get('q');
 
-        $pv = PointDeVente::find(auth()->user()->point_de_vente_id);
-        $depot = Depot::find($pv->id);
-        // $depot = $request->depot;
-
-        // dd("gogo");
-        $articles = Article::query()
-            ->where(function ($query) use ($search) {
-                $query->where('code_article', 'like', "%{$search}%")
+        $stocks = StockDepot::with('article')
+            ->get()
+            ->filter(function ($stock) use ($search) {
+                // return (str_contains($stock->article->code_article, $search) || str_contains($stock->article->designation, $search));
+                return $stock->article->where('code_article', 'like', "%{$search}%")
                     ->orWhere('designation', 'like', "%{$search}%");
-            })
-            ->where('statut', 'actif')
-            // ->with(['stocks' => function ($query) use ($request) {
-            //     $query->where('depot_id', $request->depot);
-            // }])
-            ->select(['id', 'code_article', 'designation'])
-            // ->limit(10)
-            ->get();  // Ceci retourne maintenant une Collection
+            });
 
         return response()->json([
-            'results' => $articles->map(function ($article) {
+            'results' => $stocks->map(function ($stock) {
                 return [
-                    'id' => $article->id,
-                    'text' => $article->designation,
-                    'code_article' => $article->code_article,
-                    'stock' => $article?->stocks[0]?->quantite_reelle ?? 0
+                    'id' => $stock->article->id,
+                    'text' => $stock->article->designation,
+                    'code_article' => $stock->article->code_article,
+                    'depot' => $stock->depot,
+                    'stock' => $stock->quantite_reelle ? number_format($stock->quantite_reelle, 0, " ", " ") : 00,
+                ];
+            })
+        ]);
+    }
+
+    public function searchDepots(Request $request)
+    {
+        $search = $request->get('q');
+
+        $depots = Depot::query()
+            ->where(function ($query) use ($search) {
+                $query->where('code_depot', 'like', "%{$search}%")
+                    ->orWhere('libelle_depot', 'like', "%{$search}%");
+            })
+            ->where('statut', 'actif')
+            ->get();
+
+
+        return response()->json([
+            'results' => $depots->map(function ($depot) {
+                return [
+                    'id' => $depot->id,
+                    'text' => $depot->libelle_depot,
                 ];
             })
         ]);

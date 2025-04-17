@@ -79,30 +79,39 @@
                             </td>
                             <td class="text-end">
                                 <div class="btn-group">
+                                    @can("reglements.view")
                                     <button class="btn btn-sm btn-light-primary btn-icon"
                                         onclick="showReglement({{ $reglement->id }})" data-bs-toggle="tooltip"
                                         title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </button>
+                                    @endcan
 
-                                    @if ($reglement->validated_at)
+                                    @if (!$reglement->validated_at)
+                                    @can("reglements.edit")
                                     <button class="btn btn-sm btn-light-warning btn-icon ms-1"
                                         onclick="editReglement({{ $reglement->id }})" data-bs-toggle="tooltip"
                                         title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </button>
+                                    @endcan
 
+                                    @can("reglements.validate")
                                     <button class="btn btn-sm btn-light-success btn-icon ms-1"
                                         onclick="validateReglement({{ $reglement->id }})"
                                         data-bs-toggle="tooltip" title="Valider">
                                         <i class="fas fa-check"></i>
                                     </button>
+                                    @endcan
 
+                                    @can("reglements.delete")
                                     <button class="btn btn-sm btn-light-danger btn-icon ms-1"
                                         onclick="deleteReglement({{ $reglement->id }})"
                                         data-bs-toggle="tooltip" title="Supprimer">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    @endcan
+
                                     @endif
 
                                     <button class="btn btn-sm btn-light-secondary btn-icon ms-1"

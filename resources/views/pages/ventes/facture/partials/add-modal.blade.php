@@ -15,7 +15,7 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
+            <!-- route('vente.facture.store') -->
             <form action="#" method="POST" id="addFactureForm" class="needs-validation" novalidate>
                 @csrf
                 <div class="modal-body p-4">
@@ -93,31 +93,8 @@
                             </div>
                         </div>
 
-                        {{-- Choisir un depot --}}
-                        <div class="col-md-12">
-                            <div class="card border">
-                                <div class="card-header bg-light border-light-subtle d-flex justify-content-between align-items-center">
-                                    <h6 class="card-title mb-0">
-                                        <i class="fas fa-box me-2"></i>Les Dépôts de votre point de vente <span class="text-danger">*</span>
-                                    </h6>
-                                </div>
-                                <div class="card-body">
-                                    <input type="number" id="depot_id" name="depot" class="form-control d-none">
-                                    <!--  -->
-                                    <select class="form-control form-select select2" required id="depot_select" required>
-                                        <option value="">Selectionner un dépôt</option>
-                                        @foreach (auth()->user()->pointDeVente->depot as $depot)
-                                        <option value="{{ $depot }}">
-                                            {{ $depot->libelle_depot }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
                         {{-- Section articles --}}
-                        <div class="col-12 d-none" id="articles-bloc">
+                        <div class="col-12">
                             <div class="card border border-light-subtle">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <h6 class="card-title mb-0">
@@ -132,12 +109,13 @@
                                         <table class="table table-bordered table-hover">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th style="width: 30%">Article</th>
-                                                    <th style="width: 15%">Quantité</th>
-                                                    <th style="width: 20%">Prix</th>
-                                                    <th style="width: 10%">Remise (%)</th>
-                                                    <th style="width: 25%">Total HT</th>
-                                                    <th style="width: 5%"></th>
+                                                    <th>Article</th>
+                                                    <th style="width: 30%">Dépôt</th>
+                                                    <th>Quantité</th>
+                                                    <th>Prix</th>
+                                                    <th>Remise (%)</th>
+                                                    <th>Total HT</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody id="lignesContainer">
@@ -145,23 +123,23 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="4" class="text-end fw-bold">Total HT</td>
+                                                    <td colspan="5" class="text-end fw-bold">Total HT</td>
                                                     <td class="text-end fw-bold" id="totalHT">0,00 FCFA</td>
                                                     <td></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="4" class="text-end fw-bold">TVA
+                                                    <td colspan="5" class="text-end fw-bold">TVA
                                                         ({{ $tauxTva }}%)</td>
                                                     <td class="text-end fw-bold" id="totalTVA">0,00 FCFA</td>
                                                     <td></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="4" class="text-end fw-bold">AIB</td>
+                                                    <td colspan="5" class="text-end fw-bold">AIB</td>
                                                     <td class="text-end fw-bold" id="totalAIB">0,00 FCFA</td>
                                                     <td></td>
                                                 </tr>
                                                 <tr class="table-light">
-                                                    <td colspan="4" class="text-end fw-bold">Montant TTC</td>
+                                                    <td colspan="5" class="text-end fw-bold">Montant TTC</td>
                                                     <td class="text-end fw-bold" id="totalTTC">0,00 FCFA</td>
                                                     <td></td>
                                                 </tr>
@@ -292,6 +270,11 @@
             <div class="invalid-feedback">L'article est requis</div>
         </td>
         <td>
+            <input type="number" hidden name="lignes[__INDEX__][depot_id]" class="form-control">
+            <input type="text" disabled name="lignes[__INDEX__][depot_libelle]" class="form-control">
+            <div class="invalid-feedback">Le depôt est requis</div>
+        </td>
+        <td>
             <div class="input-group">
                 <input type="number" class="form-control text-end quantite-input" name="lignes[__INDEX__][quantite]"
                     placeholder="0.00" required min="0.01" step="0.01">
@@ -333,18 +316,18 @@
 @push("scripts")
 <script>
     //  gestion des articles
-    $("#depot_select").on('change', function() {
-        if ($(this).val()) {
-            $("#articles-bloc").removeClass("d-none");
+    // $("#depot_select").on('change', function() {
+    //     if ($(this).val()) {
+    //         $("#articles-bloc").removeClass("d-none");
 
-            let depot = JSON.parse($(this).val());
+    //         let depot = JSON.parse($(this).val());
 
-            $("#depot_id").val(depot.id)
+    //         $("#depot_id").val(depot.id)
 
-        } else {
-            $("#articles-bloc").addClass("d-none")
-        }
-    })
+    //     } else {
+    //         $("#articles-bloc").addClass("d-none")
+    //     }
+    // })
 
     // gestion des selects
     $(".select2").select2({

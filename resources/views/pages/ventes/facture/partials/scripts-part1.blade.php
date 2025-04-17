@@ -31,6 +31,7 @@ const FactureConfig = {
     },
     routes: {
         articlesSearch: `${apiUrl}/vente/factures/api/articles/search`,
+        searchDepots: `${apiUrl}/vente/factures/api/articles/depots/search`,
         getTarifs: (id) => `${apiUrl}/vente/factures/articles/${id}/tarifs`,
         getUnites: (id) => `${apiUrl}/vente/factures/articles/${id}/unites`,
         store: `${apiUrl}/vente/factures/store`
@@ -285,7 +286,7 @@ class FactureManager {
 
     async initArticleSelect(row, index) {
         const articleSelect = row.find(`select[name="lignes[${index}][article_id]"]`);
-
+       
         if (articleSelect.hasClass('select2-hidden-accessible')) {
             articleSelect.select2('destroy');
         }
@@ -321,10 +322,10 @@ class FactureManager {
             templateResult: this.formatArticle,
             templateSelection: this.formatArticleSelection,
             escapeMarkup: markup => markup
-        }).on('select2:select', (e) => this.loadArticleDetails(index, e.target.value))
-          .on('select2:open', function() {
-              document.querySelector('.select2-search__field').focus();
-          });
+        }).on('select2:select', (e)=> this.loadArticleDetails(index, e))
+        .on('select2:open', function() {
+            document.querySelector('.select2-search__field').focus();
+        });
     }
 
     formatArticle(article) {
@@ -332,13 +333,13 @@ class FactureManager {
         return `<div class="select2-result-article">
                     <div class="select2-result-article__code">${article.code_article || ''}</div>
                     <div class="select2-result-article__title">${article.text || ''}</div>
-                    {{-- <div class="select2-result-article__stock">Stock: ${article.stock || 0}</div> --}}
+                    <div class="select2-result-article__stock">Stock: ${article.depot.libelle_depot} (${article.stock})</div>
                 </div>`;
     }
 
     formatArticleSelection(article) {
         if (!article.id) return article.text;
-        return `${article.code_article} - ${article.text}`;
+        return `${article.text}`;
     }
 
     async initTarifSelect(row, index) {
@@ -373,8 +374,16 @@ class FactureManager {
         });
     }
 
-    async loadArticleDetails(index, articleId) {
+    async loadArticleDetails(index, e) {
+        const articleId = e.target.value;
         const row = $(`select[name="lignes[${index}][article_id]"]`).closest('tr');
+
+        <!-- gestion des depots -->
+        const depotSelect = document.querySelector(`input[name="lignes[${index}][depot_id]"]`);
+        const depotLibelle = document.querySelector(`input[name="lignes[${index}][depot_libelle]"]`);
+        depotSelect.value = e.params.data.depot.id;
+        depotLibelle.value = e.params.data.depot.libelle_depot +' | stock: ('+e.params.data.stock+')';
+        <!-- fin -->
 
         try {
             this.showRowLoading(row);
