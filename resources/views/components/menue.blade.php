@@ -190,6 +190,11 @@
                     <li><a class="dropdown-item" href="{{ route('vente.clients.index') }}">
                             <div class="dropdown-item-wrapper">Liste des Clients</div>
                         </a></li>
+
+                    <!-- recouvrements -->
+                    <li><a class="dropdown-item" href="{{ route('recouvrement.index') }}">
+                            <div class="dropdown-item-wrapper">Recouvrement Clients</div>
+                        </a></li>
                     @endcan
 
                     @can("accompte.client")
