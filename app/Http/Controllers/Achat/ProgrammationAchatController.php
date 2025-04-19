@@ -84,7 +84,7 @@ class ProgrammationAchatController extends Controller
                 'date_programmation' => 'required|date',
                 'fournisseur_id' => 'required|exists:fournisseurs,id',
                 'commentaire' => 'nullable|string',
-                'depot' => 'required'
+                // 'depot' => 'required'
             ]);
 
             // Validation séparée pour les tableaux
@@ -104,7 +104,7 @@ class ProgrammationAchatController extends Controller
                 'point_de_vente_id' => $user->point_de_vente_id, // Point de vente automatique
                 'fournisseur_id' => $validated['fournisseur_id'],
                 'commentaire' => $validated['commentaire'] ?? null,
-                'depot' => $request->depot,
+                // 'depot' => $request->depot,
             ]);
 
             // Création des lignes
@@ -114,7 +114,7 @@ class ProgrammationAchatController extends Controller
                     'article_id' => $articleId,
                     'unite_mesure_id' => $request->unites[$index],
                     'quantite' => $request->quantites[$index],
-                    'depot' => $request->depot,
+                    // 'depot' => $request->depot,
                 ]);
 
             }
@@ -130,7 +130,7 @@ class ProgrammationAchatController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la création de la programmation: ' . $e->getMessage()
+                'message' => $e->getMessage(). 'Erreur lors de la création de la programmation: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -431,8 +431,6 @@ class ProgrammationAchatController extends Controller
             'data' => $programmation
         ]);
     }
-
-
 
     public function validees()
     {

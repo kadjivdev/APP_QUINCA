@@ -285,6 +285,7 @@
                     url: `${apiUrl}/achat/bon-commandes/${option.val()}/articles`,
                     method: 'GET',
                     success: function(response) {
+                        console.log(response)
                         if (response.success) {
                             displayArticles(response.data);
                             // Masquer le loader et afficher les détails
@@ -325,6 +326,8 @@
             console.log(articles)
             const tbody = $('#articlesTableBody');
             tbody.empty();
+
+            console.log(articles)
 
             articles.forEach(article => {
                 tbody.append(`

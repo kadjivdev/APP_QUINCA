@@ -77,7 +77,7 @@
                         </div>
 
                         {{-- Choisir un depot --}}
-                        <div class="col-md-12">
+                        <!-- <div class="col-md-12">
                             <div class="card border">
                                 <div class="card-header bg-light border-light-subtle d-flex justify-content-between align-items-center">
                                     <h6 class="card-title mb-0">
@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="card-body">
                                     <input type="number" id="depot_id" name="depot" class="form-control d-none">
-                                    <!--  -->
+                                    
                                     <select class="form-control form-select select2" required id="depot_select" required>
                                         <option value="">Selectionner un dépôt</option>
                                         @foreach (auth()->user()->pointDeVente->depot as $depot)
@@ -97,11 +97,11 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
 
                         {{-- Section articles --}}
-                        <div class="col-12 d-none" id="articles-bloc">
+                        <div class="col-12">
                             <div class="card border border-light-subtle">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <h6 class="card-title mb-0">
@@ -167,7 +167,12 @@
             <div class="input-group">
                 <!-- <label class="d-block form-label fw-medium required my-1" for="">Article</label> -->
                 <select class="form-select  select2-articles articles_select" name="articles[]" required>
-                    <!-- gerer par du js -->
+                    <option value="">Selectionner un article</option>
+                    @foreach($articles as $article)
+                    <option value="{{$article->id}}">
+                        {{$article->code_article }} {{$article->designation }}
+                    </option>
+                    @endforeach
                 </select>
             </div>
             <div class="invalid-feedback">L'article est requis</div>
@@ -200,34 +205,53 @@
 <script>
     $(document).ready(function() {
         // 
-        $("#depot_select").on('change', function() {
-            if ($(this).val()) {
-                $("#articles-bloc").removeClass("d-none");
+        // $("#depot_select").on('change', function() {
+        //     if ($(this).val()) {
+        //         $("#articles-bloc").removeClass("d-none");
 
-                let depot = JSON.parse($(this).val());
+        //         let depot = JSON.parse($(this).val());
 
-                $("#depot_id").val(depot.id)
+        //         $("#depot_id").val(depot.id)
 
-                // Stockage du depot dans une session
-                localStorage.setItem("depot", $(this).val())
+        //         // Stockage du depot dans une session
+        //         localStorage.setItem("depot", $(this).val())
 
-                $(".articles_select").empty()
+        //         $(".articles_select").empty()
 
-                let rows = `<option value="">Selectionner un article</option>`
-                if (depot.articles.length > 0) {
-                    depot.articles.forEach(article => {
-                        rows += `
-                            <option ${(!article.reste || article.reste<0)? "disabled" :''} value="${ article.id }">
-                                ${ article.code_article } ${ article.designation } - Reste : ${article.reste}
-                            </option>
-                            `
-                    });
-                }
-                $(".articles_select").append(rows)
-            } else {
-                $("#articles-bloc").addClass("d-none")
-            }
-        })
+        //         let rows = `<option value="">Selectionner un article</option>`
+        //         if (depot.articles.length > 0) {
+        //             depot.articles.forEach(article => {
+        //                 rows += `
+        //                     <option ${(!article.reste || article.reste<0)? "disabled" :''} value="${ article.id }">
+        //                         ${ article.code_article } ${ article.designation } - Reste : ${article.reste}
+        //                     </option>
+        //                     `
+        //             });
+        //         }
+        //         $(".articles_select").append(rows)
+        //     } else {
+        //         $("#articles-bloc").addClass("d-none")
+        //     }
+        // })
+
+        // let articles = JSON.parse({
+        //     {
+        //         $articles
+        //     }
+        // });
+        // $(".articles_select").empty();
+        // let rows = `<option value="">Selectionner un article</option>`
+        // if (articles.length > 0) {
+        //     articles.forEach(article => {
+        //         rows += `
+        //                     <option value="${ article.id }">
+        //                         ${ article.code_article } ${ article.designation }
+        //                     </option>
+        //                     `
+        //     });
+        // }
+        // $(".articles_select").append(rows)
+
 
         // Initialisation de Select2 avec gestion d'erreur
         try {
@@ -249,25 +273,23 @@
         });
 
         // Ajouter une nouvelle ligne
-        $('#btnAddLigne').on('click', function() {
-            // addNewLine();
+        // $('#btnAddLigne').on('click', function() {
+        //     let _depot = localStorage.getItem("depot");
 
-            let _depot = localStorage.getItem("depot");
+        //     let depot = JSON.parse(_depot)
 
-            let depot = JSON.parse(_depot)
-
-            let rows = ``
-            if (depot.articles.length > 0) {
-                depot.articles.forEach(article => {
-                    rows += `
-                            <option ${(!article.reste || article.reste<0)? "disabled" :''} value="${ article.id }">
-                                ${ article.code_article } ${ article.designation } - Reste : ${article.reste}
-                            </option>
-                            `
-                });
-            }
-            $(".articles_select").append(rows)
-        });
+        //     let rows = ``
+        //     if (depot.articles.length > 0) {
+        //         depot.articles.forEach(article => {
+        //             rows += `
+        //                     <option ${(!article.reste || article.reste<0)? "disabled" :''} value="${ article.id }">
+        //                         ${ article.code_article } ${ article.designation } - Reste : ${article.reste}
+        //                     </option>
+        //                     `
+        //         });
+        //     }
+        //     $(".articles_select").append(rows)
+        // });
 
         // Supprimer une ligne
         $(document).on('click', '.remove-ligne', function() {

@@ -316,7 +316,7 @@ class ArticleController extends Controller
             $data['stockable'] = filter_var($request->input('stockable'), FILTER_VALIDATE_BOOLEAN);
 
             $validator = Validator::make($data, [
-                'depots*' => 'required',
+                // 'depots*' => 'required',
                 // 'designation' => 'required|string|max:255',
                 // 'famille_id' => 'required|exists:famille_articles,id',
                 // 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -359,19 +359,19 @@ class ArticleController extends Controller
 
             $article = Article::create($data);
 
-            // attachement de l'article au dépot
-            foreach ($request->depots as $depotId) {
-                StockDepot::create([
-                    'depot_id' => $depotId,
-                    'article_id' => $article->id,
-                    'quantite_reelle' => $request->stock_actuel,
-                    'stock_minimum' => $request->stock_minimum,
-                    'stock_maximum' => $request->stock_maximum,
-                    'emplacement' => $request->emplacement_stock,
-                    'user_id' => auth()->user()->id,
-                    'unite_mesure_id' => $request->unite_mesure_id,
-                ]);
-            }
+            // // attachement de l'article au dépot
+            // foreach ($request->depots as $depotId) {
+            //     StockDepot::create([
+            //         'depot_id' => $depotId,
+            //         'article_id' => $article->id,
+            //         'quantite_reelle' => $request->stock_actuel,
+            //         'stock_minimum' => $request->stock_minimum,
+            //         'stock_maximum' => $request->stock_maximum,
+            //         'emplacement' => $request->emplacement_stock,
+            //         'user_id' => auth()->user()->id,
+            //         'unite_mesure_id' => $request->unite_mesure_id,
+            //     ]);
+            // }
 
             DB::commit();
             if ($request->ajax()) {

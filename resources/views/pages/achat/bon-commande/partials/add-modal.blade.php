@@ -29,7 +29,7 @@
                                     </h6>
                                 </div>
                                 <div class="card-body">
-                                    <small class="text-warning">Les programmations non liés à un dépôt sont désactivées</small>
+                                    <!-- <small class="text-warning">Les programmations non liés à un dépôt sont désactivées</small> -->
                                     <select class="form-select select2" name="programmation_id" id="programmationSelect"
                                         required>
                                         <option value="">Sélectionner une programmation validée</option>
@@ -42,8 +42,7 @@
                                             data-fournisseur="{{ $prog->fournisseur->raison_sociale }}"
                                             data-fournisseur-id="{{ $prog->fournisseur_id }}"
                                             data-validation="{{ $prog->validated_at->format('d/m/Y') }}"
-                                            @disabled(!$prog->depot)>
-                                            Dépôt : {{ $prog->_depot?$prog->_depot->libelle_depot:"--" }}
+                                            >
                                             {{ $prog->code }} - {{ $prog->fournisseur->raison_sociale }}
                                             (Validée le {{ $prog->validated_at->format('d/m/Y') }})
                                         </option>

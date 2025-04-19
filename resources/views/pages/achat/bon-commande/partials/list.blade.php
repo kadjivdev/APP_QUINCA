@@ -10,7 +10,7 @@
                             <th class="border-bottom-0">Date Insertion</th>
                             <th class="border-bottom-0">Date Commande</th>
                             <th class="border-bottom-0">Point de Vente</th>
-                            <th class="border-bottom-0">Dépôt</th>
+                            <!-- <th class="border-bottom-0">Dépôt</th> -->
                             <th class="border-bottom-0">Fournisseur</th>
                             <th class="border-bottom-0 text-end">Montant Total</th>
                             <th class="border-bottom-0 text-center">Programmation</th>
@@ -38,9 +38,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-center">
+                            <!-- <td class="text-center">
                                 <span class="badge bg-warning">{{ $bonCommande->programmation->_depot?$bonCommande->programmation->_depot->libelle_depot:"--" }}</span>
-                            </td>
+                            </td> -->
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-fournisseur me-2">

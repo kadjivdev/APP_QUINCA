@@ -261,6 +261,7 @@ function calculerTotaux(type) { //Type est soit un ajout sopit une modificaton V
 }
 
 function saveBonCommande(form) {
+    console.log("saving bon de commande")
     // Récolter les données du formulaire
     let data = {
         code: $('#codeBC').val(),
@@ -273,6 +274,7 @@ function saveBonCommande(form) {
         lignes: [] // Initialiser le tableau des lignes
     };
 
+    console.log("Récollage des données des lignes",data)
     // Récolter les données des lignes
     // Modifier le sélecteur pour cibler le bon tableau
     $('#articlesSection table tbody tr').each(function(index) {
@@ -301,6 +303,8 @@ function saveBonCommande(form) {
             `);
         },
         success: function(response) {
+            console.log("Response at success ",response)
+
             if (response.success) {
                 $('#addBonCommandeModal').modal('hide');
                 Toast.fire({
@@ -308,6 +312,11 @@ function saveBonCommande(form) {
                     title: response.message
                 });
                 setTimeout(() => window.location.reload(), 1000);
+            }else{
+                Toast.fire({
+                icon: 'error',
+                title: response.message
+            });
             }
         },
         error: function(xhr) {

@@ -148,12 +148,12 @@ class BonCommandeController extends Controller
             // Récupérer la programmation et ses lignes
             $programmation = ProgrammationAchat::with('lignes')->findOrFail($validated['programmation_id']);
 
-            if (!$programmation->depot) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Cette programmation n'appartient à aucun dépôt",
-                ]);
-            }
+            // if (!$programmation->depot) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => "Cette programmation n'appartient à aucun dépôt",
+            //     ]);
+            // }
 
             // Création du bon de commande
             $bonCommande = BonCommande::create([
@@ -461,14 +461,14 @@ class BonCommandeController extends Controller
     {
         try {
 
-            foreach ($bonCommande->lignes as $ligne) {
-                // On ajoute les quantités saisies au stock des articles
-                $stock = StockDepot::where(["depot_id" => $bonCommande->programmation->depot, "article_id" => $ligne->article_id])->first();
+            // foreach ($bonCommande->lignes as $ligne) {
+            //     // On ajoute les quantités saisies au stock des articles
+            //     $stock = StockDepot::where(["depot_id" => $bonCommande->programmation->depot, "article_id" => $ligne->article_id])->first();
 
-                if ($stock) {
-                    $stock->update(["quantite_reelle" => $stock->quantite_reelle + $ligne->quantite]);
-                }
-            }
+            //     if ($stock) {
+            //         $stock->update(["quantite_reelle" => $stock->quantite_reelle + $ligne->quantite]);
+            //     }
+            // }
 
             if ($bonCommande->validate()) {
                 return response()->json([

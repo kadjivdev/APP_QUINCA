@@ -104,8 +104,8 @@
                             </div>
                         </div>
 
-                        {{-- Photo --}}
-                        <div class="col-12">
+                        {{-- Article --}}
+                        <!-- <div class="col-12">
                             <label for="depots">Choisir des dépôts</label>
                             <select multiple required id="depots" class="form-control select2" name="depots[]">
                                 @foreach($depots as $depot)
@@ -116,7 +116,7 @@
                             <label class="form-label fw-semibold">Photo</label>
                             <input type="file" class="form-control" name="photo" accept="image/*">
                             <small class="text-muted">Formats acceptés: JPG, PNG. Max: 2MB</small>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 

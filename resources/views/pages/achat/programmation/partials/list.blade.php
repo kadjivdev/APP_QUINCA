@@ -474,7 +474,7 @@
         "autoWidth": false,
         "buttons": ["pdf", "print", "csv", "excel"],
         "order": [
-            [5, 'asc']
+            [0, 'desc']
         ],
         "pageLength": 15,
         language: {

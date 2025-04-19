@@ -176,7 +176,8 @@ class ProgrammationAchat {
             },
             error: (xhr) => {
                 this.showError('Erreur lors de l\'enregistrement');
-                console.error(xhr);
+                // console.error(xhr);
+                console.log($form.serialize())
             }
         });
     }
