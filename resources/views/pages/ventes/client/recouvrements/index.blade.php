@@ -119,9 +119,12 @@
                                         <tr class="text-white">
                                             <th class="text-white">Vérification</th>
                                             <th class="text-white">Client</th>
+                                            <th class="text-white">Recouvreur</th>
                                             <th class="text-white">Commentaire</th>
                                             <th class="text-white">Date</th>
                                             <th class="text-white">Statut</th>
+                                            <th class="text-white">Vérifié par</th>
+                                            <th class="text-white">Vérifié le</th>
                                         </tr>
                                     </thead>
 
@@ -138,11 +141,12 @@
                                                 @endif
                                             </td>
                                             <td class="ml-5 pr-5">{{ $recouvrement->client->raison_sociale }}</td>
+                                            <td class="ml-5 pr-5">{{ $recouvrement->user?$recouvrement->user->name:'---' }}</td>
                                             <td class="text-center">
                                                 <textarea class="form-control" rows="1" id="" placeholder="{{$recouvrement->comments}}"></textarea>
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge bg-light text-dark">{{ \Carbon\Carbon::parse($recouvrement->created_at)->locale('fr')->isoFormat('D MMMM YYYY') }}</span>
+                                                <span class="badge bg-light text-danger">{{ \Carbon\Carbon::parse($recouvrement->created_at)->locale('fr')->isoFormat('D MMMM YYYY') }}</span>
                                             </td>
                                             <td class="text-center">
                                                 @if($recouvrement->verified)
@@ -151,6 +155,12 @@
                                                 <span class="badge bg-danger">Non Vérifié</span>
                                                 @endif
                                             </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light text-dark">{{ $recouvrement->verifiedBy?$recouvrement->verifiedBy->name:"---" }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light text-danger">@if($recouvrement->verified_at){{ \Carbon\Carbon::parse($recouvrement->verified_at)->locale('fr')->isoFormat('D MMMM YYYY') }} @else '---' @endif </span>
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -158,9 +168,12 @@
                                         <tr>
                                             <th class="text-white">N°</th>
                                             <th class="text-white">Client</th>
+                                            <th class="text-white">Recouvreur</th>
                                             <th class="text-white">Commentaire</th>
                                             <th class="text-white">Date</th>
                                             <th class="text-white">Statut</th>
+                                            <th class="text-white">Vérifié par</th>
+                                            <th class="text-white">Vérifié le</th>
                                         </tr>
                                     </tfoot>
                                 </table>
